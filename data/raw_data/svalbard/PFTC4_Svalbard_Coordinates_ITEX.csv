@@ -1,0 +1,8 @@
+﻿Project,Treatment,Site,Elevation_m,Latitude_N,Longitude_E,New_Site_name,,,,,,,
+T,OTC,CAS,80,78.183,15.75,CH,,,,,,,
+T,OTC,BIS,80,78.183,15.75,SB,,,,,,,
+T,OTC,DRY,80,78.183,15.75,DH,,,,,,,
+T,CTL,CAS,80,78.183,15.75,CH,,,,,,,
+T,CTL,BIS,80,78.183,15.75,SB,,,,,,,
+T,CTL,DRY,80,78.183,15.75,DH,,,,,,,
+,,,,,,,,,,,,,

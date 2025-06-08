@@ -1,0 +1,63 @@
+
+metadata
+ID,name,desc,time,keywords,minlat,minlon,maxlat,maxlon,
+1,,,2024-01-23T07:54:03Z,,-28.754888875409961,28.866749983280897,-28.660892033949494,28.896831041201949,
+
+author
+ID,name,email,
+
+copyright
+year,license,author,
+
+link
+metadataID,authorID,wptID,rteptID,trkptID,rteID,trkID,text,type,href,
+1,,,,,,,"Garmin International",,http://www.garmin.com,
+
+rte
+ID,name,cmt,desc,src,number,type,IsAutoNamed,DisplayColor,TransportationMode,TripName,Date,DayNumber,
+
+rtept
+ID,rteID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,DepartureTime,StopDuration,ArrivalTime,CalculationMode,ElevationMode,NamedRoad_Name,NamedRoad_Id,NamedRoad_ProductId,TransportationMode,
+
+wpt
+ID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,Proximity,Temperature,Depth,DisplayMode,Samples,Expiration,CreationTime,
+1,-28.661020025610924,28.883080026134849,2032.0310059999999,2023-12-03T11:39:02Z,,,"PFTC1 E1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T11:39:02Z,
+2,-28.660892033949494,28.883082959800959,2032.8035890000001,2023-12-03T11:38:00Z,,,"PFTC1 E5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T11:38:00Z,
+3,-28.662471016868949,28.882639976218343,2039.2653809999999,2023-12-03T10:40:28Z,,,"PFTC1 W1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T10:40:28Z,
+4,-28.662398010492325,28.882770985364914,2039.8336179999999,2023-12-03T10:41:18Z,,,"PFTC1 W5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T10:41:18Z,
+5,-28.679927000775933,28.895129011943936,2201.8801269999999,2023-12-03T06:49:24Z,,,"PFTC2 E1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T06:49:24Z,
+6,-28.679802026599646,28.895105961710215,2200.5205080000001,2023-12-03T06:50:31Z,,,"PFTC2 E5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T06:50:31Z,
+7,-28.680384987965226,28.893873989582062,2197.663818,2023-12-03T06:34:15Z,,,"PFTC2 W1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T06:34:15Z,
+8,-28.680252972990274,28.893889999017119,2197.5566410000001,2023-12-03T06:35:38Z,,,"PFTC2 W5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T06:35:38Z,
+9,-28.719171993434429,28.896831041201949,2403.9406739999999,2023-12-03T13:40:55Z,,,"PFTC3 E1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T13:40:55Z,
+10,-28.719057999551296,28.896777983754873,2402.1791990000002,2023-12-03T13:42:05Z,,,"PFTC3 E5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T13:42:05Z,
+11,-28.718773014843464,28.895680038258433,2421.6252439999998,2023-12-03T14:09:09Z,,,"PFTC3 W1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T14:09:09Z,
+12,-28.718633037060499,28.895623041316867,2429.8571780000002,2023-12-03T14:24:49Z,,,"PFTC3 W5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-03T14:24:49Z,
+13,-28.728376999497414,28.892621984705329,2587.2219239999999,2023-12-02T15:05:24Z,,,"PFTC4 E1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-02T15:05:24Z,
+14,-28.728269962593913,28.892718041315675,2585.1665039999998,2023-12-02T15:07:10Z,,,"PFTC4 E5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-02T15:07:10Z,
+15,-28.72828496620059,28.892499022185802,2590.2170409999999,2023-12-02T15:18:09Z,,,"PFTC4 W1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-02T15:18:09Z,
+16,-28.728163009509444,28.892433978617191,2589.8000489999999,2023-12-02T15:13:39Z,,,"PFTC4 W5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-02T15:13:39Z,
+17,-28.737817034125328,28.894373970106244,2796.9467770000001,2023-12-05T09:27:18Z,,,"PFTC5 E1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-05T09:27:18Z,
+18,-28.737731035798788,28.894395008683205,2797.5573730000001,2023-12-05T09:25:49Z,,,"PFTC5 E4",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-05T09:25:49Z,
+19,-28.737690970301628,28.894380005076528,2797.429443,2023-12-05T09:24:18Z,,,"PFTC5 E5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-05T09:24:18Z,
+20,-28.737717038020492,28.892625002190471,2813.304932,2023-12-05T10:54:54Z,,,"PFTC5 W1",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-05T10:54:54Z,
+21,-28.737765988335013,28.892519976943731,2806.953857,2023-12-05T11:04:25Z,,,"PFTC5 W5",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2023-12-05T11:04:25Z,
+22,-28.754888875409961,28.866749983280897,,2024-01-23T07:51:19Z,,,"PFTC6",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,2024-01-23T07:51:19Z,
+
+Address
+wptID,StreetAddress1,StreetAddress2,City,State,Country,PostalCode,
+
+PhoneNumber
+wptID,Category,value,
+
+Categories
+wptID,Category,
+
+trk
+ID,name,cmt,desc,src,number,type,DisplayColor,
+
+trkseg
+ID,trkID,
+
+trkpt
+ID,trksegID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,Temperature,Depth,wtemp,hr,cad,

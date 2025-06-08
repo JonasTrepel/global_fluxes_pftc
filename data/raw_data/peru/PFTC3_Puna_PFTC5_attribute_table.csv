@@ -1,0 +1,39 @@
+﻿TableID,Variable name,Units,Description,How measured
+,year,yyyy,Year of sampling,recorded
+,month,month,Month of sampling,recorded
+,site,,Unique site ID using first three letters of site name,defined
+,treatment,,"Burning treatment: C = control, B = burnt, NB = newly burnt, and BB = experimentally burnt",defined
+,plot_id,,Plot ID,defined
+,family,,Plant family name,identified
+,functional_group,,"Plant functional group; graminoids, forbs, woody, fern, moss and bryophytes",identified
+,taxon,,Taxon,identified
+,cover,percentage,Estimate of individual species cover,recorded
+,burn_year,yyyy,Year of the latest fire event,recorded
+,elevation,m asl,Elevation of site,recorded
+,latitude,degree N,Latitude of site,recorded
+,longitude,degree E,Longitude of site,recorded
+,course,,"Sampling campaign including PFTC3 in 2018, Puna in 2019 and PFTC5 in 2020",recorded
+comm_structure,variable,,"Variable name; cover, min, mean and max vegetation height and bryophyte depth",defined
+comm_structure,variable_class,,"Variable class; forbs, graminoids, shurb, fern, bryophytes, lichen, bottom-, field-, shrub layer, litter, bare ground and rock (cover), vegetation (height), and bryophyte (depth)",defined
+comm_structure,value,percentage or cm,"Cover, height or depth value",recorded
+,date_of_harvest,yyyy-mm-dd,Date of biomass harvest,defined
+,season,,Time of data collection; wet or dry season,recorded
+biomass,variable,,"Name of variable; biomass, cover, min, mean and max vegetation height and bryophyte depth",defined
+biomass,variable_class,,"Name of variable class; forbs, graminoids, shurb, fern, bryophytes, lichen, litter, bare ground and rock (biomass and/or cover), vegetation (height), and bryophyte (depth)",defined
+biomass,value,"percentage, cm, g","Biomass, cover, height or depth value",recorded
+biomass,treatment,,"Burning treatment: C = control, B = burnt, and NB = newly burnt",defined
+,individual_nr,,Individual number,defined
+,leaf_id,,Leaf number,defined
+,id,,Unique leaf ID consisting of 3 letters and 4 numbers,defined
+traits,functional_group,,"Plant functional group; graminoids, forbs, woody, and fern",identified
+,trait,,"Plant functional leaf trait including plant height, wet/dry mass, leaf area, leaf thickness, specific leaf area, leaf dry matter content, carbon, nitrogen and phosphorus content, CN and NP ratio, d13C and d15N isotope ratio ",defined
+traits,value,"cm, g, cm2, mm, cm2/g, percentage, permil",Leaf trait value,recorded
+,date_time,yyyy-mm-dd-hh-mm-ss,Date and time of measurement,recorded
+,air_temperature,°C,Air temperature per plot,measured
+,ground_temperature,°C,Ground temperature per plot,measured
+,soil_temperature,°C,Soil temperature per plot,measured
+,soil_moisture,(m3 water x m-3 soil) x 100,Soil moisture per plot,measured
+,raw_soilmoisture,,Raw soil moisture values,measured
+,logger_id,,Unique logger ID,defined
+,error_flag,,Flagging wrong data,recorded
+climate,treatment,,"Burning treatment: C = control, B = burnt, and NB = newly burnt",defined

@@ -1,0 +1,149 @@
+field,units,is_trait,formal_name,description,notes
+id_kth,NA,0,NA,"Unique identification number for the row, inserted by Kenji Hayashi",NA
+source,NA,0,NA,Data source (contributor of the data),Distinction with field 'collector' uncertain
+collector,NA,0,NA,Primary data collector,Distinction with field 'source' uncertain
+other_collectors,NA,0,NA,Other data collectors,NA
+date,NA,0,NA,Date of data collection,NA
+year,NA,0,NA,Year of data collection,NA
+year_2,NA,0,NA,"Year of data collection, as extracted from 'date' entry",NA
+month,NA,0,NA,"Month of data collection, as extracted from 'date' entry",NA
+day,NA,0,NA,"Day of data collection, as extracted from 'date' entry",NA
+site,NA,0,NA,Site of data collection,NA
+locality,NA,0,NA,Description of the locality of data collection,NA
+country,NA,0,NA,Country of data collection,NA
+state_province,NA,0,NA,State or province of data collection,NA
+lower_political,NA,0,NA,Lower political division (county) of data collection,NA
+habitat,NA,0,NA,Description of site habitat,NA
+elev,m,0,NA,Elevation of observation,NA
+lat,dd,0,NA,Latitude of observation,NA
+long,dd,0,NA,Longtidue of observation,NA
+block,NA,0,NA,Block number in which observation was made,NA
+transect,NA,0,NA,Transect from Stark et al. (2017) in which observation was made,NA
+ibutton,NA,0,NA,iButton from Stark et al. (2017) corresponding to the observation,NA
+plot_type,NA,0,NA,Type of plot (collection vs. gentry) in which observation was made,NA
+plot_name,NA,0,NA,Name of plot in which observation was made,NA
+taxon_std,NA,0,NA,Standardized full taxonomic name,NA
+genus_std,NA,0,NA,Standardized genus,NA
+species_std,NA,0,NA,Standardized species epithet,NA
+sp_var_subsp_std,NA,0,NA,Standardized species epithet + infraspecific rank + var./subsp. contained together for convenience,NA
+infraspecific_rank_std,NA,0,NA,Standardized infraspecific rank,NA
+var_subsp_std,NA,0,NA,Standardized var. or subsp. name,NA
+authority_std,NA,0,NA,Standardized specific authority,NA
+family_std,NA,0,NA,Standardized taxonomic family,NA
+taxon_fixed,NA,0,NA,"Full taxonomic name, cleaned from field 'taxon'",NA
+taxon,NA,0,NA,Full taxonomic name,NA
+genus,NA,0,NA,Genus,NA
+species,NA,0,NA,Species epithet,NA
+infraspecific_rank,NA,0,NA,Infraspecific rank,NA
+var_subsp,NA,0,NA,var. or subsp. name,NA
+authority,NA,0,NA,Specific authority,NA
+family,NA,0,NA,Taxonomic family,NA
+morpho,NA,0,NA,Morpho name of species for field use,NA
+original_taxa,NA,0,NA,Original entry of taxonomic name,Exactly what is 'original' is unclear
+hartman_taxa,NA,0,NA,"Full taxonomic name, standardized to Hartman's taxonomy",Probably refers to Hartman & Nelson (2001) 'A Checklist of the Vascular Plants of Colorado'
+hartman_genus,NA,0,NA,"Genus, standardized to Hartman's taxonomy",Probably refers to Hartman & Nelson (2001) 'A Checklist of the Vascular Plants of Colorado'
+hartman_species,NA,0,NA,"Species epithet, standardized to Hartman's taxonomy",Probably refers to Hartman & Nelson (2001) 'A Checklist of the Vascular Plants of Colorado'
+hartman_family,NA,0,NA,"Taxonomic family, standardized to Hartman's taxonomy",Probably refers to Hartman & Nelson (2001) 'A Checklist of the Vascular Plants of Colorado'
+num,NA,0,NA,Observation and/or individual number,Meaning unique to data source
+log,NA,0,NA,UNKNOWN,NA
+plant,NA,0,NA,Plant number from Stark et al. (2017),NA
+no_of_leaves,NA,0,NA,Number of leaves sampled,NA
+leaf_num,NA,0,NA,Leaf observation number,Probably for repeated measurements on a single individual
+scan_name,NA,0,NA,Name of scanned fresh leaf image file,NA
+leaf_area,cm^2,1,leaf area,Fresh leaf area,NA
+leaf_area_mm2,mm^2,1,leaf area,"Fresh leaf area, in mm^2",NA
+leaf_area_dry,cm^2,1,UNKNOWN,Dry leaf area,NA
+real_area,cm^2,1,UNKNOWN,UNKNOWN,NA
+wet_mass,g,1,leaf fresh mass,Leaf mass assessed without drying,NA
+dry_mass,g,1,leaf dry mass,Leaf mass assessed after drying,NA
+dry_mass_mg,mg,1,leaf dry mass,"Leaf mass assessed after drying, in mg",NA
+SLA,cm^2 g^-1,1,leaf area per leaf dry mass,Specific Leaf Area; the ratio of the area of a leaf to its dry mass,NA
+SLA_log,log10(cm^2 g^-1),1,leaf area per leaf dry mass,log10-transformed Specific Leaf Area; the ratio of the area of a leaf to its dry mass,NA
+SLA_avg,cm^2 g^-1,1,leaf area per leaf dry mass,Average Specific Leaf Area; the ratio of the area of a leaf to its dry mass,Unclear an average of what/which entries this is
+SLA_m2_kg,m^2 kg^-1,1,leaf area per leaf dry mass,"Specific Leaf Area; the ratio of the area of a leaf to its dry mass, in m^2 kg^-1",NA
+associated_SLA,NA,0,NA,UNKNOWN,NA
+SLA_method,NA,0,NA,Description of the method of SLA measurement,NA
+SLA_avg_or_ind,NA,0,NA,Whether the reported SLA value is an average or an individual measurement value,This field is likely outdated in the most up-to-date version of the master trait data file
+SLA_notes,NA,0,NA,Notes regarding SLA measurement,NA
+LMA,g cm^-2,1,leaf dry mass per leaf area,Leaf Mass per Area; the ratio of the dry mass of a leaf to its area,NA
+LDMC,mg g^-1,1,leaf dry mass per leaf fresh mass,Leaf Dry Matter Content; the ratio of a dry mass of a leaf (mg) to its water saturated fresh mass (g),NA
+WC,g mg^-1,1,UNKNOWN,Leaf Water Content; (1000 - LDMC)/1000,NA
+height_flower,cm,1,UNKNOWN,"Flower height of the plant, measured to the base of the highest infloresence",NA
+height_leaf,cm,1,whole plant height vegetative,"Leaf height (foliage height) of the plant, measured to the tip of the highest leaf. For graminoids, leaf height is defined as the higher of either the base of the lowest floret or the tip of the highest leaf.",Evalution of consistency with formal definition recommended
+height,cm,1,whole plant height vegetative,'height_leaf' from ds1 combined with any height measurements from ds2-6,Measurement methods for ds2-6 unclear; evalution of consistency with formal definition recommended
+thickness_1,mm,1,leaf thickness,"Leaf thickness measurement no. 1 for leaves with multiple measurements taken, or the only measurement for leaves with only a single measurement taken",NA
+thickness_2,mm,1,leaf thickness,Leaf thickness measurement no. 2 for leaves with multiple measurements taken,NA
+thickness_3,mm,1,leaf thickness,Leaf thickness measurement no. 3 for leaves with multiple measurements taken,NA
+thickness,mm,1,leaf thickness,"Leaf thickness, single measurement or average of multiple measurements per individual",NA
+thickness_notes,NA,0,NA,Notes regarding leaf thickness measurement,NA
+pc_C,%,1,leaf carbon content per leaf dry mass,"The ratio of the quantity of carbon in the leaf per respective unit dry mass, expressed as a percentage",NA
+pc_N,%,1,leaf nitrogen content per leaf dry mass,"The ratio of the quantity of nitrogen in the leaf per respective unit dry mass, expressed as a percentage",NA
+pc_P,%,1,leaf phosphorus content per leaf dry mass,"The ratio of the quantity of phosphorus in the leaf per respective unit dry mass, expressed as a percentage",NA
+d13C,‰,1,UNKNOWN,Carbon isotope ratio,Confirmation needed
+d15N,‰,1,UNKNOWN,Nitrogen isotope ratio,Confirmation needed
+C_N,NA,1,UNKNOWN,Ratio of %C to %N,Confirmation needed
+N_C,NA,1,UNKNOWN,Ratio of %N to %C,Confirmation needed
+N_P,NA,1,UNKNOWN,Ratio of %N to %P,Confirmation needed
+obs,NA,0,NA,Observation number,From ColoradoEnquistTraits-forLorah.xlsx (ds6)
+HHMMSS,NA,0,NA,"Time (hour, minute, second) of observation",Data may not be in proper format at the moment
+ave_photo,umol_CO2 m^2 s^-1,1,UNKNOWN,Average rate of photosynthesis,Difference with field 'avg_photo' uncertain
+avg_photo,umol_CO2 m^2 s^-1,1,UNKNOWN,Average rate of photosynthesis,Difference with field 'ave_photo' uncertain
+photo,umol_CO2 m^2 s^-1,1,UNKNOWN,Rate of photosynthesis,NA
+photo_corrected,umol_CO2 m^2 s^-1,1,UNKNOWN,Corrected rate of photosynthesis,Unclear what 'corrected' refers to
+temp_air,degrees C,0,NA,Air temperature at observation,"Difference with field 'temp_air_C' uncertain, probably duplicate column found in two different data sources"
+temp_air_C,degrees C,0,NA,Air temperature at observation,"Difference with field 'temp_air' uncertain, probably duplicate column found in two different data sources"
+temp_leaf,degrees C,0,NA,Temperature of leaf at observation,"Difference with field 'temp_leaf_C' uncertain, probably duplicate column found in two different data sources"
+temp_leaf_C,degrees C,0,NA,Temperature of leaf at observation,"Difference with field 'temp_leaf' uncertain, probably duplicate column found in two different data sources"
+temp_blk,degrees C,0,NA,UNKNOWN,"Difference with field 'temp_blk_C' uncertain, probably duplicate column found in two different data sources"
+temp_blk_C,degrees C,0,NA,UNKNOWN,"Difference with field 'temp_blk' uncertain, probably duplicate column found in two different data sources"
+cond,mol_H2O m^-2 s^-1,1,UNKNOWN,Rate of condensation,NA
+cond_corrected,mol_H2O m^-2 s^-1,1,UNKNOWN,Corrected rate of condensation,Unclear what 'corrected' refers to
+Ci,umol_CO2 mol^-1,1,UNKNOWN,Intracellular CO2 concentration,NA
+area,cm^2,0,NA,UNKNOWN,Might be leaf area used for rate measurements etc.; all entries are either 6 of NA
+TR,mmol_H2O m^-2 s^-1,1,UNKNOWN,Rate of transpiration,NA
+VPD,kPa,1,UNKNOWN,Vapor pressure deficit based on leaf temperature,NA
+stm_rat,UNKNOWN,1,UNKNOWN,UNKNOWN,NA
+bl_cond,mol m^-2 s^-1,1,UNKNOWN,UNKNOWN,NA
+CO2R,umol_CO2 mol^-1,1,UNKNOWN,UNKNOWN,NA
+CO2S,umol_CO2 mol^-1,1,UNKNOWN,UNKNOWN,NA
+H2OR,mmol_H2O mol^-1,1,UNKNOWN,UNKNOWN,NA
+H2OS,mmol_H2O mol^-1,1,UNKNOWN,UNKNOWN,NA
+PARo,umol m^2 s^-1,1,UNKNOWN,UNKNOWN,NA
+RH_R,%,1,UNKNOWN,UNKNOWN,NA
+RH_S,%,1,UNKNOWN,UNKNOWN,NA
+WUE,umol mmol^-1,1,UNKNOWN,Water Use Efficiency (1000*umol/mmol),Unclear how to compute this value
+A_umol_m2_s,UNKNOWN,1,UNKNOWN,UNKNOWN,NA
+A_nmol_g_s,UNKNOWN,1,UNKNOWN,UNKNOWN,NA
+real_area_cm2,cm^2,1,NA,UNKNOWN,"Meaning and use unknown; difference with field 'real_area' unclear, may be duplicate column found in two different data sources"
+field_58,UNKNOWN,0,NA,UNKNOWN,NA
+field_59,UNKNOWN,0,NA,UNKNOWN,NA
+A_LiCor,UNKNOWN,1,UNKNOWN,UNKNOWN,NA
+E_LiCor,UNKNOWN,0,NA,UNKNOWN,NA
+notes_LiCor,NA,0,NA,Notes regarding LiCor measurements,NA
+leaf_area_in_machine,cm^2,0,NA,Leaf area in LiCor machine when measurement was taken,Needs confirmation
+no_of_leaflets,NA,0,NA,Number of leaflets examined,NA
+leaflet_mass,g,1,UNKNOWN,Leaflet mass,Fresh of dry?
+leaflet_area,m^2,1,leaflet area,Leaflet area,Fresh of dry?
+biomass_per_ind,g,1,UNKNOWN,Biomass per individual,Biomass per individual what? (leaf? plant?)
+plot_abundance,NA,0,NA,Abundance in plot,Confirmation needed
+species_abundance,NA,0,NA,UNKNOWN,NA
+id,NA,0,NA,Identification number for observation (deprecated),NA
+relic_id,NA,0,NA,Identification number for observation (deprecated),NA
+source_id,NA,0,NA,Identification number for observation (deprecated),NA
+collection_num,NA,0,NA,Collection number for observation (deprecated),Relationship with field 'collection_num' unclear
+vanessa_num,NA,0,NA,Vanessa Buzzard's identification number for observation (deprecated),Relationship with field 'collection_num' unclear
+brian_enquist_collection_num,NA,0,NA,Brian Enquist's collection number for observation (deprecated),NA
+file_name,NA,0,NA,Name of file from which data were compiled into ColoradoEnquistTraits-forLorah.xlsx (ds6),NA
+notes,NA,0,NA,Notes regarding observation,NA
+bogus,NA,0,NA,Whether this entry is bogus (1 if yes),NA
+flag,NA,0,NA,Whether this entry is flagged for whatever reason (1 if flagged),See notes for description of potential issues
+data_source,NA,0,NA,Source file from which data were compiled into the master trait data file,NA
+issue_ymm,NA,0,NA,"Issue (Year MisMatch): Year entries in 'year' and 'year_2' are inconsistent (TRUE if inconsistent, FALSE if not)",Data from ColoradoEnquistTraits-forLorah.xlsx (ds6) appear to have erroneous date entries (excluding entries in 'year')
+issue_siu,NA,0,NA,"Issue (Species Identity Uncertain): entered species identity is uncertain (TRUE if ID is uncertain/questionable, FALSE if there is no evidence of uncertain/questionable ID)",NA
+issue_sdq,NA,0,NA,"Issue (Stoichiometry Data Questionable): stoichiometry data (pc_C, pc_N, pc_P, d13C, d15N, C_N, N_C, N_P) may be erroneous (TRUE if stoichiometry data may be erroneous, FALSE if not)",NA
+issue_rpm,NA,0,NA,"This issue flags rows that may be repeated measurements on the same individual, but cannot be confirmed confidently",NA
+issue_mls,NA,0,NA,This issue flags rows for which leaf area may encompass multiple leafs (or # leaflets) and thus should not be used to get leaf size as a trait,NA
+issue_pcC,NA,0,NA,"This issue flags rows for which the pc_C data point may be an erroneous outlier, but couldn't be confidently confirmed",NA
+issue_pcN,NA,0,NA,"This issue flags rows for which the pc_N data point may be an erroneous outlier, but couldn't be confidently confirmed",NA
+issue_C_N,NA,0,NA,"This issue flags rows for which the C_N data point may be an erroneous outlier, but couldn't be confidently confirmed",NA
+issue_N_P,NA,0,NA,"This issue flags rows for which the N_P data point may be an erroneous outlier, but couldn't be confidently confirmed",NA
