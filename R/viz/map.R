@@ -11,11 +11,11 @@ dt <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>%
   select(country, spatial_block, site, plot_id, mmp, mat, elevation, 
          temperature_nee, temperature_reco, temperature_gpp,
          height_x_cover, sla_cm2_g, ldmc, leaf_area_cm2, nee, reco, gpp,
-         lat, lon, species_richness
+         lat, lon, species_richness, gradient
   ) %>% 
   rename(local_temperature = temperature_gpp) %>% 
   filter(complete.cases(.))
-table(dt$country)
+table(dt$gradient)
 sf_fluxes <- read_sf("data/processed_data/preliminary_data/prelim_flux_loc.gpkg") %>% 
   rename(plot_id = plot_id) 
 
@@ -23,7 +23,7 @@ dt_sf <- dt %>%
   left_join(sf_fluxes) %>%
   st_as_sf() %>%
   st_transform(crs = 'ESRI:54009') %>% 
-  mutate(country = fct_reorder(country, lat)) 
+  mutate(gradient = fct_reorder(gradient, lat)) 
 
 mapview(dt_sf)
 
@@ -35,7 +35,7 @@ world %>% st_transform(crs = 'ESRI:54009')
 
 map <- ggplot() +
   geom_sf(data = world)+
-  geom_sf(data = dt_sf, aes(color = country), size = 4) +
+  geom_sf(data = dt_sf, aes(color = gradient), size = 4) +
   #scale_color_scico_d(palette = "batlow") +
   scale_color_met_d(name = "Archambault") +
   theme_void() +
@@ -89,15 +89,15 @@ dt_long <- dt %>%
 
 library(ggridges)
 pba1 <- dt_long %>%
-  filter(var_name %in% c("nee", "gpp", "reco", "mat", "elevation")) %>% 
-  mutate(country = fct_reorder(country, lat), 
-         plotvar_name = factor(plotvar_name, levels = c("GPP (µmol/m²/s)",
-                                                        "Reco (µmol/m²/s)",
-                                                        "NEE (µmol/m²/s)",
+  filter(var_name %in% c("elevation", "mat", "local_temperature", "height_x_cover")) %>% 
+  mutate(gradient = fct_reorder(gradient, lat), 
+         plotvar_name = factor(plotvar_name, levels = c(
                                                         "Elevation (m)", 
-                                                        "MAT (°C)"))) %>%
+                                                        "MAT (°C)", 
+                                                        "Local Temperature (°C)", 
+                                                        "'Biomass'"))) %>%
   ggplot() +
-  geom_density_ridges(aes(y = country, x = var_value, color = country, fill = country), alpha = 0.75, size = 0.75) +
+  geom_density_ridges(aes(y = gradient, x = var_value, color = gradient, fill = gradient), alpha = 0.75, size = 0.75) +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
   facet_wrap(~plotvar_name, scales = "free_x", ncol = 5) +
@@ -106,7 +106,7 @@ pba1 <- dt_long %>%
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        #panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "seashell"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
@@ -120,10 +120,16 @@ pba1
 
 
 pba3 <- dt_long %>%
-  filter(var_name %in% c("sla_cm2_g", "leaf_area_cm2", "height_x_cover", "local_temperature")) %>% 
-  mutate(country = fct_reorder(country, lat)) %>%
+  filter(var_name %in% c("sla_cm2_g", "leaf_area_cm2", "gpp", "reco", "nee")) %>%
+  mutate(gradient = fct_reorder(gradient, lat),
+         plotvar_name = factor(plotvar_name, 
+                               levels = c("GPP (µmol/m²/s)",
+                                          "Reco (µmol/m²/s)",
+                                          "NEE (µmol/m²/s)",
+                                          "SLA (cm²/g)",
+                                          "Leaf Area (cm²)"))) %>%
   ggplot() +
-  geom_density_ridges(aes(y = country, x = var_value, color = country, fill = country), alpha = 0.75, size = 0.75) +
+  geom_density_ridges(aes(y = gradient, x = var_value, color = gradient, fill = gradient), alpha = 0.75, size = 0.75) +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
   facet_wrap(~plotvar_name, scales = "free_x", ncol = 6) +
@@ -132,7 +138,7 @@ pba3 <- dt_long %>%
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        #panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "seashell"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
@@ -143,7 +149,7 @@ pba3 <- dt_long %>%
         strip.background = element_rect(fill = "seashell", color = "seashell") )
 pba3
 
-pba_fus <- grid.arrange(pba1, pba2, ncol = 2)             
+#pba_fus <- grid.arrange(pba1, pba2, ncol = 2)             
 
 comb_plot_a <- grid.arrange(pba1, map_e, pba3, heights = c(1.1, 1.5, 1.2), 
                           padding = unit(0.5, "lines"))

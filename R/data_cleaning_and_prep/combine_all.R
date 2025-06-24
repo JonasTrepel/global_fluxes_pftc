@@ -1,7 +1,9 @@
 library(data.table)
 library(tidyverse)
 library(sf)
-
+library(tidylog)
+library(ggrepel)
+library(MetBrewer)
 
 # Flux data ----------------
 dt_flux_t <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
@@ -35,9 +37,10 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
   mutate(plot_id = as.character(plot_id),
          nee = nee*-1, 
          reco = reco*-1) %>% 
-  filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
   filter(tier %in% c("China_2016", "Colorado_2018", "Svalbard_2018",
-                     "Norway_2022", "Peru_2019", "South_Africa_2023"))
+                     "Norway_2022", "Peru_2019", "South_Africa_2023")) %>%
+  filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) #assuming all else are wrong 
+
 table(dt_flux[dt_flux$treatment == "c", ]$tier)
 table(dt_flux[!is.na(dt_flux$par), ]$tier)
 
@@ -225,66 +228,12 @@ dt_sr <- fread("data/processed_data/preliminary_data/prelim_species_richness.csv
 
 dt_fd <- fread("data/processed_data/preliminary_data/plant_functional_diversity.csv")
 
-## PCAs -----------------------
-dt_trait_mean %>% group_by(site) %>% summarize(mean_h = mean(plant_height_cm, na.rm = T)) %>% print(n = 50)
 
-#morphological traits 
-dt_m_t <- dt_trait_mean %>%
-  ungroup() %>% 
-  select(plot_id, sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm) %>%
-  filter(complete.cases(.)) %>% 
-  unique() %>% 
-  filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
-pr_m_t <- princomp(dt_m_t %>% select(-plot_id))
-
-dt_m_t$morph_traits_pc1 <- pr_m_t$scores[,1]
-dt_m_t$morph_traits_pc2 <- pr_m_t$scores[,2]
-
-
-#chemical traits 
-dt_c_t <- dt_trait_mean %>%
-  ungroup() %>% 
-  select(plot_id, n_percent, cn_ratio, c_percent, p_percent, cp_ratio, np_ratio) %>%
-  filter(complete.cases(.)) %>% 
-  unique() %>% 
-  filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
-pr_c_t <- princomp(dt_c_t %>% select(-plot_id))
-
-dt_c_t$chem_traits_pc1 <- pr_c_t$scores[,1]
-dt_c_t$chem_traits_pc2 <- pr_c_t$scores[,2]
-
-#all traits 
-dt_a_t <- dt_trait_mean %>%
-  ungroup() %>% 
-  select(plot_id, sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
-         n_percent, cn_ratio, c_percent, p_percent, cp_ratio, np_ratio) %>%
-  filter(complete.cases(.)) %>% 
-  unique() %>%
-  filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
-pr_a_t <- princomp(dt_a_t %>% select(-plot_id))
-
-dt_a_t$all_traits_pc1 <- pr_a_t$scores[,1]
-dt_a_t$all_traits_pc2 <- pr_a_t$scores[,2]
-
-#compile PCA dataframe 
-
-dt_pca <- dt_m_t %>% 
-  select(plot_id, morph_traits_pc1, morph_traits_pc2) %>% 
-  unique() %>% 
-  left_join(dt_a_t[, c("plot_id", "all_traits_pc1", "all_traits_pc2")]) %>% 
-  unique() %>% 
-  left_join(dt_c_t[, c("plot_id", "chem_traits_pc1", "chem_traits_pc2")]) %>% 
-  distinct() 
-  
-
-### combine everything --------------------
-dt_mod <- dt_flux %>%
+### combine everything but pcas --------------------
+dt_mod_1 <- dt_flux %>%
   left_join(dt_trait_mean) %>%
   left_join(dt_trait_var) %>%
-  left_join(dt_pca) %>%
+ # left_join(dt_pca) %>%
   left_join(dt_clim) %>% 
   left_join(dt_moist) %>% 
   left_join(dt_fd) %>% 
@@ -313,7 +262,162 @@ dt_mod <- dt_flux %>%
     abs_lat = abs(lat), 
     reco_gpp_ratio = reco/gpp,
     reco_gpp_ratio = ifelse(abs(reco_gpp_ratio) > 10, NA, reco_gpp_ratio),
-    map = mmp*12) %>% 
+    map = mmp*12)  %>% 
+  mutate(gradient = case_when(
+    country == "South Africa" ~ "Drakensberg", 
+    country == "Peru" ~ "Tropical Andes", 
+    country == "China" ~ "Western Himalayas", 
+    country == "USA" ~ "Rocky Mountains", 
+    country == "Norway" ~ "Southern Scandes", 
+    country == "Svalbard" ~ "Svalbard" 
+  ))
+
+
+## PCAs -----------------------
+dt_mod %>% group_by(site) %>% summarize(mean_h = mean(plant_height_cm, na.rm = T)) %>% print(n = 50)
+
+#morphological traits 
+dt_m_t <- dt_mod_1 %>%
+  ungroup() %>% 
+  select(lat, gradient, plot_id, sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm) %>%
+  filter(complete.cases(.)) %>% 
+  unique() %>% 
+  filter(plot_id != "") %>% 
+  mutate(across(where(is.numeric), scale))
+pr_m_t <- princomp(dt_m_t %>% select(-plot_id, -gradient, -lat))
+
+dt_m_t$morph_traits_pc1 <- pr_m_t$scores[,1]
+dt_m_t$morph_traits_pc2 <- pr_m_t$scores[,2]
+
+#viz 
+loadings_m_t <- as_tibble(pr_m_t$loadings[, 1:2], rownames = "Variable")
+scores_m_t <- as_tibble(pr_m_t$scores[, 1:2]) %>%
+  mutate(gradient = dt_m_t$gradient, 
+         lat = dt_m_t$lat) %>% 
+  mutate(gradient = fct_reorder(gradient, lat))
+
+#importance 
+#https://stackoverflow.com/questions/62422277/how-to-obtain-principal-component-variance-explained-in-r-prcomp-and-prepro
+summ_m_t <- summary(pr_m_t)
+summ_m_t
+#Alternative (same results)
+eigenvalues_m_t <- pr_m_t$sdev^2
+variance_explained_m_t <- eigenvalues_m_t / sum(eigenvalues_m_t)
+(percent_var_m_t <- round(variance_explained_m_t[1:2] * 100, 1))
+
+
+p_m_t <- ggplot() +
+  geom_point(data = scores_m_t, aes(x = Comp.1, y = Comp.2, color = gradient),  size = 1, alpha = 0.75) +
+  geom_segment(data = loadings_m_t, aes(x = 0, y = 0, xend = Comp.1*5, yend = Comp.2*5),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+    geom_text_repel(data = loadings_m_t, aes(x = Comp.1*5, y = Comp.2*5, label = Variable),
+                  size = 4, color = "black") +
+  scale_color_met_d(name = "Archambault") +
+  scale_fill_met_d(name = "Archambault") +
+  labs(title = "a)", 
+       subtitle = "PCA Morphological Traits",
+       x = paste0("PC1 (", percent_var_m_t[1], "% variance)"),
+       y = paste0("PC2 (", percent_var_m_t[2], "% variance)")) +
+  theme_minimal() +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0, size = 14, face = "bold"),
+        panel.grid = element_line(color = "seashell"), 
+        axis.text = element_text(size = 12), 
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "snow2", color = NA))
+p_m_t
+
+#chemical traits 
+dt_c_t <- dt_mod_1 %>%
+  ungroup() %>% 
+  select(plot_id, n_percent, cn_ratio, c_percent, p_percent, cp_ratio, np_ratio) %>%
+  filter(complete.cases(.)) %>% 
+  unique() %>% 
+  filter(plot_id != "") %>% 
+  mutate(across(where(is.numeric), scale))
+pr_c_t <- princomp(dt_c_t %>% select(-plot_id))
+
+dt_c_t$chem_traits_pc1 <- pr_c_t$scores[,1]
+dt_c_t$chem_traits_pc2 <- pr_c_t$scores[,2]
+
+#all traits 
+dt_a_t <- dt_mod_1 %>%
+  ungroup() %>% 
+  select(lat, gradient, plot_id, sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
+         n_percent, cn_ratio, c_percent, p_percent, cp_ratio, np_ratio) %>%
+  filter(complete.cases(.)) %>% 
+  unique() %>%
+  filter(plot_id != "") %>% 
+  mutate(across(where(is.numeric), scale))
+pr_a_t <- princomp(dt_a_t %>% select(-plot_id, -lat, -gradient))
+
+dt_a_t$all_traits_pc1 <- pr_a_t$scores[,1]
+dt_a_t$all_traits_pc2 <- pr_a_t$scores[,2]
+
+loadings_a_t <- as_tibble(pr_a_t$loadings[, 1:2], rownames = "Variable")
+
+s_a_alibi_point <- data.table(
+  Comp.1 = 0, 
+  Comp.2 = 0,
+  gradient = "Drakensberg", 
+  lat = -28.73775
+)
+scores_a_t <- as_tibble(pr_a_t$scores[, 1:2]) %>%
+  mutate(gradient = dt_a_t$gradient, 
+         lat = dt_a_t$lat) %>% 
+  rbind(s_a_alibi_point) %>% 
+  mutate(gradient = fct_reorder(gradient, lat))
+
+#importance 
+#https://stackoverflow.com/questions/62422277/how-to-obtain-principal-component-variance-explained-in-r-prcomp-and-prepro
+summ_a_t <- summary(pr_a_t)
+summ_a_t
+#Alternative (same results)
+eigenvalues_a_t <- pr_a_t$sdev^2
+variance_explained_a_t <- eigenvalues_a_t / sum(eigenvalues_a_t)
+(percent_var_a_t <- round(variance_explained_a_t[1:2] * 100, 1))
+
+
+p_a_t <- ggplot() +
+  geom_point(data = scores_a_t, aes(x = Comp.1, y = Comp.2, color = gradient),  size = 1, alpha = 0.75) +
+  geom_segment(data = loadings_a_t, aes(x = 0, y = 0, xend = Comp.1*5, yend = Comp.2*5),
+               arrow = arrow(length = unit(0.2, "cm")), color = "black") +
+  geom_text_repel(data = loadings_a_t, aes(x = Comp.1*5, y = Comp.2*5, label = Variable),
+                  size = 4, color = "black") +
+  scale_color_met_d(name = "Archambault") +
+  scale_fill_met_d(name = "Archambault") +
+  labs(title = "b)",
+       subtitle = "PCA All Traits",
+       x = paste0("PC1 (", percent_var_a_t[1], "% variance)"),
+       y = paste0("PC2 (", percent_var_a_t[2], "% variance)")) +
+  theme_minimal() +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0, size = 14, face = "bold"),
+        panel.grid = element_line(color = "seashell"), 
+        axis.text = element_text(size = 12), 
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "snow2", color = NA))
+p_a_t
+
+library(patchwork)
+p_pca <- p_m_t | p_a_t
+ggsave(plot = p_pca, "builds/plots/supplement/pca_viz.png", dpi = 600, height = 5, width = 9)
+#compile PCA dataframe 
+
+dt_pca <- dt_m_t %>% 
+  select(plot_id, morph_traits_pc1, morph_traits_pc2) %>% 
+  unique() %>% 
+  left_join(dt_a_t[, c("plot_id", "all_traits_pc1", "all_traits_pc2")]) %>% 
+  unique() %>% 
+  left_join(dt_c_t[, c("plot_id", "chem_traits_pc1", "chem_traits_pc2")]) %>% 
+  distinct() 
+
+
+
+# Combine actually everything -------
+
+dt_mod <- dt_mod_1 %>% 
+  left_join(dt_pca) %>% 
  #get country level means 
   group_by(country) %>% 
   mutate(

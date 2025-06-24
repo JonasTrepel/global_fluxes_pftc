@@ -184,7 +184,7 @@ p_elev <- dt %>%
   geom_line(data = dt_ele_pred, aes(x = elevation, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_grid(rows = vars(flux_type), cols = vars(country), scales = "free") +
-  labs(x = "Elevation (m)", y = "Flux Value", title = "Fluxes vs. Elevation") +
+  labs(x = "Elevation (m)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. Elevation") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -261,7 +261,7 @@ p_mat <- dt %>%
   geom_line(data = dt_mat_pred, aes(x = mat, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_grid(rows = vars(flux_type), cols = vars(country), scales = "free") +
-  labs(x = "MAT (°C)", y = "Flux Value", title = "Fluxes vs. MAT") +
+  labs(x = "MAT (°C)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. MAT") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -344,7 +344,7 @@ p_temp <- dt %>%
   geom_line(data = dt_temp_pred %>% filter(flux_type %in% c("nee")), aes(x = temperature_gpp, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_grid(rows = vars(flux_type), cols = vars(country), scales = "free") +
-  labs(x = "Local (instantanous) Temperature (°C)", y = "Flux Value", title = "Fluxes vs. Local Temperature") +
+  labs(x = "Local (instantanous) Temperature (°C)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. Local Temperature") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -365,8 +365,8 @@ dt %>% select(mat_anomaly_country, elevation_anomaly_country, temperature_gpp_an
   filter(complete.cases(.)) %>% cor()
 
 
-p_c <- grid.arrange(p_mat, p_temp)
-ggsave(plot = p_c, "builds/plots/fluxes_vs_tmep_and_climate.png", dpi = 600, height = 10, width = 10)
+p_c <- grid.arrange(p_elev, p_temp)
+ggsave(plot = p_c, "builds/plots/fluxes_vs_temp_and_elev.png", dpi = 600, height = 10, width = 10)
 
 ###### Check fluxes vs climate worldwide 
 m_mat_gpp_g <- glmmTMB(gpp ~
@@ -426,7 +426,7 @@ p_mat_g <- dt %>%
   geom_line(data = dt_mat_pred_g, aes(x = mat, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_wrap(~flux_type, scales = "free") +
-  labs(x = "MAT (°C)", y = "Flux Value", title = "Fluxes vs. MAT (across gradients)", 
+  labs(x = "MAT (°C)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. MAT (across gradients)", 
        subtitle = "flux ~ MAT + (1 | country/site)") +
   theme(legend.position = "none", 
         legend.box="vertical",
@@ -536,7 +536,7 @@ p_elev_nsa <- dt_nsa %>%
   geom_line(data = dt_ele_pred_nsa %>% filter(flux_type == "gpp"), aes(x = elevation, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_grid(rows = vars(flux_type), cols = vars(country), scales = "free") +
-  labs(x = "Elevation (m)", y = "Flux Value", title = "Fluxes vs. Elevation (without South Africa)") +
+  labs(x = "Elevation (m)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. Elevation (without South Africa)") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -608,7 +608,7 @@ p_mat_nsa <- dt_nsa %>%
   geom_line(data = dt_mat_pred_nsa %>% filter(flux_type == "gpp"), aes(x = mat, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "dashed", color = "black") +
   facet_grid(rows = vars(flux_type), cols = vars(country), scales = "free") +
-  labs(x = "MAT (°C)", y = "Flux Value", title = "Fluxes vs. MAT (without South Africa)") +
+  labs(x = "MAT (°C)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. MAT (without South Africa)") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -685,7 +685,7 @@ p_mat_g_nsa <- dt_nsa %>%
   geom_line(data = dt_mat_pred_g_nsa %>% filter(flux_type == "reco"), aes(x = mat, y = pred),
             alpha = .75, linewidth = 1.1, linetype = "solid", color = "black") +
   facet_wrap(~flux_type, scales = "free") +
-  labs(x = "MAT (°C)", y = "Flux Value", 
+  labs(x = "MAT (°C)", y = "Flux Value (µmol/m²/s)", 
        title = "Fluxes vs. MAT (across gradients, without South Africa)", 
        subtitle = "flux ~ MAT + (1 | country/site)") +
   theme(legend.position = "none", 
