@@ -40,13 +40,14 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     elevation_anomaly_country,
     elevation_anomaly_country,
     
-    leaf_area_anomaly_country, 
-    sla_anomaly_country, 
+    all_traits_pc2_anomaly_country, 
+    all_traits_pc1_anomaly_country, 
     height_x_cover_anomaly_country, 
     all_traits_pc1_anomaly_country,  all_traits_pc2_anomaly_country,
     chem_traits_pc1_anomaly_country, chem_traits_pc2_anomaly_country,
     morph_traits_pc1_anomaly_country,  morph_traits_pc2_anomaly_country,
-  ) #%>% filter(complete.cases(.))
+  ) %>% 
+  filter(!is.na(all_traits_pc1_anomaly_country))#%>% filter(complete.cases(.))
 
 dt <- dt_raw %>% 
   dplyr::select(-c(nee, reco, gpp, lat)) %>% 
@@ -64,8 +65,8 @@ dt <- dt_raw %>%
 
 dt %>% 
   ggplot() +
-  geom_point(aes(x = leaf_area_anomaly_country, y = gpp_anomaly_country)) +
-  geom_smooth(aes(x = leaf_area_anomaly_country, y = gpp_anomaly_country), method = "lm") +
+  geom_point(aes(x = all_traits_pc2_anomaly_country, y = gpp_anomaly_country)) +
+  geom_smooth(aes(x = all_traits_pc2_anomaly_country, y = gpp_anomaly_country), method = "lm") +
   facet_wrap(~country, scales = "free_x")
 
 
@@ -74,64 +75,64 @@ dt %>%
 
 # model for temperature
 m_temp <- glmmTMB(temperature_gpp_anomaly_country ~ 
-          elevation_anomaly_country +
-          ( 1 | site),
-        na.action = na.omit,
-        data = dt)
+                    elevation_anomaly_country +
+                    ( 1 | site),
+                  na.action = na.omit,
+                  data = dt)
 
 
 # model for veg volume / biomass 
 m_vv <- glmmTMB(height_x_cover_anomaly_country ~ 
-          elevation_anomaly_country +
-          ( 1 | site),
-        na.action = na.omit,
-        data = dt)
+                  elevation_anomaly_country +
+                  ( 1 | site),
+                na.action = na.omit,
+                data = dt)
 
 # model for sla 
-m_sla <- glmmTMB(sla_anomaly_country ~ 
-          elevation_anomaly_country +
-          ( 1 | site),
-        na.action = na.omit,
-        data = dt)
+m_atpc1 <- glmmTMB(all_traits_pc1_anomaly_country ~ 
+                   elevation_anomaly_country +
+                   ( 1 | site),
+                 na.action = na.omit,
+                 data = dt)
 
 # model for lead area
-m_la <- glmmTMB(leaf_area_anomaly_country ~ 
-          elevation_anomaly_country +
-          ( 1 | site), 
-        na.action = na.omit,
-        data = dt)
+m_atpc2 <- glmmTMB(all_traits_pc2_anomaly_country ~ 
+                  elevation_anomaly_country +
+                  ( 1 | site), 
+                na.action = na.omit,
+                data = dt)
 
 #model for NEE
 m_nee <- glmmTMB(nee_anomaly_country ~
-          temperature_nee_anomaly_country +
-          height_x_cover_anomaly_country +
-          sla_anomaly_country + 
-          leaf_area_anomaly_country +
-          elevation_anomaly_country +
-          ( 1 | site), 
-        na.action = na.omit,
-        data = dt)
-
-#model for Reco
-m_reco <- glmmTMB(reco_anomaly_country ~
-                   temperature_reco_anomaly_country +
+                   temperature_nee_anomaly_country +
                    height_x_cover_anomaly_country +
-                   sla_anomaly_country + 
-                   leaf_area_anomaly_country +
+                   all_traits_pc1_anomaly_country + 
+                   all_traits_pc2_anomaly_country +
                    elevation_anomaly_country +
                    ( 1 | site), 
                  na.action = na.omit,
                  data = dt)
 
-m_gpp <- glmmTMB(gpp_anomaly_country ~
+#model for Reco
+m_reco <- glmmTMB(reco_anomaly_country ~
                     temperature_reco_anomaly_country +
                     height_x_cover_anomaly_country +
-                    sla_anomaly_country + 
-                    leaf_area_anomaly_country +
+                    all_traits_pc1_anomaly_country + 
+                    all_traits_pc2_anomaly_country +
                     elevation_anomaly_country +
                     ( 1 | site), 
                   na.action = na.omit,
                   data = dt)
+
+m_gpp <- glmmTMB(gpp_anomaly_country ~
+                   temperature_reco_anomaly_country +
+                   height_x_cover_anomaly_country +
+                   all_traits_pc1_anomaly_country + 
+                   all_traits_pc2_anomaly_country +
+                   elevation_anomaly_country +
+                   ( 1 | site), 
+                 na.action = na.omit,
+                 data = dt)
 
 
 ## Extract estimates and predict --------------- 
@@ -139,8 +140,8 @@ m_gpp <- glmmTMB(gpp_anomaly_country ~
 model_list <- list(
   m_temp = m_temp,
   m_vv = m_vv,
-  m_sla = m_sla,
-  m_la = m_la,
+  m_atpc1 = m_atpc1,
+  m_atpc2 = m_atpc2,
   m_nee = m_nee,
   m_reco = m_reco,
   m_gpp = m_gpp
@@ -229,9 +230,9 @@ for(i in 1:length(model_list)){
                        country = dt$country,
                        predicted_fixed_only = predict(m, newdata = dt %>% mutate(site = NA)),
                        predicted = predict(m),
-                      response = response_name, 
-                      model_name = m_name)
-      
+                       response = response_name, 
+                       model_name = m_name)
+  
   dt_op <- rbind(dt_op, tmp_op)            
   
   print(paste0(m_name, " done (",i, "/", length(model_list), ")"))
@@ -244,8 +245,8 @@ p_op_fm <- dt_op %>%
   mutate(clean_response = case_when(
     response == "temperature_gpp_anomaly_country" ~ "Local Temperature", 
     response == "height_x_cover_anomaly_country" ~ "'Biomass'", 
-    response == "sla_anomaly_country" ~ "SLA", 
-    response == "leaf_area_anomaly_country" ~ "Leaf Area", 
+    response == "all_traits_pc1_anomaly_country" ~ "All Traits PC1", 
+    response == "all_traits_pc2_anomaly_country" ~ "All Traits PC2", 
     response == "nee_anomaly_country" ~ "NEE", 
     response == "reco_anomaly_country" ~ "Reco", 
     response == "gpp_anomaly_country" ~ "GPP", 
@@ -263,8 +264,8 @@ p_op_fo <- dt_op %>%
   mutate(clean_response = case_when(
     response == "temperature_gpp_anomaly_country" ~ "Local Temperature", 
     response == "height_x_cover_anomaly_country" ~ "'Biomass'", 
-    response == "sla_anomaly_country" ~ "SLA", 
-    response == "leaf_area_anomaly_country" ~ "Leaf Area", 
+    response == "all_traits_pc1_anomaly_country" ~ "All Traits PC1", 
+    response == "all_traits_pc2_anomaly_country" ~ "All Traits PC2", 
     response == "nee_anomaly_country" ~ "NEE", 
     response == "reco_anomaly_country" ~ "Reco", 
     response == "gpp_anomaly_country" ~ "GPP", 
@@ -279,7 +280,7 @@ p_op_fo <- dt_op %>%
 p_op_fo
 
 p_op <- grid.arrange(p_op_fm, p_op_fo)
-ggsave(plot = p_op, "builds/plots/supplement/observed_vs_predicted.png", dpi = 600, height = 8, width = 7.25)
+ggsave(plot = p_op, "builds/plots/supplement/observed_vs_predicted_all_traits.png", dpi = 600, height = 8, width = 7.25)
 
 
 # Plot predictions ---------
@@ -300,8 +301,8 @@ dt_predictions <- dt_pred %>%
            term == "all_traits_pc2_anomaly_country"          ~ "All Traits PC2",
            term == "chem_traits_pc1_anomaly_country"          ~ "Chem. Traits PC1",
            term == "chem_traits_pc2_anomaly_country"          ~ "Chem. Traits PC2",
-           term == "sla_anomaly_country"                 ~ "SLA",
-           term == "leaf_area_anomaly_country"           ~ "Leaf Area"), 
+           term == "all_traits_pc1_anomaly_country"                 ~ "SLA",
+           term == "all_traits_pc2_anomaly_country"           ~ "Leaf Area"), 
          clean_response = case_when(
            grepl("nee", response) ~ "NEE", 
            grepl("reco", response) ~ "Reco", 
@@ -314,32 +315,32 @@ dt_long <- dt %>%
   pivot_longer(cols = c(unique(dt_predictions$term)), 
                values_to = "var_value", names_to = "term") %>% 
   mutate(
-         clean_term =  case_when(
-           .default = term,
-           grepl("temperature_", term) ~ "Local Temperature",
-           term == "elevation_anomaly_country" ~ "Elevation",
-           term == "height_x_cover_anomaly_country"      ~ "'Biomass'",
-           term == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
-           term == "morph_traits_pc2_anomaly_country"          ~ "Morph. Traits PC2",
-           term == "all_traits_pc1_anomaly_country"          ~ "All Traits PC1",
-           term == "all_traits_pc2_anomaly_country"          ~ "All Traits PC2",
-           term == "chem_traits_pc1_anomaly_country"          ~ "Chem. Traits PC1",
-           term == "chem_traits_pc2_anomaly_country"          ~ "Chem. Traits PC2",
-           term == "sla_anomaly_country"                 ~ "SLA",
-           term == "leaf_area_anomaly_country"           ~ "Leaf Area"))
+    clean_term =  case_when(
+      .default = term,
+      grepl("temperature_", term) ~ "Local Temperature",
+      term == "elevation_anomaly_country" ~ "Elevation",
+      term == "height_x_cover_anomaly_country"      ~ "'Biomass'",
+      term == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
+      term == "morph_traits_pc2_anomaly_country"          ~ "Morph. Traits PC2",
+      term == "all_traits_pc1_anomaly_country"          ~ "All Traits PC1",
+      term == "all_traits_pc2_anomaly_country"          ~ "All Traits PC2",
+      term == "chem_traits_pc1_anomaly_country"          ~ "Chem. Traits PC1",
+      term == "chem_traits_pc2_anomaly_country"          ~ "Chem. Traits PC2",
+      term == "all_traits_pc1_anomaly_country"                 ~ "SLA",
+      term == "all_traits_pc2_anomaly_country"           ~ "Leaf Area"))
 
 theme_pred <-   theme(legend.position = "none", 
-                     legend.box="vertical",
-                     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-                     panel.grid = element_line(color = "seashell"), 
-                     #axis.title.x = element_blank(), 
-                     axis.text = element_text(size = 12), 
-                     axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
-                     panel.border = element_rect(color = NA), 
-                     panel.background = element_rect(fill = "snow2"), 
-                     strip.text.x = element_text(size = 12), 
-                     strip.text.y = element_text(size = 12, face = "bold"), 
-                     strip.background = element_rect(fill = "seashell", color = "seashell") )
+                      legend.box="vertical",
+                      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+                      panel.grid = element_line(color = "seashell"), 
+                      #axis.title.x = element_blank(), 
+                      axis.text = element_text(size = 12), 
+                      axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
+                      panel.border = element_rect(color = NA), 
+                      panel.background = element_rect(fill = "snow2"), 
+                      strip.text.x = element_text(size = 12), 
+                      strip.text.y = element_text(size = 12, face = "bold"), 
+                      strip.background = element_rect(fill = "seashell", color = "seashell") )
 # NEE 
 
 #regular
@@ -398,7 +399,7 @@ p_gpp <- dt_gpp_flux %>%
 p_gpp
 
 p_pred_flux <- grid.arrange(p_gpp, p_nee, p_reco, ncol = 1, heights = c(1, 1, 1))
-ggsave(plot = p_pred_flux, "builds/plots/flux_predictions_.png", dpi = 600, height = 7, width = 8)
+ggsave(plot = p_pred_flux, "builds/plots/flux_predictions_all_traits.png", dpi = 600, height = 7, width = 8)
 
 # plot relationships of other responses 
 
@@ -439,36 +440,36 @@ p_vv
 
 
 dt_sla_flux <- dt_predictions %>%
-  filter(response == "sla_anomaly_country")
+  filter(response == "all_traits_pc1_anomaly_country")
 p_sla <- dt_sla_flux %>% 
   ggplot() +
   geom_point(data = dt %>% 
                mutate(country = fct_reorder(country, lat)),
-             aes(x = elevation_anomaly_country, y = sla_anomaly_country, color = country), alpha = 0.75) +
+             aes(x = elevation_anomaly_country, y = all_traits_pc1_anomaly_country, color = country), alpha = 0.75) +
   geom_ribbon(aes(x = var_value, ymin = ci_lb, ymax = ci_ub), alpha = 0.25) +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
   geom_line(aes(x = var_value, y = predicted, linetype = sig_yn), linewidth = 1.01) +
   scale_linetype_manual(values = c(no = "dashed", yes = "solid")) +
-  labs( x= "Elevation", y = "SLA") +
+  labs( x= "Elevation", y = "All Traits PC1") +
   theme_bw() +
   theme_pred
 p_sla
 
 
 dt_la_flux <- dt_predictions %>%
-  filter(response == "leaf_area_anomaly_country")
+  filter(response == "all_traits_pc2_anomaly_country")
 p_la <- dt_la_flux %>% 
   ggplot() +
   geom_point(data = dt %>% 
                mutate(country = fct_reorder(country, lat)),
-             aes(x = elevation_anomaly_country, y = leaf_area_anomaly_country, color = country), alpha = 0.75) +
+             aes(x = elevation_anomaly_country, y = all_traits_pc2_anomaly_country, color = country), alpha = 0.75) +
   geom_ribbon(aes(x = var_value, ymin = ci_lb, ymax = ci_ub), alpha = 0.25) +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
   geom_line(aes(x = var_value, y = predicted, linetype = sig_yn), linewidth = 1.01) +
   scale_linetype_manual(values = c(no = "dashed", yes = "solid")) +
-  labs( x= "Elevation", y = "Leaf Area") +
+  labs( x= "Elevation", y = "All Traits PC2") +
   theme_bw() +
   theme_pred
 p_la
@@ -478,7 +479,6 @@ p_1 <- grid.arrange(p_temp, p_vv, p_sla, p_la, ncol = 4)
 
 
 p_pred <- grid.arrange(p_1, p_pred_flux, heights = c(1, 3))  
-ggsave(plot = p_pred, "builds/plots/model_output_bivariate_rels.png", dpi = 600, height = 10, width = 11)
-  
-  
-  
+ggsave(plot = p_pred, "builds/plots/model_output_bivariate_rels_all_traits_pca.png", dpi = 600, height = 10, width = 11)
+
+

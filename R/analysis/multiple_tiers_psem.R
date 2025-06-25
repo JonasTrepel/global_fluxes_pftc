@@ -8,7 +8,7 @@ library(glmmTMB)
 library("semPlot")
 library(performance)
 library(gridExtra)
-
+library(DHARMa)
 
 dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
   dplyr::select(
@@ -1047,9 +1047,9 @@ dt_est <- dt_res %>%
       grepl("t3", model_name) ~ "tier_3",
       grepl("t4", model_name) ~ "tier_4"),
     predictor_tier = case_when(
-      grepl("1", model_name) ~ "morph_traits_pca",
-      grepl("2", model_name) ~ "traits_separately",
-      grepl("3", model_name) ~ "all_traits_pca"),
+      grepl("_1", model_name) ~ "morph_traits_pca",
+      grepl("_2", model_name) ~ "traits_separately",
+      grepl("_3", model_name) ~ "all_traits_pca"),
     response_tier = case_when(
       .default = "veg",
       grepl("reco", response) & !grepl("temperature", response) ~ "flux",
@@ -1123,9 +1123,9 @@ p_t1_flux <- dt_est %>%
 p_t1_flux
 
 ggsave(plot = p_t1_flux,
-       "builds/plots/psem_t1_estimates_all_traits_pca.png",
+       "builds/plots/psem_t1_estimates.png",
        dpi = 600, 
-       height = 3, width = 8)
+       height = 2, width = 8)
 
 
 # Tier 2 ----------------------
@@ -1157,12 +1157,12 @@ p_t2_pred <- dt_est %>%
   theme_est
 p_t2_pred
 
-p_t2 <- grid.arrange(p_t2_pred ,p_t2_flux, heights = c(1, 2))
+p_t2 <- grid.arrange(p_t2_pred ,p_t2_flux, heights = c(1.5, 2))
 
 ggsave(plot = p_t2,
-       "builds/plots/psem_t2_estimates_all_traits_pca.png",
+       "builds/plots/psem_t2_estimates.png",
        dpi = 600, 
-       height = 5, width = 8)
+       height = 3.5, width = 8)
 
 
 # Tier 3 ------------ 
@@ -1194,12 +1194,12 @@ p_t3_pred <- dt_est %>%
   theme_est
 p_t3_pred
 
-p_t3 <- grid.arrange(p_t3_pred ,p_t3_flux, heights = c(1, 2))
+p_t3 <- grid.arrange(p_t3_pred ,p_t3_flux, heights = c(1.33, 2))
 
 ggsave(plot = p_t3,
-       "builds/plots/psem_t3_estimates_all_traits_pca.png",
+       "builds/plots/psem_t3_estimates.png",
        dpi = 600, 
-       height = 5, width = 8)
+       height = 4, width = 8)
 
 
 # Tier 4--------------------------
@@ -1314,3 +1314,275 @@ ggsave(plot = p_t4_atpca,
        dpi = 600, 
        height = 5, width = 10)
 
+
+#### Compare flux model AICs------------
+#NEE
+fm_t1_nee <- glmmTMB(nee_anomaly_country ~
+          elevation_anomaly_country +
+          ( 1 | site), na.action = na.omit,
+          data = dt)
+summary(fm_t1_nee)
+
+fm_t2_nee <- glmmTMB(nee_anomaly_country ~
+                       temperature_nee_anomaly_country +
+                       elevation_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t2_nee)
+
+
+fm_t3_nee <- glmmTMB(nee_anomaly_country ~
+                       temperature_nee_anomaly_country +
+                       elevation_anomaly_country +
+                       height_x_cover_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t3_nee)
+
+fm_t4_nee_1 <- glmmTMB(nee_anomaly_country ~
+                       temperature_nee_anomaly_country +
+                       elevation_anomaly_country +
+                       height_x_cover_anomaly_country +
+                       morph_traits_pc1_anomaly_country +
+                       morph_traits_pc2_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t4_nee_1)
+
+fm_t4_nee_2 <- glmmTMB(nee_anomaly_country ~
+                       temperature_nee_anomaly_country +
+                       elevation_anomaly_country +
+                       height_x_cover_anomaly_country +
+                         leaf_area_anomaly_country +
+                         sla_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t4_nee_2)
+
+
+#Reco
+
+fm_t1_reco <- glmmTMB(reco_anomaly_country ~
+                       elevation_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t1_reco)
+
+fm_t2_reco <- glmmTMB(reco_anomaly_country ~
+                       temperature_reco_anomaly_country +
+                       elevation_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t2_reco)
+
+
+fm_t3_reco <- glmmTMB(reco_anomaly_country ~
+                       temperature_reco_anomaly_country +
+                       elevation_anomaly_country +
+                       height_x_cover_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t3_reco)
+
+fm_t4_reco_1 <- glmmTMB(reco_anomaly_country ~
+                         temperature_reco_anomaly_country +
+                         elevation_anomaly_country +
+                         height_x_cover_anomaly_country +
+                         morph_traits_pc1_anomaly_country +
+                         morph_traits_pc2_anomaly_country +
+                         ( 1 | site), na.action = na.omit,
+                       data = dt)
+summary(fm_t4_reco_1)
+
+fm_t4_reco_2 <- glmmTMB(reco_anomaly_country ~
+                         temperature_reco_anomaly_country +
+                         elevation_anomaly_country +
+                         height_x_cover_anomaly_country +
+                         leaf_area_anomaly_country +
+                         sla_anomaly_country +
+                         ( 1 | site), na.action = na.omit,
+                       data = dt)
+summary(fm_t4_reco_2)
+
+#Gpp
+fm_t1_gpp <- glmmTMB(gpp_anomaly_country ~
+                       elevation_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t1_gpp)
+
+fm_t2_gpp <- glmmTMB(gpp_anomaly_country ~
+                       temperature_gpp_anomaly_country +
+                       elevation_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t2_gpp)
+
+
+fm_t3_gpp <- glmmTMB(gpp_anomaly_country ~
+                       temperature_gpp_anomaly_country +
+                       elevation_anomaly_country +
+                       height_x_cover_anomaly_country +
+                       ( 1 | site), na.action = na.omit,
+                     data = dt)
+summary(fm_t3_gpp)
+
+fm_t4_gpp_1 <- glmmTMB(gpp_anomaly_country ~
+                         temperature_gpp_anomaly_country +
+                         elevation_anomaly_country +
+                         height_x_cover_anomaly_country +
+                         morph_traits_pc1_anomaly_country +
+                         morph_traits_pc2_anomaly_country +
+                         ( 1 | site), na.action = na.omit,
+                       data = dt)
+summary(fm_t4_gpp_1)
+
+fm_t4_gpp_2 <- glmmTMB(gpp_anomaly_country ~
+                         temperature_gpp_anomaly_country +
+                         elevation_anomaly_country +
+                         height_x_cover_anomaly_country +
+                         leaf_area_anomaly_country +
+                         sla_anomaly_country +
+                         ( 1 | site), na.action = na.omit,
+                       data = dt)
+summary(fm_t4_gpp_2)
+
+#extract AIC etc 
+model_list_fm <- list(
+  fm_t1_nee = fm_t1_nee,
+  fm_t1_reco = fm_t1_reco,
+  fm_t1_gpp = fm_t1_gpp,
+  
+  fm_t2_nee = fm_t2_nee,
+  fm_t2_reco = fm_t2_reco,
+  fm_t2_gpp = fm_t2_gpp,
+  
+  fm_t3_nee = fm_t3_nee,
+  fm_t3_reco = fm_t3_reco,
+  fm_t3_gpp = fm_t3_gpp,
+  
+  fm_t4_nee_1 = fm_t4_nee_1,
+  fm_t4_nee_2 = fm_t4_nee_2,
+  fm_t4_reco_1 = fm_t4_reco_1,
+  fm_t4_reco_2 = fm_t4_reco_2,
+  fm_t4_gpp_1 = fm_t4_gpp_1,
+  fm_t4_gpp_2 = fm_t4_gpp_2
+)
+
+dt_res_fm <- data.frame()
+
+for(i in 1:length(model_list_fm)){
+  
+  
+  m <- model_list_fm[[i]]
+  
+  m_name <- names(model_list_fm)[i]
+  
+  r.squaredGLMM(m)[1]
+
+  tmp_dt <- data.table(
+    model_name = m_name, 
+    aic = as.numeric(AIC(m)),
+    aicc = as.numeric(AICc(m)),
+    bic = as.numeric(BIC(m)), 
+    rsq_m = as.numeric(r.squaredGLMM(m)[1]), 
+    rsq_c = as.numeric(r.squaredGLMM(m)[2]))
+  
+  dt_res_fm <- rbind(dt_res_fm, tmp_dt)
+  
+  print(paste0(i, " done"))
+}
+
+dt_fm <- dt_res_fm %>% 
+  mutate(model_tier = case_when(
+    grepl("t1", model_name) ~ "tier_1",
+    grepl("t2", model_name) ~ "tier_2",
+    grepl("t3", model_name) ~ "tier_3",
+    grepl("t4", model_name) ~ "tier_4"),
+    model_tier_num = case_when(
+      grepl("t1", model_name) ~ 1,
+      grepl("t2", model_name) ~ 2,
+      grepl("t3", model_name) ~ 3,
+      grepl("t4", model_name) ~ 4),
+    predictor_tier = case_when(
+      .default = "not_applicable",
+      grepl("_1", model_name) ~ "morph_traits_pca",
+      grepl("_2", model_name) ~ "traits_separately"), 
+    response = case_when(
+      grepl("reco", model_name) ~ "Reco",
+      grepl("nee", model_name) ~ "NEE",
+      grepl("gpp", model_name)~ "GPP"))
+
+theme(legend.position = "none", 
+                     legend.box="vertical",
+                     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+                     panel.grid = element_line(color = "seashell"), 
+                     #axis.title.x = element_blank(), 
+                     axis.text = element_text(size = 12), 
+                     axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
+                     panel.border = element_rect(color = NA), 
+                     panel.background = element_rect(fill = "snow2"), 
+                     strip.text.x = element_text(size = 12), 
+                     strip.text.y = element_text(size = 12, face = "bold"), 
+                     strip.background = element_rect(fill = "seashell", color = "seashell") )
+
+library(MetBrewer)
+
+p_rsq <- dt_fm %>%
+  filter(predictor_tier != "morph_traits_pca") %>%
+  ggplot(aes(x = model_tier_num, y = rsq_m, color = response)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_line(linewidth = 1) +
+  labs(
+    x = "Model Tier",
+    y = "Marginal R2",
+    color = "Flux"
+  ) +
+  scale_color_met_d(name = "Egypt") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        legend.box="vertical",
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        panel.grid = element_line(color = "seashell"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow2", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "seashell", color = "seashell") )
+p_rsq
+
+p_ic <- dt_fm %>%
+  filter(predictor_tier != "morph_traits_pca") %>%
+  pivot_longer(cols = c("aic", "bic", "aicc"),
+               names_to = "ic_name",
+               values_to = "ic_value") %>%
+  ggplot(aes(x = model_tier_num, y = ic_value,
+             color = response, shape = ic_name, group = interaction(response, ic_name))) +
+  geom_point(size = 2, alpha = 0.8) +
+  geom_line(size = 0.8, alpha = 0.7) +
+  labs(
+    x = "Model Tier",
+    y = "Information Criterion",
+    color = "Flux", 
+    shape = "IC"
+  ) +
+  scale_color_met_d(name = "Egypt") +
+  theme_minimal() +
+  theme(legend.position = "right",
+        legend.box="vertical",
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        panel.grid = element_line(color = "seashell"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow2", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "seashell", color = "seashell") )
+p_ic
+p_comp <- grid.arrange(p_rsq, p_ic, widths = c(1, 1.25))
+ggsave(plot = p_comp, "builds/plots/supplement/performance_comparison_between_tiers.png",
+       dpi = 600, 
+       height = 3, width = 8)

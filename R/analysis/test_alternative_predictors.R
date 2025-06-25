@@ -61,7 +61,7 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     temperature_gpp_anomaly_country,
     temperature_nee_anomaly_country,
     temperature_reco_anomaly_country,
-    mat_anomaly_country,
+    elevation_anomaly_country,
     elevation_anomaly_country,
     
     leaf_area_anomaly_country, 
@@ -100,21 +100,21 @@ dt <- dt_raw %>%
 ### Test response of alternative hypotheses to climate -------
 # PAR
 m_alt_par <- glmmTMB(par_anomaly_country ~ 
-                       mat_anomaly_country +
+                       elevation_anomaly_country +
                        (1 | site), 
                      na.action = na.omit, data = dt)
 summary(m_alt_par); check_collinearity(m_alt_par); r.squaredGLMM(m_alt_par)
 
 # Woodiness
 m_alt_wood <- glmmTMB(woodiness_anomaly_country ~ 
-                        mat_anomaly_country +
+                        elevation_anomaly_country +
                         (1 | site), 
                       na.action = na.omit, data = dt)
 summary(m_alt_wood); check_collinearity(m_alt_wood); r.squaredGLMM(m_alt_wood)
 
 # Grassiness
 m_alt_grass <- glmmTMB(grassiness_anomaly_country ~ 
-                         mat_anomaly_country +
+                         elevation_anomaly_country +
                          (1 | site), 
                        na.action = na.omit, data = dt)
 summary(m_alt_grass); check_collinearity(m_alt_grass); r.squaredGLMM(m_alt_grass)
@@ -122,7 +122,7 @@ summary(m_alt_grass); check_collinearity(m_alt_grass); r.squaredGLMM(m_alt_grass
 
 # Species Richness
 m_alt_sr <- glmmTMB(species_richness_anomaly_country ~ 
-                        mat_anomaly_country +
+                        elevation_anomaly_country +
                         (1 | site), 
                       na.action = na.omit, data = dt)
 summary(m_alt_sr); check_collinearity(m_alt_sr); r.squaredGLMM(m_alt_sr)
@@ -130,7 +130,7 @@ summary(m_alt_sr); check_collinearity(m_alt_sr); r.squaredGLMM(m_alt_sr)
 
 # Functional Diversity
 m_alt_fd <- glmmTMB(functional_diversity_q1_anomaly_country ~ 
-                      mat_anomaly_country +
+                      elevation_anomaly_country +
                       (1 | site), 
                     na.action = na.omit, data = dt)
 summary(m_alt_fd); check_collinearity(m_alt_fd); r.squaredGLMM(m_alt_fd)
@@ -139,7 +139,7 @@ summary(m_alt_fd); check_collinearity(m_alt_fd); r.squaredGLMM(m_alt_fd)
 
 # Soil moisture
 m_alt_soil <- glmmTMB(soil_moisture_anomaly_country ~ 
-                        mat_anomaly_country +
+                        elevation_anomaly_country +
                         (1 | site), 
                       na.action = na.omit, data = dt)
 summary(m_alt_soil); check_collinearity(m_alt_soil); r.squaredGLMM(m_alt_soil)
@@ -149,7 +149,7 @@ nee_base_formula <- "nee_anomaly_country ~ temperature_nee_anomaly_country +
                   height_x_cover_anomaly_country +
                   sla_anomaly_country + 
                   leaf_area_anomaly_country +
-                  mat_anomaly_country"
+                  elevation_anomaly_country"
 
 # PAR
 m_nee_no_par <- glmmTMB(
@@ -251,7 +251,7 @@ reco_base_formula <- "reco_anomaly_country ~ temperature_reco_anomaly_country +
                   height_x_cover_anomaly_country +
                   sla_anomaly_country + 
                   leaf_area_anomaly_country +
-                  mat_anomaly_country"
+                  elevation_anomaly_country"
 
 # PAR
 m_reco_no_par <- glmmTMB(
@@ -355,7 +355,7 @@ gpp_base_formula <- "gpp_anomaly_country ~ temperature_gpp_anomaly_country +
                   height_x_cover_anomaly_country +
                   sla_anomaly_country + 
                   leaf_area_anomaly_country +
-                  mat_anomaly_country"
+                  elevation_anomaly_country"
 
 # PAR
 m_gpp_no_par <- glmmTMB(
@@ -485,13 +485,13 @@ for(i in 1:nrow(dt_guide)){
     height_x_cover_anomaly_country +
     sla_anomaly_country + 
     leaf_area_anomaly_country +
-    mat_anomaly_country + (1 | site)"))
+    elevation_anomaly_country + (1 | site)"))
   
   form_with <- as.formula(paste0(resp, " ~ ", var, " + temperature_nee_anomaly_country +
     height_x_cover_anomaly_country +
     sla_anomaly_country + 
     leaf_area_anomaly_country +
-    mat_anomaly_country + (1 | site)"))
+    elevation_anomaly_country + (1 | site)"))
   
   # Model with and without the alternative hypothesis 
   m_without <- glmmTMB(
@@ -714,7 +714,7 @@ dt_plot <- dt_pred %>%
     model_name == "m_alt_fd" ~ "Functional Diversity", 
     model_name == "m_alt_soil" ~ "Soil Moisture" 
   ), 
-  clean_term = "MAT")
+  clean_term = "Elevation")
 
 
 dt_long <- dt %>% 
@@ -736,11 +736,11 @@ dt_long <- dt %>%
 p_pred <- dt_plot %>% 
   ggplot() +
   geom_point(data = dt_long, 
-             aes(x = mat_anomaly_country, y = response_value), alpha = 0.25) +
+             aes(x = elevation_anomaly_country, y = response_value), alpha = 0.25) +
   geom_ribbon(aes(x = var_value, ymin = conf.low, ymax = conf.high), alpha = 0.25) +
   geom_line(aes(x = var_value, y = predicted, linetype = sig), linewidth = 1.1) +
   scale_linetype_manual(values = c("significant" = "solid", "non-significant" = "dashed")) +
-  labs(x = "Response Value", y = "MAT") +
+  labs(x = "Response Value", y = "Elevation") +
   facet_wrap(~clean_response, scales = "free", ncol = 4) +
   theme(legend.position = "none", 
         legend.box="vertical",
