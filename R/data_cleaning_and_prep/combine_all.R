@@ -18,6 +18,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
   unique() %>% 
   mutate(temperature_nee = ifelse(type == "nee", temperature, NA),
          temperature_reco = ifelse(type == "reco", temperature, NA), 
+         month = month(date),
          country = case_when(
            grepl("China", tier) ~ "China", 
            grepl("Colorado", tier) ~ "USA", 
@@ -28,7 +29,8 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
          ), 
          country = as.factor(country)) %>% 
   pivot_wider(names_from = type, values_from = flux_best, values_fn = mean) %>% 
-  group_by(country, tier, elevation, treatment, site, plot_id) %>% 
+  group_by(country, tier, elevation, treatment,
+           site, plot_id) %>% 
   summarize(nee = mean(nee, na.rm = T), #in case there are multiple measurements per plot and year
             reco = mean(reco, na.rm = T), 
             temperature_nee = mean(temperature_nee, na.rm = T), 
@@ -39,7 +41,10 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
          reco = reco*-1) %>% 
   filter(tier %in% c("China_2016", "Colorado_2018", "Svalbard_2018",
                      "Norway_2022", "Peru_2019", "South_Africa_2023")) %>%
-  filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) #assuming all else are wrong 
+  filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
+  #filter(treatment == "c") %>% # peru, we also include naturally burned sites (cause fire is also part of the system e.g., in SA)
+  #filter(!(tier == "Peru_2019" & month != 11)) %>% 
+  ungroup()
 
 table(dt_flux[dt_flux$treatment == "c", ]$tier)
 table(dt_flux[!is.na(dt_flux$par), ]$tier)
@@ -274,7 +279,7 @@ dt_mod_1 <- dt_flux %>%
 
 
 ## PCAs -----------------------
-dt_mod %>% group_by(site) %>% summarize(mean_h = mean(plant_height_cm, na.rm = T)) %>% print(n = 50)
+#dt_mod %>% group_by(site) %>% summarize(mean_h = mean(plant_height_cm, na.rm = T)) %>% print(n = 50)
 
 #morphological traits 
 dt_m_t <- dt_mod_1 %>%

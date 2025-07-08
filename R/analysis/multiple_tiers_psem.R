@@ -23,7 +23,7 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     temperature_nee, temperature_reco, temperature_gpp,
     
     # trait means 
-    sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_t1_g, plant_height_cm,
+    sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
     n_percent, cn_ratio, c_percent, p_percent,
     
     # others 
