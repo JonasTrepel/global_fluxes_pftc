@@ -707,30 +707,30 @@ ggsave(plot = p_mat_g_nsa, "builds/plots/supplement/fluxes_vs_mat_across_gradien
 
 
 
-
-
-##### Random slopes -------
-m_glmm <- glmmTMB(gpp ~
-          temperature_gpp +
-          height_x_cover +
-          sla_cm2_g + 
-          leaf_area_cm2 +
-          mat +
-          (temperature_gpp + height_x_cover + sla_cm2_g + leaf_area_cm2 + mat | country) +
-          (1 | site), 
-        na.action = na.omit,
-        data = dt)
-summary(m_glmm); r.squaredGLMM(m_glmm)
-
-
-m_b <- brms::brm(gpp ~
-                    temperature_gpp +
-                    height_x_cover +
-                    sla_cm2_g + 
-                    leaf_area_cm2 +
-                    mat +
-                    (temperature_gpp + height_x_cover + sla_cm2_g + leaf_area_cm2 + mat | country) +
-                    (1 | site), 
-                  data = dt)
-summary(m_b); brms::bayes_R2(m_b)
+# 
+# 
+# ##### Random slopes -------
+# m_glmm <- glmmTMB(gpp ~
+#           temperature_gpp +
+#           height_x_cover +
+#           sla_cm2_g + 
+#           leaf_area_cm2 +
+#           mat +
+#           (temperature_gpp + height_x_cover + sla_cm2_g + leaf_area_cm2 + mat | country) +
+#           (1 | site), 
+#         na.action = na.omit,
+#         data = dt)
+# summary(m_glmm); r.squaredGLMM(m_glmm)
+# 
+# 
+# m_b <- brms::brm(gpp ~
+#                     temperature_gpp +
+#                     height_x_cover +
+#                     sla_cm2_g + 
+#                     leaf_area_cm2 +
+#                     mat +
+#                     (temperature_gpp + height_x_cover + sla_cm2_g + leaf_area_cm2 + mat | country) +
+#                     (1 | site), 
+#                   data = dt)
+# summary(m_b); brms::bayes_R2(m_b)
 

@@ -49,6 +49,7 @@ ch.meta <- fread("data/raw_data/china/metaCH.csv") %>%
 #Data that I've found on OSF which shouldn't be there though. 
 ch.flux.2016.2 <- get(load("data/raw_data/china/standardControlFluxCH_2016.Rdata"))
 glimpse(ch.flux.2016.2)
+
 # odd. let's ignore that for now and continue with the data we got from Inge
 
 # Data directly from Inge
@@ -591,6 +592,8 @@ unique(sv.cover$plot_id)
 
 no.flux.raw <- fread("data/raw_data/norway/PFTC6_24h_cflux_allsites_2022.csv") 
 quantile(no.flux.raw$PARavg, na.rm = T)
+
+plot(no.flux.raw$flux, no.flux.raw$flux_corrected)
 no.flux.raw2 <- no.flux.raw %>% 
   mutate(rowID = paste0("Row", 1:nrow(.)), 
          Minute = minute(datetime), 

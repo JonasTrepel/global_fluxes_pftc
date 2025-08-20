@@ -29,6 +29,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
          ), 
          country = as.factor(country)) %>% 
   pivot_wider(names_from = type, values_from = flux_best, values_fn = mean) %>% 
+  filter(!(tier == "Peru_2019" & month == 7)) %>% #remove the dry season
   group_by(country, tier, elevation, treatment,
            site, plot_id) %>% 
   summarize(nee = mean(nee, na.rm = T), #in case there are multiple measurements per plot and year
@@ -43,7 +44,6 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
                      "Norway_2022", "Peru_2019", "South_Africa_2023")) %>%
   filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
   #filter(treatment == "c") %>% # peru, we also include naturally burned sites (cause fire is also part of the system e.g., in SA)
-  #filter(!(tier == "Peru_2019" & month != 11)) %>% 
   ungroup()
 
 table(dt_flux[dt_flux$treatment == "c", ]$tier)
