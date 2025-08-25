@@ -1,4 +1,4 @@
-library("lavaan")
+library(scico)
 library("piecewiseSEM")
 library(data.table)
 library(tidyverse)
@@ -9,6 +9,8 @@ library("semPlot")
 library(performance)
 library(gridExtra)
 library(DHARMa)
+
+set.seed(161)
 
 dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
   dplyr::select(
@@ -586,6 +588,69 @@ AIC(m_t4_nee_3)
 plot(m_t4_nee_3)
 anova(m_t4_nee_3)
 
+## LT with AT data -------
+m_t4_nee_4 <- psem(
+  
+  # model for temperature
+  glmmTMB(temperature_nee_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  
+  # model for veg volume / biomass 
+  glmmTMB(height_x_cover_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for sla 
+  glmmTMB(sla_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for lead area
+  glmmTMB(leaf_area_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  #model for flux
+  glmmTMB(nee_anomaly_country ~
+            temperature_nee_anomaly_country +
+            height_x_cover_anomaly_country +
+            sla_anomaly_country + 
+            leaf_area_anomaly_country +
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  # Correlated errors
+  height_x_cover_anomaly_country %~~% sla_anomaly_country,
+  height_x_cover_anomaly_country %~~% leaf_area_anomaly_country,
+  sla_anomaly_country %~~% leaf_area_anomaly_country,
+  temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
+  temperature_nee_anomaly_country %~~% sla_anomaly_country,
+  temperature_nee_anomaly_country %~~% leaf_area_anomaly_country,
+  
+  data = dt_at
+)
+ss_t4_nee_4 <- summary(m_t4_nee_4)
+ss_t4_nee_4
+dSep(m_t4_nee_4)
+LLchisq(m_t4_nee_4)
+AIC(m_t4_nee_4)
+plot(m_t4_nee_4)
+anova(m_t4_nee_4)
+
+
+AIC(m_t4_nee_4)[1] - AIC(m_t4_nee_3)[1] #aic with leaf traits instead of all traits PCA lower 
 
 # 2. Reco ------------------------------------------
 ## Moprhological Trait PCA --------------------
@@ -774,6 +839,71 @@ AIC(m_t4_reco_3)
 plot(m_t4_reco_3)
 anova(m_t4_reco_3)
 
+
+## LT with AT data -------
+m_t4_reco_4 <- psem(
+  
+  # model for temperature
+  glmmTMB(temperature_reco_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  
+  # model for veg volume / biomass 
+  glmmTMB(height_x_cover_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for sla 
+  glmmTMB(sla_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for lead area
+  glmmTMB(leaf_area_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  #model for flux
+  glmmTMB(reco_anomaly_country ~
+            temperature_reco_anomaly_country +
+            height_x_cover_anomaly_country +
+            sla_anomaly_country + 
+            leaf_area_anomaly_country +
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  # Correlated errors
+  height_x_cover_anomaly_country %~~% sla_anomaly_country,
+  height_x_cover_anomaly_country %~~% leaf_area_anomaly_country,
+  sla_anomaly_country %~~% leaf_area_anomaly_country,
+  temperature_reco_anomaly_country %~~% height_x_cover_anomaly_country,
+  temperature_reco_anomaly_country %~~% sla_anomaly_country,
+  temperature_reco_anomaly_country %~~% leaf_area_anomaly_country,
+  
+  data = dt_at
+)
+ss_t4_reco_4 <- summary(m_t4_reco_4)
+ss_t4_reco_4
+dSep(m_t4_reco_4)
+LLchisq(m_t4_reco_4)
+AIC(m_t4_reco_4)
+plot(m_t4_reco_4)
+anova(m_t4_reco_4)
+
+
+AIC(m_t4_reco_4)[1] - AIC(m_t4_reco_3)[1] #aic with leaf traits instead of all traits PCA lower 
+
 # 3. GPP ------------------------------------------
 ## Moprhological Trait PCA --------------------
 m_t4_gpp_1 <- psem(
@@ -961,7 +1091,69 @@ AIC(m_t4_gpp_3)
 plot(m_t4_gpp_3)
 anova(m_t4_gpp_3)
 
+## LT with AT data -------
+m_t4_gpp_4 <- psem(
+  
+  # model for temperature
+  glmmTMB(temperature_gpp_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  
+  # model for veg volume / biomass 
+  glmmTMB(height_x_cover_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for sla 
+  glmmTMB(sla_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site),
+          na.action = na.omit,
+          data = dt_at),
+  
+  # model for lead area
+  glmmTMB(leaf_area_anomaly_country ~ 
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  #model for flux
+  glmmTMB(gpp_anomaly_country ~
+            temperature_gpp_anomaly_country +
+            height_x_cover_anomaly_country +
+            sla_anomaly_country + 
+            leaf_area_anomaly_country +
+            elevation_anomaly_country +
+            ( 1 | site), 
+          na.action = na.omit,
+          data = dt_at),
+  
+  # Correlated errors
+  height_x_cover_anomaly_country %~~% sla_anomaly_country,
+  height_x_cover_anomaly_country %~~% leaf_area_anomaly_country,
+  sla_anomaly_country %~~% leaf_area_anomaly_country,
+  temperature_gpp_anomaly_country %~~% height_x_cover_anomaly_country,
+  temperature_gpp_anomaly_country %~~% sla_anomaly_country,
+  temperature_gpp_anomaly_country %~~% leaf_area_anomaly_country,
+  
+  data = dt_at
+)
+ss_t4_gpp_4 <- summary(m_t4_gpp_4)
+ss_t4_gpp_4
+dSep(m_t4_gpp_4)
+LLchisq(m_t4_gpp_4)
+AIC(m_t4_gpp_4)
+plot(m_t4_gpp_4)
+anova(m_t4_gpp_4)
 
+
+AIC(m_t4_gpp_4)[1] - AIC(m_t4_gpp_3)[1] #again, when only using leaf traits, it's better..,.
 ## Extract model estimates ---------------------------------------
 
 model_list <- list(
@@ -980,19 +1172,20 @@ model_list <- list(
   m_t4_nee_1 = m_t4_nee_1,
   m_t4_nee_2 = m_t4_nee_2,
   m_t4_nee_3 = m_t4_nee_3,
+  m_t4_nee_4 = m_t4_nee_4,
   m_t4_reco_1 = m_t4_reco_1,
   m_t4_reco_2 = m_t4_reco_2,
   m_t4_reco_3 = m_t4_reco_3,
+  m_t4_reco_4 = m_t4_reco_4,
   m_t4_gpp_1 = m_t4_gpp_1,
   m_t4_gpp_2 = m_t4_gpp_2,
-  m_t4_gpp_3 = m_t4_gpp_3
+  m_t4_gpp_3 = m_t4_gpp_3, 
+  m_t4_gpp_4 = m_t4_gpp_4
 )
 
 dt_res <- data.frame()
 
 for(i in 1:length(model_list)){
-  
-  
   
   m <- model_list[[i]]
   
@@ -1049,7 +1242,8 @@ dt_est <- dt_res %>%
     predictor_tier = case_when(
       grepl("_1", model_name) ~ "morph_traits_pca",
       grepl("_2", model_name) ~ "traits_separately",
-      grepl("_3", model_name) ~ "all_traits_pca"),
+      grepl("_3", model_name) ~ "all_traits_pca", 
+      grepl("_4", model_name) ~ "leaf_traits_with_all_traits_data"),
     response_tier = case_when(
       .default = "veg",
       grepl("reco", response) & !grepl("temperature", response) ~ "flux",
@@ -1094,18 +1288,21 @@ dt_est <- dt_res %>%
 
 
 # Plots -------------
+scico(9, palette = 'bam')
+#"#001959" "#818231" "#F9CCF9"
+
 theme_est <-   theme(legend.position = "none", 
                      legend.box="vertical",
                      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-                     panel.grid = element_line(color = "seashell"), 
+                     panel.grid = element_line(color = "snow"), 
                      #axis.title.x = element_blank(), 
                      axis.text = element_text(size = 12), 
                      axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
                      panel.border = element_rect(color = NA), 
-                     panel.background = element_rect(fill = "snow2"), 
+                     panel.background = element_rect(fill = "snow"), 
                      strip.text.x = element_text(size = 12), 
                      strip.text.y = element_text(size = 12, face = "bold"), 
-                     strip.background = element_rect(fill = "seashell", color = "seashell") )
+                     strip.background = element_rect(fill = "linen", color = "linen") )
 
 # Tier 1 ----------------
 p_t1_flux <- dt_est %>% 
@@ -1115,7 +1312,7 @@ p_t1_flux <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1136,7 +1333,7 @@ p_t2_flux <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1150,7 +1347,7 @@ p_t2_pred <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1173,7 +1370,7 @@ p_t3_flux <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1187,7 +1384,7 @@ p_t3_pred <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1212,7 +1409,7 @@ p_t4_flux_ts <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1226,7 +1423,7 @@ p_t4_pred_ts <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1249,7 +1446,7 @@ p_t4_flux_mtpca <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1263,7 +1460,7 @@ p_t4_pred_mtpca <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1278,7 +1475,7 @@ ggsave(plot = p_t4_mtpca,
        dpi = 600, 
        height = 5, width = 10)
 
-#All traits PCA 
+#All traits PCA ----
 p_t4_flux_atpca <- dt_est %>% 
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "all_traits_pca" & response_tier == "flux") %>% 
@@ -1286,7 +1483,7 @@ p_t4_flux_atpca <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1300,7 +1497,7 @@ p_t4_pred_atpca <- dt_est %>%
   geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
-  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#fab255","Significantly negative" = "#0f7ba2")) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
@@ -1311,6 +1508,42 @@ p_t4_pred_atpca
 p_t4_atpca <- grid.arrange(p_t4_pred_atpca,p_t4_flux_atpca, heights = c(1, 2))
 ggsave(plot = p_t4_atpca,
        "builds/plots/psem_t4_estimates_all_traits_pca.png",
+       dpi = 600, 
+       height = 5, width = 10)
+
+## leaf traits with all traits PCA ----
+p_t4_flux_lt_w_at_dt <- dt_est %>% 
+  filter(!grepl("ntercept", predictor)) %>% 
+  filter(model_tier == "tier_4" & predictor_tier == "leaf_traits_with_all_traits_data" & response_tier == "flux") %>% 
+  ggplot() +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
+                  linewidth = 1.2, size = 0.9, alpha = 0.9) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
+  facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
+  theme_bw() +
+  labs(x = "Estimate", y = "",) +
+  theme_est
+p_t4_flux_lt_w_at_dt 
+
+p_t4_pred_lt_w_at_dt  <- dt_est %>% 
+  filter(!grepl("ntercept", predictor) & grepl("gpp", model_name)) %>% 
+  filter(model_tier == "tier_4" & predictor_tier == "leaf_traits_with_all_traits_data" & response_tier == "veg") %>% 
+  ggplot() +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
+                  linewidth = 1.2, size = 0.9, alpha = 0.9) +
+  scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
+  facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
+  theme_bw() +
+  labs(x = "Estimate", y = "",) +
+  theme_est
+p_t4_pred_lt_w_at_dt 
+
+
+p_t4_lt_w_at_dt <- grid.arrange(p_t4_pred_lt_w_at_dt, p_t4_flux_lt_w_at_dt, heights = c(1, 2))
+ggsave(plot = p_t4_lt_w_at_dt ,
+       "builds/plots/psem_t4_estimates_leaf_traits_with_all_traits_data.png",
        dpi = 600, 
        height = 5, width = 10)
 
@@ -1466,7 +1699,7 @@ model_list_fm <- list(
   fm_t4_reco_1 = fm_t4_reco_1,
   fm_t4_reco_2 = fm_t4_reco_2,
   fm_t4_gpp_1 = fm_t4_gpp_1,
-  fm_t4_gpp_2 = fm_t4_gpp_2
+  fm_t4_gpp_2 = fm_t4_gpp_2, 
 )
 
 dt_res_fm <- data.frame()
@@ -1543,14 +1776,14 @@ p_rsq <- dt_fm %>%
   theme(legend.position = "none",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA), 
+        panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 12, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 p_rsq
 
 p_ic <- dt_fm %>%
@@ -1573,14 +1806,14 @@ p_ic <- dt_fm %>%
   theme(legend.position = "right",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA), 
+        panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 12, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 p_ic
 p_comp <- grid.arrange(p_rsq, p_ic, widths = c(1, 1.25))
 ggsave(plot = p_comp, "builds/plots/supplement/performance_comparison_between_tiers.png",

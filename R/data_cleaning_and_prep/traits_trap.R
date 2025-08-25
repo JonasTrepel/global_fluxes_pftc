@@ -42,6 +42,8 @@ trait <- trait %>%
   filter(!(er > 2.25 & n < 4 & !is.na(sd))) %>% 
   select(-c(Tmd:er)) %>% ungroup()
 
+table(trait[trait$Tier == "Colorado_2018", ]$Trait)
+
 community <- fread("data/processed_data/preliminary_data/prelim_cover.csv") %>% 
   rename(PlotID = plot_id, 
          Site = site, 
@@ -76,7 +78,10 @@ trait_filling <- trait_fill(
   scale_hierarchy = c("Tier", "Site", "PlotID"),
   
   # min number of samples
-  min_n_in_sample = 5
+  min_n_in_sample = 5, 
+  
+  #don't calculate traits on global scale
+  global = FALSE
 )
 
 trait_missing(
@@ -85,17 +90,21 @@ trait_missing(
 )
 
 # run nonparametric bootstrapping
-np_bootstrapped_moments <- trait_np_bootstrap_own(
+np_bootstrapped_moments <- trait_np_bootstrap(
   trait_filling, 
   nrep = 100
 )
 
 np_bootstrapped_moments
+np_bootstrapped_moments[np_bootstrapped_moments$Tier == "Colorado_2018" & np_bootstrapped_moments$Trait == "n_percent", ]
 
 # summarizes bootstrapping output
-sum_boot_moment <- trait_summarise_boot_moments_own(
+sum_boot_moment <- trait_summarise_boot_moments(
   np_bootstrapped_moments
 )
+
+sum_boot_moment[sum_boot_moment$Tier == "Colorado_2018" & sum_boot_moment$Trait == "n_percent", ]
+
 sum_boot_moment
 unique(sum_boot_moment[grepl("US", sum_boot_moment$PlotID),]$mean)
 
@@ -116,3 +125,11 @@ sum_boot_moment %>%
   ggplot(aes(x = Tier, y = mean)) + 
   geom_boxplot() +
   geom_jitter()
+
+sum_boot_moment %>% 
+  filter(Trait == "n_percent") %>% 
+  #mutate(mean = log(mean+1)) %>%
+  ggplot(aes(x = Tier, y = mean)) + 
+  geom_boxplot() +
+  geom_jitter()
+

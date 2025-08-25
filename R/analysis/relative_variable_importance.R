@@ -3,6 +3,72 @@ library(tidyverse)
 library(data.table)
 library(glmmTMB)
 
+dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
+  dplyr::select(
+    # identifiers 
+    country, site, plot_id,# treatment,
+    
+    # fluxes
+    nee, reco, gpp,
+    
+    # environmental 
+    elevation, map, mat,
+    temperature_nee, temperature_reco, temperature_gpp,
+    
+    # trait means 
+    sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
+    n_percent, cn_ratio, c_percent, p_percent,
+    
+    # others 
+    height_x_cover, species_richness,
+    functional_diversity_q1, lat,
+    
+    #pca axis 
+    all_traits_pc1,  all_traits_pc2,
+    chem_traits_pc1, chem_traits_pc2,
+    morph_traits_pc1,  morph_traits_pc2,
+    
+    # Anomalies
+    gpp_anomaly_country,
+    nee_anomaly_country,
+    reco_anomaly_country,
+    temperature_gpp_anomaly_country,
+    temperature_nee_anomaly_country,
+    temperature_reco_anomaly_country,
+    elevation_anomaly_country,
+    elevation_anomaly_country,
+    
+    leaf_area_anomaly_country, 
+    sla_anomaly_country, 
+    height_x_cover_anomaly_country, 
+    all_traits_pc1_anomaly_country,  all_traits_pc2_anomaly_country,
+    chem_traits_pc1_anomaly_country, chem_traits_pc2_anomaly_country,
+    morph_traits_pc1_anomaly_country,  morph_traits_pc2_anomaly_country,
+    
+    # functional_diversity_q1_anomaly_country,
+    # species_richness_t1_anomaly_country,
+    # # n_percent_anomaly_country,
+    # # p_percent_anomaly_country,
+    # # cn_ratio_anomaly_country,
+    # # c_percent_anomaly_country,
+    # par_anomaly_country,
+    # soil_moisture_anomaly_country,
+    # woodiness_t1_anomaly_country,
+    # grassiness_t1_anomaly_country
+  ) #%>% filter(complete.cases(.))
+
+m_dat <- dt_raw %>% 
+  dplyr::select(-c(nee, reco, gpp, lat)) %>% 
+  mutate(leaf_area_cm2 = log(leaf_area_cm2),
+         species_richness = log(species_richness),
+         functional_diversity_q1 = log(functional_diversity_q1),
+         height_x_cover = log(height_x_cover)
+         
+  ) %>% 
+  mutate(across(where(is.numeric), ~as.numeric(scale(.x)))) %>% 
+  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
+  distinct()
+
 
 
 
@@ -182,14 +248,14 @@ p_vp_ts <- dt_vp %>%
   theme(legend.position = "none",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA), 
+        panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 12, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_vp_ts
 
@@ -205,14 +271,14 @@ p_vp_mt <- dt_vp %>%
   theme(legend.position = "none",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA), 
+        panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 12, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_vp_mt
 
@@ -227,13 +293,13 @@ p_vp_at <- dt_vp %>%
   theme(legend.position = "none",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA), 
+        panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 12, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_vp_at

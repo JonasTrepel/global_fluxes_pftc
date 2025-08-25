@@ -407,8 +407,9 @@ sv.flux2 <- fread("data/raw_data/svalbard/Cflux_SV_Gradient_2018.csv") %>%
          type = cover,
          par = par_mean,
          temperature = ir_mean) %>% 
-  select(date, site, plotid, gradient, starttime, type, par, temperature, flux_best, rsqd) %>% 
+  select(date, site, plotid, gradient, starttime, type, par, temperature, flux_best, rsqd, treatment) %>% 
   mutate(type = ifelse(type == "L", "nee", "reco")) %>% 
+  filter(treatment == "Control") %>% 
   filter(!is.na(flux_best)) %>% 
   mutate(flux_best = flux_best*(-1)) %>% 
   # mutate(flux_best = ifelse(type == "reco", flux_best*(-1), flux_best)) %>% 
@@ -1011,7 +1012,7 @@ us.traits <- us.t.raw %>%
   #filter(!grepl("NA", plot_id)) %>% 
   mutate(trait_value = ifelse(year == 2016 & trait_name == "leaf_area_cm2", trait_value*10, trait_value))
 
-us.traits[us.traits$trait_name == "plant_height_cm", ]$trait_value
+us.traits[us.traits$site == "pbm" & us.traits$trait_name == "p_percent", ]$trait_value
 
 us.traits
 unique(us.traits[us.traits$site == "cinnamon", ]$plot)
@@ -1350,7 +1351,7 @@ sv.flux.fin <- sv.flux %>%
          year = year(date), 
          season = "not_part_of_the_dataset")
 
-names(no.flux) #big mess, have to clear that up before we go on
+names(no.flux) #
 no.flux.fin <- no.flux %>%
   mutate(burn_year = NA,
          date = date(datetime),
@@ -1506,11 +1507,17 @@ no.traits.fin <- no.traits %>%
   mutate(aspect = NA, 
          burn_year = NA) %>% dplyr::select(-datetime, -date, -blockID)
 
+unique(no.traits.fin$trait_name)
+
 names(us.traits) # get rd of 
 us.traits.fin <- us.traits %>%
      mutate(aspect = NA, 
             burn_year = NA, 
             treatment = NA) %>% dplyr::select(-plot)
+unique(us.traits.fin$site)
+us.traits.fin[us.traits.fin$trait_name == "p_percent" & 
+                us.traits.fin$site == "road", ]$trait_value
+
 
 names(sa.traits) # get rd of 
 
@@ -1538,6 +1545,11 @@ traits.combined.raw <- rbind(ch.traits.fin,
 
 mean_narm <- function(x){m <- mean(x, na.rm = T); return(m)}
 
+traits.combined.raw[traits.combined.raw$tier == "Colorado_2016" &
+    traits.combined.raw$trait_name == "n_percent", ]$trait_value
+
+
+
 traits.stoich <- traits.combined.raw %>% 
   filter(trait_name %in% c("p_percent", "c_percent", "n_percent")) %>% 
   pivot_wider(names_from = "trait_name",
@@ -1554,7 +1566,24 @@ traits.stoich <- traits.combined.raw %>%
   filter(!is.na(trait_value))
 
 summary(traits.stoich)
-traits.combined <- rbind(traits.combined.raw, traits.stoich)
+
+traits.stoich.co <- traits.combined.raw %>% 
+  filter(tier == "Colorado_2016") %>% 
+  filter(trait_name %in% c("p_percent", "c_percent", "n_percent")) %>% 
+  pivot_wider(names_from = "trait_name",
+              values_from = "trait_value",
+              id_cols = c("species", "plot_id", "site", "tier", "elevation",
+                          "treatment", "latitude", "longitude", "burn_year", 
+                          "aspect", "year"), 
+              values_fn = mean_narm) %>% 
+  mutate(cn_ratio = c_percent/n_percent) %>% 
+  dplyr::select(-c("c_percent", "n_percent", "p_percent")) %>% 
+  pivot_longer(cols = c("cn_ratio"), 
+               names_to = "trait_name", values_to = "trait_value") %>% 
+  filter(!is.na(trait_value))
+
+
+traits.combined <- rbind(traits.combined.raw, traits.stoich, traits.stoich.co)
 
 setdiff(names(traits.combined.raw), names(traits.stoich))
 setdiff(names(sv.traits.fin), names(no.traits.fin))

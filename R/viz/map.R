@@ -106,15 +106,15 @@ pba1 <- dt_long %>%
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
         panel.border = element_rect(color = NA), 
-        panel.background = element_rect(fill = "snow2"), 
+        panel.background = element_rect(fill = "snow"), 
         strip.text.x = element_text(size = 14), 
         strip.text.y = element_text(size = 14, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 pba1
 
 
@@ -138,15 +138,15 @@ pba3 <- dt_long %>%
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
         panel.border = element_rect(color = NA), 
-        panel.background = element_rect(fill = "snow2"), 
+        panel.background = element_rect(fill = "snow"), 
         strip.text.x = element_text(size = 14), 
         strip.text.y = element_text(size = 14, face = "bold"), 
-        strip.background = element_rect(fill = "seashell", color = "seashell") )
+        strip.background = element_rect(fill = "linen", color = "linen") )
 pba3
 
 #pba_fus <- grid.arrange(pba1, pba2, ncol = 2)             

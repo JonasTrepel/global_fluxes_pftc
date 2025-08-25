@@ -9,9 +9,11 @@ library(MetBrewer)
 dt_flux_t <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
   filter(!is.na(flux_best)) %>% 
   dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year) %>% 
-  unique()
+  unique() %>% 
+  mutate(month = month(date))
 summary(dt_flux_t)
-
+table(dt_flux_t[dt_flux_t$treatment == "c", ]$tier)
+table(dt_flux_t[dt_flux_t$treatment == "c" & tier == "Peru_2018", ]$month)
 
 dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
   dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year, par) %>%
@@ -30,6 +32,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
          country = as.factor(country)) %>% 
   pivot_wider(names_from = type, values_from = flux_best, values_fn = mean) %>% 
   filter(!(tier == "Peru_2019" & month == 7)) %>% #remove the dry season
+  filter(!(tier == "Svalbard_2018" & site == "ITEX")) %>% #remove itex experiment
   group_by(country, tier, elevation, treatment,
            site, plot_id) %>% 
   summarize(nee = mean(nee, na.rm = T), #in case there are multiple measurements per plot and year
@@ -40,16 +43,15 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
   mutate(plot_id = as.character(plot_id),
          nee = nee*-1, 
          reco = reco*-1) %>% 
-  filter(tier %in% c("China_2016", "Colorado_2018", "Svalbard_2018",
-                     "Norway_2022", "Peru_2019", "South_Africa_2023")) %>%
+  filter(tier %in% c("China_2016", "Colorado_2016", "Svalbard_2018",
+                     "Norway_2022", "Peru_2018", "South_Africa_2023")) %>%
   filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
   #filter(treatment == "c") %>% # peru, we also include naturally burned sites (cause fire is also part of the system e.g., in SA)
   ungroup()
 
-table(dt_flux[dt_flux$treatment == "c", ]$tier)
-table(dt_flux[!is.na(dt_flux$par), ]$tier)
-
 #Colorado 2018 and Peru 2019 have the most control plots, which is why we will go with them for now 
+#But for Peru 2018 we have leaf traits, so we go for this one instead. 
+# And for Colorado 2016 we have lead P and only three plots less, so we go for it :)
 
 #uniqueDates <- dt_flux %>% ungroup() %>%  dplyr::select(tier, plot_id, date) %>% unique()
 
@@ -59,12 +61,14 @@ dt_trait_raw <- fread("data/processed_data/preliminary_data/prelim_traitstrap.cs
          site = Site, 
          plot_id = PlotID)
 
+glimpse(dt_trait_raw)
+dt_trait_raw[dt_trait_raw$tier == "Norway_2022" & Trait == "cn_ratio", ]
 dt_trait_mean <- dt_trait_raw %>% dplyr::select(tier, site, plot_id, Trait, mean) %>% 
   pivot_wider(values_from = mean, names_from = Trait) %>% unique() %>% 
   mutate(sla_cm2_g = ifelse(is.infinite(sla_cm2_g), NA, sla_cm2_g)) %>% 
   dplyr::select(tier, site, plot_id, plant_height_cm, dry_mass_g, ldmc, leaf_area_cm2, sla_cm2_g, wet_mass_g,
                 n_percent, cn_ratio, p_percent, c_percent, cp_ratio, np_ratio) %>% 
-  group_by(site, plot_id) %>% 
+  group_by(tier, site, plot_id) %>% 
   summarize(
     dry_mass_g = mean(dry_mass_g, na.rm = T), 
     plant_height_cm = mean(plant_height_cm, na.rm = T), 
@@ -80,31 +84,12 @@ dt_trait_mean <- dt_trait_raw %>% dplyr::select(tier, site, plot_id, Trait, mean
     c_percent = mean(c_percent, na.rm = T)
   ) %>% filter(!grepl("NA", plot_id))
 
-table(dt_trait_mean[!is.na(dt_trait_mean$n_percent),]$site)
+table(dt_trait_mean[!is.na(dt_trait_mean$n_percent),]$tier)
 
-dt_trait_var <- dt_trait_raw %>%
-  dplyr::select(tier, site, plot_id, Trait, sd) %>%
-  pivot_wider(values_from = sd, names_from = Trait) %>%
-  unique() %>%
-  mutate(sla_cm2_g = ifelse(is.infinite(sla_cm2_g), NA, sla_cm2_g)) %>%
-  dplyr::select(
-    tier, site, plot_id,
-    dry_mass_g_sd = dry_mass_g,
-    plant_height_cm_sd = plant_height_cm,
-    ldmc_sd = ldmc,
-    leaf_area_cm2_sd = leaf_area_cm2,
-    sla_cm2_g_sd = sla_cm2_g,
-    wet_mass_g_sd = wet_mass_g,
-    n_percent_sd = n_percent,
-    cn_ratio_sd = cn_ratio,
-    p_percent_sd = p_percent,
-    c_percent_sd = c_percent
-  )
 
 dt_trait_mean %>% as.data.table()
 
 dt_trait_mean
-summary(dt_trait_var)
 glimpse(dt_trait_mean)
 
 plots_with_traits <- unique(dt_trait_mean[dt_trait_mean$plot_id %in% c(unique(dt_flux_t$plot_id)), ]$plot_id)
@@ -237,7 +222,7 @@ dt_fd <- fread("data/processed_data/preliminary_data/plant_functional_diversity.
 ### combine everything but pcas --------------------
 dt_mod_1 <- dt_flux %>%
   left_join(dt_trait_mean) %>%
-  left_join(dt_trait_var) %>%
+ # left_join(dt_trait_var) %>%
  # left_join(dt_pca) %>%
   left_join(dt_clim) %>% 
   left_join(dt_moist) %>% 
@@ -270,8 +255,8 @@ dt_mod_1 <- dt_flux %>%
     map = mmp*12)  %>% 
   mutate(gradient = case_when(
     country == "South Africa" ~ "Drakensberg", 
-    country == "Peru" ~ "Tropical Andes", 
-    country == "China" ~ "Western Himalayas", 
+    country == "Peru" ~ "Central Andes", 
+    country == "China" ~ "Eastern Himalayas", 
     country == "USA" ~ "Rocky Mountains", 
     country == "Norway" ~ "Southern Scandes", 
     country == "Svalbard" ~ "Svalbard" 
@@ -288,7 +273,7 @@ dt_m_t <- dt_mod_1 %>%
   filter(complete.cases(.)) %>% 
   unique() %>% 
   filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
+  mutate(across(where(is.numeric), ~ as.numeric(scale(.))))
 pr_m_t <- princomp(dt_m_t %>% select(-plot_id, -gradient, -lat))
 
 dt_m_t$morph_traits_pc1 <- pr_m_t$scores[,1]
@@ -326,10 +311,10 @@ p_m_t <- ggplot() +
   theme_minimal() +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow2"), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA))
+        panel.background = element_rect(fill = "snow", color = NA))
 p_m_t
 
 #chemical traits 
@@ -339,7 +324,7 @@ dt_c_t <- dt_mod_1 %>%
   filter(complete.cases(.)) %>% 
   unique() %>% 
   filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
+  mutate(across(where(is.numeric),~ as.numeric(scale(.))))
 pr_c_t <- princomp(dt_c_t %>% select(-plot_id))
 
 dt_c_t$chem_traits_pc1 <- pr_c_t$scores[,1]
@@ -353,7 +338,7 @@ dt_a_t <- dt_mod_1 %>%
   filter(complete.cases(.)) %>% 
   unique() %>%
   filter(plot_id != "") %>% 
-  mutate(across(where(is.numeric), scale))
+  mutate(across(where(is.numeric), ~ as.numeric(scale(.))))
 pr_a_t <- princomp(dt_a_t %>% select(-plot_id, -lat, -gradient))
 
 dt_a_t$all_traits_pc1 <- pr_a_t$scores[,1]
@@ -398,10 +383,10 @@ p_a_t <- ggplot() +
   theme_minimal() +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0, size = 14, face = "bold"),
-        panel.grid = element_line(color = "seashell"), 
+        panel.grid = element_line(color = "snow2"), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
-        panel.background = element_rect(fill = "snow2", color = NA))
+        panel.background = element_rect(fill = "snow", color = NA))
 p_a_t
 
 library(patchwork)
@@ -418,7 +403,7 @@ dt_pca <- dt_m_t %>%
   distinct() 
 
 
-
+table(dt_a_t$plot_id)
 # Combine actually everything -------
 
 dt_mod <- dt_mod_1 %>% 
