@@ -303,3 +303,4 @@ p_vp_at <- dt_vp %>%
         strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_vp_at
+ggsave(plot = p_vp_at, "builds/plots/supplement/variable_importance_all_traits_pca.png", dpi = 600, height = 3, width = 7)

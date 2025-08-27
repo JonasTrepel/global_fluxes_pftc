@@ -72,7 +72,7 @@ dt_long <- dt %>%
                names_to = "var_name", values_to = "var_value") %>% 
   left_join(dt_units) %>% 
   mutate(plotvar_name = ifelse(!var_name %in% c("height_x_cover", "species_richness"), paste0(var_name, " (", unit, ")"), var_name)) %>% 
-  mutate(plotvar_name = gsub("local_temperature", "Local Temperature", plotvar_name),
+  mutate(plotvar_name = gsub("local_temperature", "Inst. Temperature", plotvar_name),
          plotvar_name = gsub("leaf_area_cm2", "Leaf Area", plotvar_name),
          plotvar_name = gsub("height_x_cover", "'Biomass'", plotvar_name), 
          plotvar_name = gsub("ldmc", "LDMC", plotvar_name), 
@@ -94,7 +94,7 @@ pba1 <- dt_long %>%
          plotvar_name = factor(plotvar_name, levels = c(
                                                         "Elevation (m)", 
                                                         "MAT (°C)", 
-                                                        "Local Temperature (°C)", 
+                                                        "Inst. Temperature (°C)", 
                                                         "'Biomass'"))) %>%
   ggplot() +
   geom_density_ridges(aes(y = gradient, x = var_value, color = gradient, fill = gradient), alpha = 0.75, size = 0.75) +

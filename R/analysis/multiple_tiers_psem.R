@@ -1261,7 +1261,7 @@ dt_est <- dt_res %>%
       response == "all_traits_pc2_anomaly_country" ~ paste0("All Traits PCA 2\n", rsq_label),
       response == "chem_traits_pc1_anomaly_country" ~ paste0("Chem. Traits PCA 1\n", rsq_label),
       response == "chem_traits_pc2_anomaly_country" ~ paste0("Chem. Traits PCA 2\n", rsq_label),
-      grepl("temperature", response) ~ paste0("Local Temperature\n", rsq_label),
+      grepl("temperature", response) ~ paste0("Inst. Temperature\n", rsq_label),
       response == "sla_anomaly_country" ~ paste0("SLA\n", rsq_label),
       response == "leaf_area_anomaly_country" ~ paste0("Leaf Area\n", rsq_label),
     ), 
@@ -1269,7 +1269,7 @@ dt_est <- dt_res %>%
     ci_ub = estimate + 1.96*std_error, 
     clean_term =  case_when(
       .default = predictor,
-      grepl("temperature_", predictor) ~ "Local Temperature",
+      grepl("temperature_", predictor) ~ "Inst. Temperature",
       predictor == "elevation_anomaly_country" ~ "Elevation",
       predictor == "height_x_cover_anomaly_country"      ~ "'Biomass'",
       predictor == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
@@ -1284,9 +1284,44 @@ dt_est <- dt_res %>%
       .default = "Non significant", 
       ci_lb > 0 ~ "Significantly positive", 
       ci_ub < 0 ~ "Significantly negative", 
-    ))
+    )) %>% 
+  mutate(
+    clean_term = factor(clean_term,
+                        levels = c("'Biomass'",
+                                   "Leaf Area",
+                                   "SLA",
+                                   "Chem. Traits PC2", "Chem. Traits PC1",
+                                   "All Traits PC2", "All Traits PC1",
+                                   "Morph. Traits PC2", "Morph. Traits PC1",
+                                   "Inst. Temperature",
+                                   "Elevation")),
+    response = factor(response,
+                      levels = c("gpp_anomaly_country",
+                                 "nee_anomaly_country",
+                                 "reco_anomaly_country",
+                                 "temperature_gpp_anomaly_country",
+                                 "temperature_reco_anomaly_country",
+                                 "temperature_nee_anomaly_country",
+                                 "morph_traits_pc1_anomaly_country",
+                                 "morph_traits_pc2_anomaly_country",
+                                 "all_traits_pc1_anomaly_country",
+                                 "all_traits_pc2_anomaly_country",
+                                 "chem_traits_pc1_anomaly_country",
+                                 "chem_traits_pc2_anomaly_country",
+                                 "sla_anomaly_country",
+                                 "leaf_area_anomaly_country",
+                                 "height_x_cover_anomaly_country")
+    )
+  )
 
+resp_clean_comb <- dt_est %>% 
+  select(response, clean_response) %>%
+  unique() %>% 
+  arrange(response) 
 
+dt_est$clean_response <- factor(dt_est$clean_response, levels = c(
+  resp_clean_comb$clean_response
+))
 # Plots -------------
 scico(9, palette = 'bam')
 #"#001959" "#818231" "#F9CCF9"
@@ -1334,7 +1369,7 @@ p_t2_flux <- dt_est %>%
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
-  facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
+  facet_wrap(~clean_response, scales = "free_x", ncol = 5) +
   theme_bw() +
   labs(x = "Estimate", y = "",) +
   theme_est
@@ -1699,7 +1734,7 @@ model_list_fm <- list(
   fm_t4_reco_1 = fm_t4_reco_1,
   fm_t4_reco_2 = fm_t4_reco_2,
   fm_t4_gpp_1 = fm_t4_gpp_1,
-  fm_t4_gpp_2 = fm_t4_gpp_2, 
+  fm_t4_gpp_2 = fm_t4_gpp_2
 )
 
 dt_res_fm <- data.frame()
@@ -1794,13 +1829,15 @@ p_ic <- dt_fm %>%
   ggplot(aes(x = model_tier_num, y = ic_value,
              color = response, shape = ic_name, group = interaction(response, ic_name))) +
   geom_point(size = 2, alpha = 0.8) +
-  geom_line(size = 0.8, alpha = 0.7) +
+  geom_line(size = 0.8, alpha = 0.7, aes(linetype = ic_name)) +
   labs(
     x = "Model Tier",
     y = "Information Criterion",
     color = "Flux", 
-    shape = "IC"
+    shape = "IC", 
+    linetype = "IC"
   ) +
+  scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
   scale_color_met_d(name = "Egypt") +
   theme_minimal() +
   theme(legend.position = "right",

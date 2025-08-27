@@ -8,7 +8,7 @@ library(GGally)
 dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
   dplyr::select(
     # identifiers 
-    country, site, plot_id, treatment,
+    country, site, plot_id, treatment, gradient, 
     
     # fluxes
     nee, reco, gpp,
@@ -120,6 +120,32 @@ dt_corr_reg <- dt_raw %>%
     
     # trait means 
     sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
+
+    # others 
+    height_x_cover, species_richness,
+    functional_diversity_q1, 
+    
+  ) %>% filter(complete.cases(.))
+
+corr_reg <- round(cor(dt_corr_reg), 1)
+p_reg <- ggcorrplot(corr_reg, hc.order = F, type = "lower",
+                       lab = TRUE) +
+  labs(title = "Full Dataset")
+
+p_reg
+
+#all traits 
+dt_corr_reg_at <- dt_raw %>% 
+  dplyr::select(
+    # fluxes
+    nee, reco, gpp,
+    
+    # environmental 
+    elevation, map, mat,
+    temperature_nee, temperature_reco, temperature_gpp,
+    
+    # trait means 
+    sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm,
     n_percent, cn_ratio, cp_ratio, np_ratio, c_percent, p_percent,
     
     # others 
@@ -128,16 +154,46 @@ dt_corr_reg <- dt_raw %>%
 
     ) %>% filter(complete.cases(.))
 
-corr_reg <- round(cor(dt_corr_reg), 1)
-p_reg <- ggcorrplot(corr_reg, hc.order = F, type = "lower",
-           lab = TRUE)
+corr_reg_at <- round(cor(dt_corr_reg_at), 1)
+p_reg_at <- ggcorrplot(corr_reg_at, hc.order = F, type = "lower",
+           lab = TRUE) +
+  labs(title = "Subset With Leaf Chemical Traits ")
 
-p_reg
+p_reg_at
 
-ggsave(plot = p_reg, "builds/plots/supplement/correlation_regular_vars.png", dpi = 600, height = 10, width = 10)
+library(patchwork)
+
+p_reg_corr <- p_reg / p_reg_at
+
+ggsave(plot = p_reg_corr, "builds/plots/supplement/correlation_regular_vars.png", dpi = 600, height = 15, width = 10)
 
 # correlation of country level anomalies variables ------
 dt_corr_country <- dt_raw %>% 
+  dplyr::select(# fluxes
+    gpp_anomaly_country,
+    nee_anomaly_country,
+    reco_anomaly_country,
+    temperature_gpp_anomaly_country,
+    temperature_nee_anomaly_country,
+    temperature_reco_anomaly_country,
+    mat_anomaly_country,
+    elevation_anomaly_country,
+    
+    leaf_area_anomaly_country, 
+    sla_anomaly_country, 
+    height_x_cover_anomaly_country, 
+    plant_height_anomaly_country) %>% 
+  filter(complete.cases(.))
+
+names(dt_corr_country) <- gsub("country", "gradient", names(dt_corr_country))
+
+corr_country <- round(cor(dt_corr_country), 1)
+p_country <- ggcorrplot(corr_country, hc.order = F, type = "lower",
+                     lab = TRUE) +
+  labs(title = "Full Dataset")
+p_country
+
+dt_corr_country_at <- dt_raw %>% 
   dplyr::select(# fluxes
     gpp_anomaly_country,
     nee_anomaly_country,
@@ -160,12 +216,18 @@ dt_corr_country <- dt_raw %>%
     c_percent_anomaly_country) %>% 
   filter(complete.cases(.))
 
-corr_country <- round(cor(dt_corr_country), 1)
-p_country <- ggcorrplot(corr_country, hc.order = F, type = "lower",
-                     lab = TRUE)
-p_country
-ggsave(plot = p_country, "builds/plots/supplement/correlation_country_level_vars.png", dpi = 600, height = 10, width = 10)
+names(dt_corr_country_at) <- gsub("country", "gradient", names(dt_corr_country_at))
 
+
+corr_country_at <- round(cor(dt_corr_country_at), 1)
+p_country_at <- ggcorrplot(corr_country_at, hc.order = F, type = "lower",
+                        lab = TRUE) +
+  labs(title = "Subset With Leaf Chemical Traits ")
+p_country_at
+
+
+p_country_corr <- p_country / p_country_at
+ggsave(plot = p_country_corr, "builds/plots/supplement/correlation_country_level_vars.png", dpi = 600, height = 13, width = 10)
 
 
 cor.test(dt_raw$height_x_cover_anomaly_country, dt_raw$plant_height_anomaly_country, na.rm = T)
