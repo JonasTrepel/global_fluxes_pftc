@@ -350,12 +350,28 @@ s_a_alibi_point <- data.table(
   Comp.1 = 0, 
   Comp.2 = 0,
   gradient = "Drakensberg", 
-  lat = -28.73775
+  lat = -2
 )
+
+norway_alibi_point <- data.table(
+  Comp.1 = 0, 
+  Comp.2 = 0,
+  gradient = "Southern Scandes", 
+  lat = 1
+)
+
+dt_a_t[dt_a_t$gradient == "Southern Scandes", ]
+dt_a_t[dt_a_t$gradient == "Svalbard", ]$lat
+dt_a_t[dt_a_t$gradient == "Rocky Mountains", ]$lat
+dt_a_t[dt_a_t$gradient == "Central Andes", ]$lat
+
+
+
 scores_a_t <- as_tibble(pr_a_t$scores[, 1:2]) %>%
   mutate(gradient = dt_a_t$gradient, 
          lat = dt_a_t$lat) %>% 
   rbind(s_a_alibi_point) %>% 
+  rbind(norway_alibi_point) %>% 
   mutate(gradient = fct_reorder(gradient, lat))
 
 #importance 
@@ -381,7 +397,8 @@ p_a_t <- ggplot() +
        x = paste0("PC1 (", percent_var_a_t[1], "% variance)"),
        y = paste0("PC2 (", percent_var_a_t[2], "% variance)")) +
   theme_minimal() +
-  theme(legend.position = "none", 
+  labs(color = "Gradient") +
+  theme(legend.position = "right", 
         plot.title = element_text(hjust = 0, size = 14, face = "bold"),
         panel.grid = element_line(color = "snow2"), 
         axis.text = element_text(size = 12), 
@@ -391,7 +408,7 @@ p_a_t
 
 library(patchwork)
 p_pca <- p_m_t | p_a_t
-ggsave(plot = p_pca, "builds/plots/supplement/pca_viz.png", dpi = 600, height = 5, width = 9)
+ggsave(plot = p_pca, "builds/plots/supplement/pca_viz.png", dpi = 600, height = 5, width = 10)
 #compile PCA dataframe 
 
 dt_pca <- dt_m_t %>% 

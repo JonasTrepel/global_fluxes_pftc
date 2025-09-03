@@ -224,7 +224,7 @@ dt_vp <- dt_res_fm %>%
       grepl("gpp", model_name)~ "GPP"), 
   clean_term =  case_when(
     .default = predictor,
-    grepl("temperature_", predictor) ~ "Local Temperature",
+    grepl("temperature_", predictor) ~ "Inst. Temperature",
     predictor == "elevation_anomaly_country" ~ "Elevation",
     predictor == "height_x_cover_anomaly_country"      ~ "'Biomass'",
     predictor == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
@@ -234,7 +234,17 @@ dt_vp <- dt_res_fm %>%
     predictor == "sla_anomaly_country"                 ~ "SLA",
     predictor == "leaf_area_anomaly_country"           ~ "Leaf Area"), 
   label = paste0(response, "\n(R2m = ", round(rsq_m, 2), ")")) %>% 
-  rename(var_imp = `I.perc(%)`) 
+  rename(var_imp = `I.perc(%)`) %>% 
+  mutate(
+    clean_term = factor(clean_term,
+                        levels = c("'Biomass'",
+                                   "Leaf Area",
+                                   "SLA",
+                                   "Chem. Traits PC2", "Chem. Traits PC1",
+                                   "All Traits PC2", "All Traits PC1",
+                                   "Morph. Traits PC2", "Morph. Traits PC1",
+                                   "Inst. Temperature",
+                                   "Elevation")))
 
 
 
@@ -259,7 +269,7 @@ p_vp_ts <- dt_vp %>%
 
 p_vp_ts
 
-ggsave(plot = p_vp_ts, "builds/plots/variable_importance_traits_separately.png", dpi = 600, height = 3, width = 7)
+ggsave(plot = p_vp_ts, "builds/plots/variable_importance_traits_separately.png", dpi = 600, height = 2.5, width = 7)
 
 p_vp_mt <- dt_vp %>% 
   filter(predictor_tier == "morph_traits_pca") %>% 
