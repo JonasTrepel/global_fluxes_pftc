@@ -196,7 +196,7 @@ p_elev <- dt %>%
             alpha = .75, linetype = "dashed", color = "black", linewidth = 0.75) +
   facet_grid(rows = vars(flux_type), cols = vars(gradient), scales = "free") +
   MetBrewer::scale_color_met_d(name = "Archambault") +
-  labs(x = "Elevation (m)", y = "Flux Value (µmol/m²/s)", title = "Fluxes vs. Elevation") +
+  labs(x = "Elevation (m above sea level)", y = "µmol m⁻² s⁻¹", title = "Fluxes vs. Elevation") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),

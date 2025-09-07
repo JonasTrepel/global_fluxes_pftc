@@ -233,7 +233,7 @@ dt_vp <- dt_res_fm %>%
     predictor == "all_traits_pc2_anomaly_country"          ~ "All Traits PC2",
     predictor == "sla_anomaly_country"                 ~ "SLA",
     predictor == "leaf_area_anomaly_country"           ~ "Leaf Area"), 
-  label = paste0(response, "\n(R2m = ", round(rsq_m, 2), ")")) %>% 
+  label = paste0(response, "\n(R²m = ", round(rsq_m, 2), ")")) %>% 
   rename(var_imp = `I.perc(%)`) %>% 
   mutate(
     clean_term = factor(clean_term,
@@ -253,14 +253,14 @@ p_vp_ts <- dt_vp %>%
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R2", y = "") +
+  labs(x = "Percentage of Marginal R²", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
         panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
-        axis.text = element_text(size = 10), 
+        axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
         panel.background = element_rect(fill = "snow", color = NA), 
         strip.text.x = element_text(size = 12), 
@@ -269,14 +269,14 @@ p_vp_ts <- dt_vp %>%
 
 p_vp_ts
 
-ggsave(plot = p_vp_ts, "builds/plots/variable_importance_traits_separately.png", dpi = 600, height = 2.5, width = 7)
+ggsave(plot = p_vp_ts, "builds/plots/variable_importance_traits_separately.png", dpi = 600, height = 3, width = 10)
 
 p_vp_mt <- dt_vp %>% 
   filter(predictor_tier == "morph_traits_pca") %>% 
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R2", y = "") +
+  labs(x = "Percentage of Marginal R²", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",
@@ -298,7 +298,7 @@ p_vp_at <- dt_vp %>%
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R2", y = "") +
+  labs(x = "Percentage of Marginal R²", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",

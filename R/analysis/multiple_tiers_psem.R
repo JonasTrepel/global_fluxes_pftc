@@ -1249,7 +1249,7 @@ dt_est <- dt_res %>%
       grepl("reco", response) & !grepl("temperature", response) ~ "flux",
       grepl("nee", response) & !grepl("temperature", response) ~ "flux",
       grepl("gpp", response) & !grepl("temperature", response) ~ "flux"),
-    rsq_label = paste0("(R2m = ", round(rsq_m, 2), "; R2c = ", round(rsq_c,2), ")"), 
+    rsq_label = paste0("(R²m = ", round(rsq_m, 2), "; R²c = ", round(rsq_c,2), ")"), 
     clean_response = case_when(
       response == "nee_anomaly_country" ~ paste0("NEE\n", rsq_label),
       response == "gpp_anomaly_country" ~ paste0("GPP\n", rsq_label),
@@ -1803,7 +1803,7 @@ p_rsq <- dt_fm %>%
   geom_line(linewidth = 1) +
   labs(
     x = "Model Tier",
-    y = "Marginal R2",
+    y = "Marginal R²",
     color = "Flux"
   ) +
   scale_color_met_d(name = "Egypt") +
@@ -1826,6 +1826,8 @@ p_ic <- dt_fm %>%
   pivot_longer(cols = c("aic", "bic", "aicc"),
                names_to = "ic_name",
                values_to = "ic_value") %>%
+  mutate(ic_name = toupper(ic_name)) %>% 
+  filter(!ic_name == "AICC") %>%
   ggplot(aes(x = model_tier_num, y = ic_value,
              color = response, shape = ic_name, group = interaction(response, ic_name))) +
   geom_point(size = 2, alpha = 0.8) +
@@ -1853,6 +1855,6 @@ p_ic <- dt_fm %>%
         strip.background = element_rect(fill = "linen", color = "linen") )
 p_ic
 p_comp <- grid.arrange(p_rsq, p_ic, widths = c(1, 1.25))
-ggsave(plot = p_comp, "builds/plots/supplement/performance_comparison_between_tiers.png",
+ggsave(plot = p_comp, "builds/plots/performance_comparison_between_tiers.png",
        dpi = 600, 
-       height = 3, width = 8)
+       height = 2.5, width = 8)

@@ -49,7 +49,8 @@ community <- fread("data/processed_data/preliminary_data/prelim_cover.csv") %>%
          Site = site, 
          Tier = tier, 
          Taxon = species,
-         Cover = cover) %>% dplyr::select(PlotID, Site, Tier, Cover, Taxon) %>% filter(!Taxon == "" )
+         Cover = cover) %>% dplyr::select(PlotID, Site, Tier, Cover, Taxon) %>%
+  filter(!Taxon == "" )
 
 unique(community$PlotID)
 unique(trait[grepl("US", trait$PlotID),]$PlotID)

@@ -51,16 +51,17 @@ units <- c(
   elevation = "m",
   mat = "°C",
   mmp = "mm",
-  nee = "µmol/m²/s",
-  reco = "µmol/m²/s",
-  gpp = "µmol/m²/s", 
-  sla_cm2_g = "cm²/g",          
+  nee = "µmol m⁻² s⁻¹",
+  reco = "µmol m⁻² s⁻¹",
+  gpp = "µmol m⁻² s⁻¹", 
+  sla_cm2_g = "cm² g⁻¹",          
   leaf_area_cm2 = "cm²",       
   local_temperature = "°C", 
   species_richness = "dimensionless",
   height_x_cover = "dimensionless", 
   ldmc = "g"
 )
+
 
 dt_units <- data.table(
   var_name = names(units), 
@@ -102,7 +103,7 @@ pba1 <- dt_long %>%
   scale_fill_met_d(name = "Archambault") +
   facet_wrap(~plotvar_name, scales = "free_x", ncol = 5) +
   theme_bw() +
-  labs(y = "", x = "Variable Value") +
+  labs(y = "", x = "") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -123,10 +124,10 @@ pba3 <- dt_long %>%
   filter(var_name %in% c("sla_cm2_g", "leaf_area_cm2", "gpp", "reco", "nee")) %>%
   mutate(gradient = fct_reorder(gradient, lat),
          plotvar_name = factor(plotvar_name, 
-                               levels = c("GPP (µmol/m²/s)",
-                                          "Reco (µmol/m²/s)",
-                                          "NEE (µmol/m²/s)",
-                                          "SLA (cm²/g)",
+                               levels = c("GPP (µmol m⁻² s⁻¹)",
+                                          "Reco (µmol m⁻² s⁻¹)",
+                                          "NEE (µmol m⁻² s⁻¹)",
+                                          "SLA (cm² g⁻¹)",
                                           "Leaf Area (cm²)"))) %>%
   ggplot() +
   geom_density_ridges(aes(y = gradient, x = var_value, color = gradient, fill = gradient), alpha = 0.75, size = 0.75) +
@@ -134,7 +135,7 @@ pba3 <- dt_long %>%
   scale_fill_met_d(name = "Archambault") +
   facet_wrap(~plotvar_name, scales = "free_x", ncol = 6) +
   theme_bw() +
-  labs(y = "", x = "Variable Value") +
+  labs(y = "", x = "") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -153,5 +154,5 @@ pba3
 
 comb_plot_a <- grid.arrange(pba1, map_e, pba3, heights = c(1.1, 1.5, 1.2), 
                           padding = unit(0.5, "lines"))
-ggsave(plot = comb_plot_a, "builds/plots/map.png", dpi = 600, height = 10, width = 10)
+ggsave(plot = comb_plot_a, "builds/plots/map.png", dpi = 600, height = 10.5, width = 10.5)
 
