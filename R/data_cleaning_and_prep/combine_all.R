@@ -41,13 +41,15 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
             temperature_reco = mean(temperature_reco, na.rm = T), 
             par = mean(par, na.rm =T) ) %>% 
   mutate(plot_id = as.character(plot_id),
-         nee = nee*-1, 
-         reco = reco*-1) %>% 
+         nee = ifelse(tier %in% c("South_Africa_2023"), nee, nee*-1), 
+         reco = ifelse(tier %in% c("South_Africa_2023"), reco, reco*-1)) %>% 
   filter(tier %in% c("China_2016", "Colorado_2016", "Svalbard_2018",
                      "Norway_2022", "Peru_2018", "South_Africa_2023")) %>%
   filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
   #filter(treatment == "c") %>% # peru, we also include naturally burned sites (cause fire is also part of the system e.g., in SA)
   ungroup()
+table(dt_flux_t$tier)
+table(dt_flux$tier)
 
 #Colorado 2018 and Peru 2019 have the most control plots, which is why we will go with them for now 
 #But for Peru 2018 we have leaf traits, so we go for this one instead. 

@@ -1180,61 +1180,62 @@ fwrite(sa.wp2, "data/raw_data/south_africa/PFCT7_plot_locations_clean.csv")
 
 ### get dates 
 
-sa.meta.raw <- fread("data/raw_data/south_africa/PFTC7_SA_raw_fluxes_2023 - Gradient.csv")
+sa.meta.raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023.csv")
 
 sa.meta <- sa.meta.raw %>% 
-  rename(sampling_day = `day (NOT DATE!!!)`) %>% 
-  filter(day.night == "day") %>% 
-  mutate(unique_site = paste0(siteID, "_", aspect), 
-         keep = case_when(
-           .default = "keep",
-           unique_site == "5_east" & Attempt == 1 ~ "discard", 
-           unique_site == "5_west" & Attempt == 1 ~ "discard", 
-           unique_site == "3_east" & Attempt == 1 ~ "discard", 
-           unique_site == "3_west" & Attempt == 1 ~ "discard", 
-           unique_site == "1_west" & Attempt == 1 ~ "discard", 
-           unique_site == "1_east" & sampling_day == 3 ~ "discard")) %>%
-  filter(keep == "keep") %>% 
-  dplyr::select(unique_site, siteID, sampling_day, Attempt) %>% 
-  arrange(siteID) %>% 
+  filter(day_night == "day")  %>% 
+  filter(flag %in% c("okay", "manual_flux_time_selection"))%>% 
+  mutate(unique_site = paste0(site_id, "_", aspect)) %>%
+  dplyr::select(unique_site, date ) %>% 
   unique() %>% 
-  mutate(day = sampling_day + 2, 
-         month = 12, 
-         year = 2023, 
-         date = as_date(paste0(year, "-", month, "-", day))
-         ) %>% 
-  dplyr::select(unique_site, date )
-           
+  mutate(discard = case_when(
+    .default = "keep", 
+    unique_site == "3_west" & date == "2023-12-09" ~ "discard", 
+    date == "2023-12-03" ~ "discard"
+  )) %>% 
+  filter(discard == "keep") %>% 
+  dplyr::select(-discard)
+
 sa.meta
 
 sa.wp3 <- sa.wp2 %>% left_join(sa.meta)
 
 
 ## Flux data ----------------------------
+#temperature first... 
+
+sa_temp <- fread("data/raw_data/south_africa/pftc7_flux_par_and_tmp.csv") %>% 
+  dplyr::select(file, date, temperature, par) %>% 
+  unique()
+
 #https://docs.google.com/document/d/1P2X-3IIQE6IQwvgvDQe9YJLqVWd2srqzxJZWWoM3mig/edit
-sa.flux.raw <- fread("data/raw_data/south_africa/PFTC7_licor_nee_flagged.csv")
+sa.flux.raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023_with_file.csv")
 names(sa.flux.raw)
 sa.flux <- sa.flux.raw %>% 
+  unique() %>% 
+  left_join(sa_temp) %>% 
   filter(flag %in% c("okay", "manual_flux_time_selection")) %>% 
   rename(flux_best = flux_value, 
-         temperature = tav) %>%
+         elevation = elevation_m_asl, 
+         plot = plot_id) %>%
+  filter(flux_type %in% c("nee", "resp_day", "resp_night")) %>% 
   mutate(tier = "South_Africa_2023", 
          plot_id = paste0("SA_", elevation, aspect, plot), 
          site = paste0(elevation, aspect),
          type = case_when(
-           measurement == "photo" ~ "nee", 
-           measurement == "resp" & day.night == "day" ~ "reco", 
-           measurement == "resp" & day.night == "night" ~ "night_reco", 
+           flux_type == "nee" ~ "nee", 
+           flux_type == "resp_day" ~ "reco", 
+           flux_type == "resp_night" ~ "night_reco", 
          )) %>% 
-  dplyr::select(c(plot_id, tier, flux_best, type, temperature, site, plot, aspect, elevation)) %>% 
-  left_join(sa.wp3)
+  dplyr::select(c(plot_id, tier, flux_best, type, site, plot, aspect, temperature, par, elevation)) %>% 
+  left_join(sa.wp3) %>% 
+  filter(type != "night_reco")
 
 range(sa.flux[type == "nee", flux_best], na.rm = T)
-range(sa.flux[type == "nee", flux_best], na.rm = T)
-range(sa.flux[type == "night_reco", flux_best], na.rm = T)
+range(sa.flux[type == "reco", flux_best], na.rm = T)
 
 sum(!is.na(sa.flux$flux_best))
-
+summary(sa.flux)
 ggplot(data = sa.flux) + 
   geom_boxplot(aes(x = type, y = flux_best)) +
   geom_hline(yintercept = 0) +
@@ -1244,10 +1245,13 @@ ggplot(data = sa.flux[grepl("nee", type), ]) +
   geom_jitter(aes(x = temperature, y = flux_best)) +
   geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
 
+ggplot(data = sa.flux[grepl("nee", type), ]) + 
+  geom_jitter(aes(x = par, y = flux_best)) +
+  geom_smooth(aes(x = par, y = flux_best), method = "gam")
 
 ## Trait data ----------------------------
 
-sa.t.raw <- fread("data/raw_data/south_africa/PFTC7_SA_clean_traits_2023.csv")
+sa.t.raw <- fread("data/raw_data/south_africa/iv_PFTC7_clean_elevationgradient_traits_2023.csv")
 table(sa.t.raw$problem_flag)
 table(sa.t.raw$traits)
 
@@ -1274,14 +1278,13 @@ unique(sa.traits$species)
 ## I don't think we have clean biomass data yet 
 
 ## Cover --------------------------------
-sa.cover.raw <- fread("data/raw_data/south_africa/PFTC7_SA_clean_community_19Apr2024.csv")
+sa.cover.raw <- fread("data/raw_data/south_africa/i_PFTC7_clean_elevationgradient_community_2023.csv")
 sa.cover <- sa.cover.raw %>% 
   rename(site = site_id, 
          plot = plot_id) %>% 
   mutate(tier = "South_Africa_2023", 
-         aspect = ifelse(aspect == "W", "west", "east"), 
          plot = round(plot, 0), 
-         plot_id = paste0("SA_", elevation, aspect, plot), 
+         plot_id = paste0("SA_", elevation_m_asl, aspect, plot), 
          year = 2023, 
          species = gsub("_", " ", species), 
          species = str_to_sentence(species)) %>% 
@@ -1289,7 +1292,7 @@ sa.cover <- sa.cover.raw %>%
 
 ## Height ------------
 
-sa.height.raw <- fread("data/raw_data/south_africa/PFTC7_SA_clean_community_structure_2023.csv")
+sa.height.raw <- fread("data/raw_data/south_africa/ii_PFTC7_clean_elevationgradient_community_structure_2023.csv")
 
 sa.height <- sa.height.raw %>% 
   mutate(tier = "South_Africa_2023",
@@ -1382,7 +1385,6 @@ sa.flux.fin <- sa.flux %>%
          date = as_date(date, format = '%Y.%m.%d'),
          treatment = NA,
          year = year(date), 
-         par = NA,
          season = "not_part_of_the_dataset") %>% 
   filter(!type == "night_reco") %>% 
   dplyr::select(-unique_site)
@@ -1619,7 +1621,7 @@ us.cover.final <- us.cover
 
 #south africa
 sa.cover.final <- sa.cover %>% 
-  mutate(site = paste0(elevation, aspect)) %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
+  mutate(site = paste0(elevation_m_asl, aspect)) %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
   rename(site_id = site) 
 
 
@@ -1726,7 +1728,7 @@ us.ch <- us.height %>% rename(
 ## South Africa 
 
 sa.ch <- sa.cover %>% 
-  mutate(site = paste0(elevation, aspect)) %>% 
+  mutate(site = paste0(elevation_m_asl, aspect)) %>% 
   left_join(sa.height) %>% 
   rename(height = meanHeight) %>%
   group_by(tier, site, plot_id) %>% 

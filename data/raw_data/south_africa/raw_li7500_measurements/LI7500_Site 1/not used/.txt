@@ -1,0 +1,4 @@
+Model:	 LI-7500
+SN:	
+Timestamp:	Dec 3 2023 at 1:11:02
+DATAH	Time	Date	Sequence Number	CO2 (mmol/m^3)	CO2 (mg/m^3)	CO2 Absorptance	CO2 (umol/mol)	H2O (mmol/m^3)	H2O (g/m^3)	H2O Absorptance	H2O (mmol/mol)	Dew Point (C)	Temperature (C)	Pressure (kPa)	Diagnostic Value	Diagnostic Value 2	Diagnostic Word	DSI Vin (v)	Cooler Voltage (v)	Chopper Cooler Voltage (v)	Smart Flux Vin (v)	CO2 Signal Strength	Integral	Peak Height	CO2 Sample	CO2 Reference	H2O Sample	H2O Reference	CH4 Seconds	CH4 Nano Seconds	CH4 (umol/mol)	CH4 (mmol/m^3)	CH4 Signal Strength (RSSI)	CH4 Diagnostic Value	CHK

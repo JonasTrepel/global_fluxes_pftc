@@ -3894,9 +3894,9 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2000west,SA_2000west1,South_Africa_2023,Bulbostylis oritrephes,0.5,0.5
 2000east,SA_2000east3,South_Africa_2023,Bulbostylis oritrephes,0.5,0.5
 2000east,SA_2000east4,South_Africa_2023,Bulbostylis oritrephes,0.5,0.5
-2200west,SA_2200west1,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
-2200east,SA_2200east3,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
-2200west,SA_2200west5,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2200west,SA_2200west1,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
+2200east,SA_2200east3,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
+2200west,SA_2200west5,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2000west,SA_2000west3,South_Africa_2023,Carex zuluensis,0.5,0.5
 2200east,SA_2200east1,South_Africa_2023,Carex zuluensis,0.5,0.5
 2200east,SA_2200east4,South_Africa_2023,Commelina africana,0.5,0.5
@@ -4083,8 +4083,8 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200west,SA_2200west1,South_Africa_2023,Senecio glaberrimus,1,0.5
 2600east,SA_2600east0,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2600west,SA_2600west0,South_Africa_2023,Senecio glaberrimus,0.5,0.5
-2000west,SA_2000west3,South_Africa_2023,Spiky daisy,0.5,0.5
-2000west,SA_2000west4,South_Africa_2023,Spiky daisy,0.5,0.5
+2000west,SA_2000west3,South_Africa_2023,Asteraceae sp1,0.5,0.5
+2000west,SA_2000west4,South_Africa_2023,Asteraceae sp1,0.5,0.5
 2200east,SA_2200east3,South_Africa_2023,Sporobolus centrifugus,1,0.5
 2000west,SA_2000west2,South_Africa_2023,Themeda triandra,20,0.5
 2000west,SA_2000west1,South_Africa_2023,Themeda triandra,10,0.5
@@ -4099,7 +4099,6 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east5,South_Africa_2023,Themeda triandra,8,0.5
 2200east,SA_2200east2,South_Africa_2023,Themeda triandra,5,0.5
 2200west,SA_2200west1,South_Africa_2023,Themeda triandra,15,0.5
-2000west,SA_2000west2,South_Africa_2023,Thesium sp1,0.5,0.5
 2000west,SA_2000west2,South_Africa_2023,Tristachya leucothrix,20,0.5
 2000west,SA_2000west1,South_Africa_2023,Tristachya leucothrix,1,0.5
 2000east,SA_2000east5,South_Africa_2023,Tristachya leucothrix,1,0.5
@@ -4127,7 +4126,6 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200west,SA_2200west3,South_Africa_2023,Tristachya leucothrix,5,0.5
 2200east,SA_2200east4,South_Africa_2023,Hypoxis costata,0.5,0.5
 2000east,SA_2000east2,South_Africa_2023,Cyperus sphaerocephalus,0.5,0.5
-2000east,SA_2000east2,South_Africa_2023,Lasiosiphon kraussianus,0.5,0.5
 2000east,SA_2000east2,South_Africa_2023,Eragrostis racemosa,2,0.5
 2000east,SA_2000east2,South_Africa_2023,Acalypha schinzii,0.5,0.5
 2000east,SA_2000east2,South_Africa_2023,Helichrysum pilosellum,0.5,0.5
@@ -4141,7 +4139,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200west,SA_2200west4,South_Africa_2023,Oxalis depressa,1,0.5
 2200west,SA_2200west5,South_Africa_2023,Eragrostis capensis,0.5,0.5
 2200east,SA_2200east1,South_Africa_2023,Eragrostis capensis,5,0.5
-2200west,SA_2200west4,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2200west,SA_2200west4,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2200east,SA_2200east2,South_Africa_2023,Aristea woodii,0.5,0.5
 2200east,SA_2200east3,South_Africa_2023,Tristachya leucothrix,1,0.5
 2200east,SA_2200east4,South_Africa_2023,Eragrostis capensis,1,0.5
@@ -4155,7 +4153,6 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east2,South_Africa_2023,Commelina africana,0.5,0.5
 2200west,SA_2200west2,South_Africa_2023,Gnidia caffra,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Koeleria capensis,0.5,0.5
-2200west,SA_2200west2,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
 2200east,SA_2200east2,South_Africa_2023,Elionurus muticus,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Crassula vaginata,0.5,0.5
 2200west,SA_2200west2,South_Africa_2023,Koeleria capensis,1,0.5
@@ -4169,12 +4166,12 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east4,South_Africa_2023,Themeda triandra,15,0.5
 2200west,SA_2200west1,South_Africa_2023,Tristachya leucothrix,0.5,0.5
 2200west,SA_2200west1,South_Africa_2023,Sporobolus centrifugus,2,0.5
-2200east,SA_2200east5,South_Africa_2023,Cyperus round,0.5,0.5
+2200east,SA_2200east5,South_Africa_2023,Cyperus sp1,0.5,0.5
 2200west,SA_2200west1,South_Africa_2023,Craterocapsa tarsodes,1,0.5
 2200west,SA_2200west1,South_Africa_2023,Oxalis depressa,0.5,0.5
 2200west,SA_2200west3,South_Africa_2023,Pentameris airoides,0.5,0.5
 2200west,SA_2200west1,South_Africa_2023,Carex zuluensis,0.5,0.5
-2200west,SA_2200west3,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2200west,SA_2200west3,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2200west,SA_2200west5,South_Africa_2023,Anthospermum herbaceum,2,0.5
 2200west,SA_2200west1,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2200west,SA_2200west1,South_Africa_2023,Eragrostis racemosa,0.5,0.5
@@ -4185,7 +4182,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200west,SA_2200west1,South_Africa_2023,Helichrysum auronitens,0.5,0.5
 2200west,SA_2200west5,South_Africa_2023,Acalypha punctata,1,0.5
 2200west,SA_2200west1,South_Africa_2023,Hypoxis rigidula,0.5,0.5
-2200east,SA_2200east4,South_Africa_2023,Diheteropogon filifolius,1,0.5
+2200east,SA_2200east4,South_Africa_2023,Diheteropogon filifolius,0.666666666666667,0.5
 2200east,SA_2200east2,South_Africa_2023,Heteropogon contortus,5,0.5
 2200east,SA_2200east2,South_Africa_2023,Eragrostis capensis,10,0.5
 2200east,SA_2200east1,South_Africa_2023,Commelina africana,0.5,0.5
@@ -4198,6 +4195,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east4,South_Africa_2023,Acalypha punctata,0.5,0.5
 2200west,SA_2200west2,South_Africa_2023,Sporobolus centrifugus,1,0.5
 2200east,SA_2200east2,South_Africa_2023,Thin asclepias (possibly aspidonepsis reenensis),0.5,0.5
+2200west,SA_2200west2,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2200east,SA_2200east2,South_Africa_2023,Haplocarpha scaposa,0.5,0.5
 2200west,SA_2200west3,South_Africa_2023,Anthospermum herbaceum,0.5,0.5
 2200east,SA_2200east5,South_Africa_2023,Heteropogon contortus,9,0.5
@@ -4238,14 +4236,14 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2800west,SA_2800west0,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2800west,SA_2800west0,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2800west,SA_2800west1,South_Africa_2023,Harpochloa falx,6,0.5
-2800west,SA_2800west2,South_Africa_2023,Cf holcus lanatus,0.5,0.5
+2800west,SA_2800west2,South_Africa_2023,Holcus lanatus cf,0.5,0.5
 2800west,SA_2800west2,South_Africa_2023,Kniphofia porphyrantha,0.5,0.5
 2800east,SA_2800east3,South_Africa_2023,Themeda triandra,0.5,0.5
 2800west,SA_2800west3,South_Africa_2023,Berkheya rhapontica,0.5,0.5
 2200east,SA_2200east1,South_Africa_2023,Acalypha punctata,4,0.5
 2600west,SA_2600west2,South_Africa_2023,Berkheya rhapontica,0.5,0.5
 2200east,SA_2200east3,South_Africa_2023,Haplocarpha scaposa,0.5,0.5
-2200west,SA_2200west2,South_Africa_2023,C f satyrium longicauda,0.5,0.5
+2200west,SA_2200west2,South_Africa_2023,Cf satyrium longicauda,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Cotula hispida,0.5,0.5
 2600west,SA_2600west1,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2200east,SA_2200east5,South_Africa_2023,Berkheya rhapontica,0.5,0.5
@@ -4290,7 +4288,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east3,South_Africa_2023,Diheteropogon filifolius,1,0.5
 2200east,SA_2200east2,South_Africa_2023,Eragrostis racemosa,1,0.5
 2200west,SA_2200west3,South_Africa_2023,Oxalis depressa,0.5,0.5
-2200east,SA_2200east1,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2200east,SA_2200east1,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2200west,SA_2200west3,South_Africa_2023,Hypoxis rigidula,0.5,0.5
 2200east,SA_2200east1,South_Africa_2023,Koeleria capensis,1,0.5
 2200east,SA_2200east2,South_Africa_2023,Tristachya leucothrix,1,0.5
@@ -4300,7 +4298,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2200east,SA_2200east4,South_Africa_2023,Ficinia cinnamomea,2,0.5
 2200west,SA_2200west4,South_Africa_2023,Wahlenbergia krebsii,0.5,0.5
 2200east,SA_2200east4,South_Africa_2023,Anthospermum herbaceum,0.5,0.5
-2200east,SA_2200east2,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2200east,SA_2200east2,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2200east,SA_2200east4,South_Africa_2023,Aristea woodii,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Anthospermum herbaceum,1,0.5
 2200west,SA_2200west2,South_Africa_2023,Craterocapsa tarsodes,1,0.5
@@ -4334,13 +4332,13 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2800east,SA_2800east5,South_Africa_2023,Helichrysum dasycephalum,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Merxmuellera drakensbergensis,5,0.5
 2800west,SA_2800west2,South_Africa_2023,Sporobolus centrifugus,0.5,0.5
-2800west,SA_2800west1,South_Africa_2023,Argyrolobium sp.,0.5,0.5
+2800west,SA_2800west1,South_Africa_2023,Argyrolobium sp,0.5,0.5
 2800west,SA_2800west3,South_Africa_2023,Trifolium burchellianum,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Dimorphotheca jucunda,8,0.5
 2800west,SA_2800west3,South_Africa_2023,Valeriana capensis,1,0.5
 2600east,SA_2600east4,South_Africa_2023,Vernonia natalensis,0.5,0.5
 2200west,SA_2200west3,South_Africa_2023,Helichrysum pallidum,0.5,0.5
-2600east,SA_2600east4,South_Africa_2023,Fabaceae sp,0.5,0.5
+2600east,SA_2600east4,South_Africa_2023,Fabaceae sp1,0.5,0.5
 2800west,SA_2800west3,South_Africa_2023,Themeda triandra,30,0.5
 2800west,SA_2800west3,South_Africa_2023,Pentameris exserta,80,0.5
 2800west,SA_2800west1,South_Africa_2023,Moraea stricta,0.5,0.5
@@ -4375,7 +4373,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600west,SA_2600west4,South_Africa_2023,Moraea stricta,0.5,0.5
 2600west,SA_2600west5,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2600west,SA_2600west4,South_Africa_2023,Anthoxanthum ecklonii,0.5,0.5
-2600east,SA_2600east2,South_Africa_2023,Athrixia needle,1,0.5
+2600east,SA_2600east2,South_Africa_2023,Athrixia sp1,1,0.5
 2600east,SA_2600east2,South_Africa_2023,Cotula hispida,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Helichrysum adenocarpum,1,0.5
 2600west,SA_2600west1,South_Africa_2023,Senecio glaberrimus,1,0.5
@@ -4383,9 +4381,9 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600east,SA_2600east5,South_Africa_2023,Polygala rhinostigma,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Helichrysum dasycephalum,1,0.5
 2600east,SA_2600east2,South_Africa_2023,Helichrysum krookii,0.5,0.5
-2600east,SA_2600east4,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2600east,SA_2600east4,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2600east,SA_2600east2,South_Africa_2023,Senecio glaberrimus,0.5,0.5
-2600east,SA_2600east5,South_Africa_2023,Athrixia needle,3,0.5
+2600east,SA_2600east5,South_Africa_2023,Athrixia sp1,3,0.5
 2600east,SA_2600east5,South_Africa_2023,Ficinia cinnamomea,12,0.5
 2600east,SA_2600east5,South_Africa_2023,Aristea woodii,0.5,0.5
 2600east,SA_2600east5,South_Africa_2023,Elionurus muticus,0.5,0.5
@@ -4406,7 +4404,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600east,SA_2600east3,South_Africa_2023,Aristea woodii,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2600east,SA_2600east3,South_Africa_2023,Lotononis lotononoides,1,0.5
-2600east,SA_2600east3,South_Africa_2023,Athrixia needle,0.5,0.5
+2600east,SA_2600east3,South_Africa_2023,Athrixia sp1,0.5,0.5
 2600east,SA_2600east3,South_Africa_2023,Senecio glaberrimus,1,0.5
 2600east,SA_2600east5,South_Africa_2023,Alepidea setifera,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Dimorphotheca jucunda,3,0.5
@@ -4437,10 +4435,10 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600west,SA_2600west4,South_Africa_2023,Lotononis lotononoides,0.5,0.5
 2600west,SA_2600west4,South_Africa_2023,Carex zuluensis,0.5,0.5
 2800NA,SA_2800NA0,South_Africa_2023,Senecio glaberrimus,0.5,0.5
-2600east,SA_2600east4,South_Africa_2023,Stachys cf natalensis,0.5,0.5
+2600east,SA_2600east4,South_Africa_2023,Stachys natalensis cf,0.5,0.5
 2600east,SA_2600east2,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2600east,SA_2600east2,South_Africa_2023,Oxalis depressa,0.5,0.5
-2600east,SA_2600east2,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2600east,SA_2600east2,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2600east,SA_2600east3,South_Africa_2023,Helichrysum dasycephalum,1,0.5
 2800west,SA_2800west1,South_Africa_2023,Cotula hispida,0.5,0.5
 2800west,SA_2800west4,South_Africa_2023,Festuca costata,1,0.5
@@ -4457,7 +4455,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2800west,SA_2800west4,South_Africa_2023,Berkheya rhapontica,0.5,0.5
 2800east,SA_2800east4,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Craterocapsa tarsodes,1,0.5
-2400east,SA_2400east2,South_Africa_2023,Eucomis cf humilis,1,0.5
+2400east,SA_2400east2,South_Africa_2023,Eucomis humilis cf,1,0.5
 2400east,SA_2400east5,South_Africa_2023,Monsonia attenuata,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Eulalia villosa,1,0.5
 2800east,SA_2800east4,South_Africa_2023,Lotononis lotononoides,5,0.5
@@ -4472,9 +4470,9 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2400west,SA_2400west3,South_Africa_2023,Koeleria capensis,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Ficinia cinnamomea,10,0.5
 2400west,SA_2400west1,South_Africa_2023,Eragrostis capensis,0.5,0.5
-2400west,SA_2400west5,South_Africa_2023,Senecio tall,0.5,0.5
-2400west,SA_2400west3,South_Africa_2023,Senecio tall,2,0.5
-2600east,SA_2600east1,South_Africa_2023,Athrixia needle,0.5,0.5
+2400west,SA_2400west5,South_Africa_2023,Senecio cf scitus,0.5,0.5
+2400west,SA_2400west3,South_Africa_2023,Senecio cf scitus,2,0.5
+2600east,SA_2600east1,South_Africa_2023,Athrixia sp1,0.5,0.5
 2600west,SA_2600west2,South_Africa_2023,Moraea inclinata,0.5,0.5
 2600east,SA_2600east1,South_Africa_2023,Alepidea setifera,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Oxalis depressa,0.5,0.5
@@ -4490,11 +4488,10 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2800east,SA_2800east3,South_Africa_2023,Anthoxanthum ecklonii,0.5,0.5
 2800west,SA_2800west4,South_Africa_2023,Pentameris exserta,10,0.5
 2800east,SA_2800east3,South_Africa_2023,Oxalis depressa,0.5,0.5
-2800east,SA_2800east3,South_Africa_2023,Cotula hispida,0.5,0.5
-2800west,SA_2800west2,South_Africa_2023,Cineraria sp,0.5,0.5
+2800west,SA_2800west2,South_Africa_2023,Cineraria sp1,0.5,0.5
 2800west,SA_2800west5,South_Africa_2023,Berkheya rhapontica,0.5,0.5
-2600east,SA_2600east5,South_Africa_2023,Zaluzianskya sp,0.5,0.5
-2600east,SA_2600east5,South_Africa_2023,Rubiaceae shrubby thing,0.5,0.5
+2600east,SA_2600east5,South_Africa_2023,Zaluzianskya sp1,0.5,0.5
+2600east,SA_2600east5,South_Africa_2023,Rubiaceae,0.5,0.5
 2600east,SA_2600east5,South_Africa_2023,Jamesbrittenia pristisepala,0.5,0.5
 2600east,SA_2600east5,South_Africa_2023,Kniphofia porphyrantha,0.5,0.5
 2800west,SA_2800west4,South_Africa_2023,Alepidea thodei,0.5,0.5
@@ -4531,7 +4528,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600east,SA_2600east2,South_Africa_2023,Soft scilla,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Hypoxis parvula,1,0.5
 2600west,SA_2600west4,South_Africa_2023,Muraltia saxicola,0.5,0.5
-2800west,SA_2800west5,South_Africa_2023,Stubble daisy,0.5,0.5
+2800west,SA_2800west5,South_Africa_2023,Asteraceae sp2,0.5,0.5
 2800west,SA_2800west5,South_Africa_2023,Tenaxia disticha,40,0.5
 2800east,SA_2800east3,South_Africa_2023,Erica woodii,3,0.5
 2800west,SA_2800west5,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
@@ -4590,20 +4587,20 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600west,SA_2600west5,South_Africa_2023,Helichrysum aureum,0.5,0.5
 2600west,SA_2600west3,South_Africa_2023,Oxalis depressa,0.5,0.5
 2800west,SA_2800west5,South_Africa_2023,Senecio glaberrimus,0.5,0.5
-2600east,SA_2600east4,South_Africa_2023,Athrixia needle,15,0.5
+2600east,SA_2600east4,South_Africa_2023,Athrixia sp1,15,0.5
 2600east,SA_2600east2,South_Africa_2023,Carex zuluensis,0.5,0.5
-2600east,SA_2600east3,South_Africa_2023,Cineraria sp,0.5,0.5
+2600east,SA_2600east3,South_Africa_2023,Cineraria sp1,0.5,0.5
 2600east,SA_2600east3,South_Africa_2023,Tenaxia disticha,10,0.5
 2600west,SA_2600west5,South_Africa_2023,Muraltia saxicola,0.5,0.5
 2800west,SA_2800west1,South_Africa_2023,Cerastium arabidis,0.5,0.5
-2800west,SA_2800west3,South_Africa_2023,Argyrolobium sp,0.5,0.5
+2800west,SA_2800west3,South_Africa_2023,Argyrolobium sp1,0.5,0.5
 2600east,SA_2600east1,South_Africa_2023,Dimorphotheca jucunda,0.5,0.5
 2200west,SA_2200west5,South_Africa_2023,Disa stachyoides,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Ficinia cinnamomea,25,0.5
 2600east,SA_2600east5,South_Africa_2023,Eulalia villosa,0.5,0.5
 2600west,SA_2600west2,South_Africa_2023,Harpochloa falx,25,0.5
 2600west,SA_2600west2,South_Africa_2023,Helichrysum ecklonis,2,0.5
-2600east,SA_2600east2,South_Africa_2023,Cineraria sp,0.5,0.5
+2600east,SA_2600east2,South_Africa_2023,Cineraria sp1,0.5,0.5
 2200west,SA_2200west1,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Helichrysum pilosellum,0.5,0.5
 2800east,SA_2800east1,South_Africa_2023,Themeda triandra,1,0.5
@@ -4614,7 +4611,6 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2400west,SA_2400west3,South_Africa_2023,Helichrysum ecklonis,2,0.5
 2400east,SA_2400east1,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Koeleria capensis,1,0.5
-2800east,SA_2800east4,South_Africa_2023,Bulbostylis humilis,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Satyrium longicauda,0.5,0.5
 2400east,SA_2400east1,South_Africa_2023,Lotononis lotononoides,1,0.5
@@ -4644,14 +4640,14 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 2600west,SA_2600west5,South_Africa_2023,Alepidea setifera,0.5,0.5
 2400east,SA_2400east3,South_Africa_2023,Senecio erubescens,1,0.5
 2400east,SA_2400east2,South_Africa_2023,Oxalis obliquifolia,0.5,0.5
-2400west,SA_2400west3,South_Africa_2023,Cf helichrysum albo brunneum,0.5,0.5
+2400west,SA_2400west3,South_Africa_2023,Helichrysum albo brunneum cf,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Craterocapsa tarsodes,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Oxalis depressa,0.5,0.5
 2800east,SA_2800east4,South_Africa_2023,Festuca costata,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Festuca costata,1,0.5
 2800east,SA_2800east5,South_Africa_2023,Elionurus muticus,25,0.5
 2800west,SA_2800westNA,South_Africa_2023,Helichrysum pallidum,0.5,0.5
-2600east,SA_2600east3,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2600east,SA_2600east3,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2600west,SA_2600west2,South_Africa_2023,Ficinia cinnamomea,20,0.5
 2600east,SA_2600east4,South_Africa_2023,Moraea stricta,0.5,0.5
 2600west,SA_2600west5,South_Africa_2023,Oxalis depressa,0.5,0.5
@@ -4706,7 +4702,7 @@ pfeiler,US_pfeiler5,Colorado_2016,,1,
 NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2600east,SA_2600east5,South_Africa_2023,Pelargonium zonale,0.5,0.5
 2800west,SA_2800west1,South_Africa_2023,Senecio erubescens,1,0.5
-2600east,SA_2600east5,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2600east,SA_2600east5,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2800west,SA_2800west3,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
 2600west,SA_2600west1,South_Africa_2023,Berkheya rhapontica,1,0.5
 2800west,SA_2800west2,South_Africa_2023,Helichrysum pilosellum,0.5,0.5
@@ -4721,7 +4717,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2600east,SA_2600east1,South_Africa_2023,Harpochloa falx,20,0.5
 2800east,SA_2800east4,South_Africa_2023,Erica woodii,0.5,0.5
 2800east,SA_2800east2,South_Africa_2023,Eulalia villosa,2,0.5
-2400west,SA_2400west1,South_Africa_2023,C.f. hesperantha baurii,0.5,0.5
+2400west,SA_2400west1,South_Africa_2023,Hesperantha baurii cf,0.5,0.5
 2400east,SA_2400east3,South_Africa_2023,Wahlenbergia krebsii,0.5,0.5
 2800west,SA_2800west2,South_Africa_2023,Bulbostylis oritrephes,0.5,0.5
 2800west,SA_2800west4,South_Africa_2023,Helichrysum dasycephalum,0.5,0.5
@@ -4737,11 +4733,11 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Ficinia cinnamomea,30,0.5
 2400west,SA_2400west3,South_Africa_2023,Ficinia cinnamomea,3,0.5
 2400west,SA_2400west4,South_Africa_2023,Eragrostis capensis,0.5,0.5
-2400east,SA_2400east5,South_Africa_2023,Senecio tall,0.5,0.5
+2400east,SA_2400east5,South_Africa_2023,Senecio cf scitus,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Oxalis depressa,0.5,0.5
 2800east,SA_2800east2,South_Africa_2023,Themeda triandra,20,0.5
 2400east,SA_2400east2,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
-2400east,SA_2400east4,South_Africa_2023,Athrixia needle,0.5,0.5
+2400east,SA_2400east4,South_Africa_2023,Athrixia sp1,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Heteropogon contortus,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Heteropogon contortus,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Anthoxanthum ecklonii,1,0.5
@@ -4750,11 +4746,10 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Kniphofia porphyrantha,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Monsonia attenuata,0.5,0.5
-2400west,SA_2400west3,South_Africa_2023,Satyrium longicauda,0.5,0.5
 2400east,SA_2400east3,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2800east,SA_2800east1,South_Africa_2023,Helichrysum dasycephalum,0.5,0.5
 2800east,SA_2800east4,South_Africa_2023,Carex zuluensis,0.5,0.5
-2800east,SA_2800east1,South_Africa_2023,Indigofera sp,0.5,0.5
+2800east,SA_2800east1,South_Africa_2023,Indigofera sp1,0.5,0.5
 2600east,SA_2600east2,South_Africa_2023,Berkheya rosulata,10,0.5
 2800west,SA_2800west3,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2200east,SA_2200east2,South_Africa_2023,Berkheya rhapontica,0.5,0.5
@@ -4769,7 +4764,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2200east,SA_2200eastNA,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2600west,SA_2600west4,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2200west,SA_2200west4,South_Africa_2023,Taraxacum officinale,0.5,0.5
-2600east,SA_2600east2,South_Africa_2023,Zaluzianskya sp,0.5,0.5
+2600east,SA_2600east2,South_Africa_2023,Zaluzianskya sp1,0.5,0.5
 2800west,SA_2800west1,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
 2600east,SA_2600east5,South_Africa_2023,Helichrysum odoratissimum,0.5,0.5
 2200east,SA_2200east3,South_Africa_2023,Gerbera piloselloides,0.5,0.5
@@ -4790,7 +4785,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2800east,SA_2800east1,South_Africa_2023,Ficinia cinnamomea,40,0.5
 2800west,SA_2800west4,South_Africa_2023,Harpochloa falx,0.5,0.5
 2800east,SA_2800east1,South_Africa_2023,Elionurus muticus,30,0.5
-2600east,SA_2600east1,South_Africa_2023,Cineraria sp,0.5,0.5
+2600east,SA_2600east1,South_Africa_2023,Cineraria sp1,0.5,0.5
 2800east,SA_2800east1,South_Africa_2023,Merxmuellera drakensbergensis,10,0.5
 2400east,SA_2400east5,South_Africa_2023,Oxalis depressa,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Senecio discodregeanus,0.5,0.5
@@ -4813,7 +4808,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Helichrysum ecklonis,6,0.5
 2400east,SA_2400east3,South_Africa_2023,Lotononis lotononoides,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Berkheya rhapontica,0.5,0.5
-2400east,SA_2400east0,South_Africa_2023,Eucomis cf humilis,0.5,0.5
+2400east,SA_2400east0,South_Africa_2023,Eucomis humilis cf,0.5,0.5
 2400east,SA_2400east4,South_Africa_2023,Eulalia villosa,2,0.5
 2800east,SA_2800east1,South_Africa_2023,Oxalis depressa,0.5,0.5
 2800east,SA_2800east4,South_Africa_2023,Helichrysum aureum,0.5,0.5
@@ -4827,7 +4822,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Eragrostis racemosa,0.5,0.5
 2800west,SA_2800west2,South_Africa_2023,Tenaxia disticha,2,0.5
 2600east,SA_2600east1,South_Africa_2023,Albuca fastigiata,0.5,0.5
-2400west,SA_2400west0,South_Africa_2023,Senecio tall,0.5,0.5
+2400west,SA_2400west0,South_Africa_2023,Senecio cf scitus,0.5,0.5
 2400east,SA_2400east4,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2400east,SA_2400east1,South_Africa_2023,Eucomis autumnalis,2,0.5
 2400east,SA_2400east4,South_Africa_2023,Hypoxis parvula,0.5,0.5
@@ -4835,7 +4830,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Dimorphotheca jucunda,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Albuca fastigiata,0.5,0.5
-2600east,SA_2600east4,South_Africa_2023,Erica green stem,0.5,0.5
+2600east,SA_2600east4,South_Africa_2023,Erica sp1,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Heliophila elongata,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Helichrysum pallidum,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Alepidea setifera,1,0.5
@@ -4846,10 +4841,10 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Themeda triandra,60,0.5
 2400west,SA_2400west5,South_Africa_2023,Senecio glaberrimus,1,0.5
 2400east,SA_2400east4,South_Africa_2023,Lotononis lotononoides,0.5,0.5
-2400east,SA_2400east1,South_Africa_2023,Athrixia needle,1,0.5
+2400east,SA_2400east1,South_Africa_2023,Athrixia sp1,1,0.5
 2400east,SA_2400east5,South_Africa_2023,Themeda triandra,10,0.5
 2400west,SA_2400west4,South_Africa_2023,Ficinia cinnamomea,1,0.5
-2400east,SA_2400east4,South_Africa_2023,Ledebouria cf cooperi,0.5,0.5
+2400east,SA_2400east4,South_Africa_2023,Ledebouria cooperi cf,0.5,0.5
 2400east,SA_2400east5,South_Africa_2023,Pelargonium zonale,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Helichrysum ecklonis,10,0.5
 2400east,SA_2400east5,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
@@ -4880,8 +4875,7 @@ NANA,SA_NANA3,South_Africa_2023,Helichrysum ecklonis,0.5,0.5
 2600east,SA_2600east4,South_Africa_2023,Eucomis autumnalis,1,0.5
 2600east,SA_2600east2,South_Africa_2023,Helichrysum pilosellum,0.5,0.5
 2400east,SA_2400east5,South_Africa_2023,Helichrysum dasycephalum,0.5,0.5
-2400west,SA_2400west2,South_Africa_2023,Rhodohypoxis baurii,1,0.5
-2400west,SA_2400westNA,South_Africa_2023,Helichrysum dasycephalum,0.5,0.5
+2400west,SA_2400west2,South_Africa_2023,Rhodohypoxis baurii,0.75,0.5
 2800east,SA_2800east5,South_Africa_2023,Anthospermum streyi,0.5,0.5
 2800east,SA_2800east5,South_Africa_2023,Harpochloa falx,4,0.5
 2400west,SA_2400west5,South_Africa_2023,Aster perfoliatus,2,0.5
@@ -4893,19 +4887,19 @@ NANA,SA_NANANA,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Lotononis lotononoides,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Helichrysum adenocarpum,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Kniphofia porphyrantha,0.5,0.5
-2400east,SA_2400east2,South_Africa_2023,Eucomis purple base,0.5,0.5
+2400east,SA_2400east2,South_Africa_2023,Eucomis sp1,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Helichrysum spiralepis,0.5,0.5
 2400east,SA_2400east1,South_Africa_2023,Tristachya leucothrix,0.5,0.5
 2400east,SA_2400east1,South_Africa_2023,Wahlenbergia krebsii,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Moraea alticola,0.5,0.5
-2400east,SA_2400east1,South_Africa_2023,Eucomis cf humilis,8,0.5
+2400east,SA_2400east1,South_Africa_2023,Eucomis humilis cf,8,0.5
 2400east,SA_2400east1,South_Africa_2023,Drimia sphaerocephala,0.5,0.5
 2400east,SA_2400east1,South_Africa_2023,Oxalis depressa,0.5,0.5
 2400east,SA_2400east5,South_Africa_2023,Cerastium arabidis,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Senecio glaberrimus,0.5,0.5
 2400east,SA_2400east4,South_Africa_2023,Stiburus alopecuroides,4,0.5
 2800east,SA_2800east0,South_Africa_2023,Dimorphotheca jucunda,0.5,0.5
-2400west,SA_2400west3,South_Africa_2023,Purple base senecio,1,0.5
+2400west,SA_2400west3,South_Africa_2023,Senecio sp2,1,0.5
 2400west,SA_2400west5,South_Africa_2023,Koeleria capensis,1,0.5
 2400east,SA_2400east4,South_Africa_2023,Agapanthus campanulatus,1,0.5
 2400east,SA_2400east1,South_Africa_2023,Senecio glaberrimus,0.5,0.5
@@ -4913,7 +4907,7 @@ NANA,SA_NANANA,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Sporobolus centrifugus,0.5,0.5
 2400east,SA_2400east4,South_Africa_2023,Albuca fastigiata,0.5,0.5
 2400east,SA_2400east3,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
-2400east,SA_2400east3,South_Africa_2023,Eucomis cf humilis,2,0.5
+2400east,SA_2400east3,South_Africa_2023,Eucomis humilis cf,2,0.5
 2400east,SA_2400east5,South_Africa_2023,Helichrysum odoratissimum,0.5,0.5
 2400east,SA_2400east3,South_Africa_2023,Themeda triandra,25,0.5
 2400east,SA_2400east4,South_Africa_2023,Helichrysum odoratissimum,0.5,0.5
@@ -4921,6 +4915,7 @@ NANA,SA_NANANA,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2400west,SA_2400west3,South_Africa_2023,Cyperus round,0.5,0.5
 2400west,SA_2400west4,South_Africa_2023,Oxalis depressa,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Oxalis depressa,0.5,0.5
+2400west,SA_2400west3,South_Africa_2023,Satyrium longicauda,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Eulalia villosa,0.5,0.5
 2400east,SA_2400east5,South_Africa_2023,Lotononis lotononoides,0.5,0.5
 2400east,SA_2400east2,South_Africa_2023,Tristachya leucothrix,2,0.5
@@ -4937,10 +4932,10 @@ NANA,SA_NANANA,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2000west,SA_2000westNA,South_Africa_2023,Felicia muricata,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Erica woodii,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Aristea woodii,0.5,0.5
-2800east,SA_2800eastNA,South_Africa_2023,Alepidia sp.,0.5,0.5
+2800east,SA_2800eastNA,South_Africa_2023,Alepidia sp,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Erica thodei,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Cliffortia nitidula,0.5,0.5
-2800west,SA_2800westNA,South_Africa_2023,Cineraria sp,0.5,0.5
+2800west,SA_2800westNA,South_Africa_2023,Cineraria sp1,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Sporobolus centrifugus,0.5,0.5
 2000east,SA_2000east0,South_Africa_2023,Elionurus muticus,0.5,0.5
 2800east,SA_2800eastNA,South_Africa_2023,Alepidea woodii,0.5,0.5
@@ -4954,9 +4949,9 @@ NANA,SA_NANANA,South_Africa_2023,Ficinia cinnamomea,0.5,0.5
 2800west,SA_2800westNA,South_Africa_2023,Valeriana capensis,0.5,0.5
 2000west,SA_2000westNA,South_Africa_2023,Sporobolus centrifugus,0.5,0.5
 2000west,SA_2000westNA,South_Africa_2023,Helichrysum pilosellum,0.5,0.5
-2400east,SA_2400east4,South_Africa_2023,Eucomis cf humilis,0.5,0.5
+2400east,SA_2400east4,South_Africa_2023,Eucomis humilis cf,0.5,0.5
 2400west,SA_2400west5,South_Africa_2023,Thesium sp1,0.5,0.5
-2400west,SA_2400west1,South_Africa_2023,Senecio tall,0.5,0.5
+2400west,SA_2400west1,South_Africa_2023,Senecio cf scitus,0.5,0.5
 2000east,SA_2000eastNA,South_Africa_2023,Oxalis depressa,0.5,0.5
 2200east,SA_2200eastNA,South_Africa_2023,Helichrysum nudifolium,0.5,0.5
 2400west,SA_2400west1,South_Africa_2023,Sebaea natalensis,0.5,0.5
