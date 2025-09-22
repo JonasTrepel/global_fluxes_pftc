@@ -8,18 +8,22 @@ library(MetBrewer)
 # Flux data ----------------
 dt_flux_t <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
   filter(!is.na(flux_best)) %>% 
-  dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year) %>% 
+  dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year, par) %>% 
   unique() %>% 
   mutate(month = month(date))
 summary(dt_flux_t)
 table(dt_flux_t[dt_flux_t$treatment == "c", ]$tier)
 table(dt_flux_t[dt_flux_t$treatment == "c" & tier == "Peru_2018", ]$month)
+summary(dt_flux_t[dt_flux_t$tier == "South_Africa_2023", ]$par)
+
 
 dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
   dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year, par) %>%
   unique() %>% 
   mutate(temperature_nee = ifelse(type == "nee", temperature, NA),
          temperature_reco = ifelse(type == "reco", temperature, NA), 
+         par_nee = ifelse(type == "nee", par, NA),
+         par_reco = ifelse(type == "reco", par, NA), 
          month = month(date),
          country = case_when(
            grepl("China", tier) ~ "China", 
@@ -39,7 +43,8 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
             reco = mean(reco, na.rm = T), 
             temperature_nee = mean(temperature_nee, na.rm = T), 
             temperature_reco = mean(temperature_reco, na.rm = T), 
-            par = mean(par, na.rm =T) ) %>% 
+            par_nee = mean(par_nee, na.rm =T),
+            par_reco = mean(par_reco, na.rm =T)) %>% 
   mutate(plot_id = as.character(plot_id),
          nee = ifelse(tier %in% c("South_Africa_2023"), nee, nee*-1), 
          reco = ifelse(tier %in% c("South_Africa_2023"), reco, reco*-1)) %>% 
@@ -50,6 +55,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
   ungroup()
 table(dt_flux_t$tier)
 table(dt_flux$tier)
+summary(dt_flux[dt_flux$tier == "South_Africa_2023", ]$par_reco)
 
 #Colorado 2018 and Peru 2019 have the most control plots, which is why we will go with them for now 
 #But for Peru 2018 we have leaf traits, so we go for this one instead. 
@@ -464,7 +470,8 @@ dt_mod <- dt_mod_1 %>%
     cp_ratio_country_mean = mean(cp_ratio, na.rm = TRUE),
     np_ratio_country_mean = mean(np_ratio, na.rm = TRUE),
     c_percent_country_mean = mean(c_percent, na.rm = TRUE),
-    par_country_mean = mean(par, na.rm = TRUE),
+    par_reco_country_mean = mean(par_reco, na.rm = TRUE),
+    par_nee_country_mean = mean(par_nee, na.rm = TRUE),
     soil_moisture_country_mean = mean(soil_moisture, na.rm = TRUE),
     woodiness_country_mean = mean(woodiness, na.rm = TRUE),
     grassiness_country_mean = mean(grassiness, na.rm = TRUE),
@@ -508,7 +515,8 @@ dt_mod <- dt_mod_1 %>%
     cp_ratio_anomaly_country = cp_ratio - cp_ratio_country_mean,
     np_ratio_anomaly_country = np_ratio - np_ratio_country_mean,
     c_percent_anomaly_country = c_percent - c_percent_country_mean,
-    par_anomaly_country = par - par_country_mean,
+    par_reco_anomaly_country = par_reco - par_reco_country_mean,
+    par_nee_anomaly_country = par_nee - par_nee_country_mean,
     soil_moisture_anomaly_country = soil_moisture - soil_moisture_country_mean,
     woodiness_anomaly_country = woodiness - woodiness_country_mean,
     grassiness_anomaly_country = grassiness - grassiness_country_mean
@@ -524,4 +532,10 @@ dt_mod[(is.na(dt_mod$morph_traits_pc1_anomaly_country)), ]$plot_id
 
 
 fwrite(dt_mod, "data/processed_data/clean_data/global_fluxes_main_data.csv")
+summary(dt_mod[dt_mod$gradient == "Drakensberg", ]$par_nee)
 
+
+dt_mod %>%
+  filter(gradient == "Drakensberg") %>%
+  dplyr::select(plot_id, par_nee, par_reco, temperature_nee) %>% 
+  View()

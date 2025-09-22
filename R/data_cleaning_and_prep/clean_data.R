@@ -1419,6 +1419,8 @@ fluxes.combined <- fluxes.combined.raw %>%
 
 unique(fluxes.combined[is.na(fluxes.combined$latitude), ])
 table(fluxes.combined$type)
+unique(fluxes.combined[tier == "South_Africa_2023", ]$par)
+
 
 fwrite(fluxes.combined, "data/processed_data/preliminary_data/prelim_fluxes.csv")
 
