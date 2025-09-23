@@ -291,7 +291,11 @@ ggplot(data = pe.flux[grepl("nee", type), ]) +
 pe.t.raw <- fread("data/raw_data/peru/PFTC3-Puna-PFTC5_Peru_2018-2020_FunctionalTraits_clean.csv")
 
 unique(pe.t.raw$trait)
-quantile(pe.t.raw[pe.t.raw$trait == "sla_cm2_g", ]$value , na.rm = T )
+quantile(pe.t.raw[pe.t.raw$trait == "sla_cm2_g" & course == "PFTC3", ]$value , na.rm = T )
+quantile(pe.t.raw[pe.t.raw$trait == "c_percent" & course == "PFTC3", ]$value , na.rm = T )
+unique(pe.t.raw[pe.t.raw$trait == "c_percent" & year == 2019, ]$value)
+sum(is.na(unique(pe.t.raw[pe.t.raw$trait == "n_percent" & course == "PFTC5", ]$value)))
+
 
 pe.traits <- pe.t.raw %>% 
   rename(trait_name = trait, 
@@ -1266,7 +1270,16 @@ sa.traits <- sa.t.raw %>%
          year = 2023, 
          trait_name = ifelse(trait_name == "veg_height_cm", "plant_height_cm", trait_name), 
          species = str_to_sentence(species), 
-         site = paste0(elevation, aspect)) %>% 
+         site = paste0(elevation, aspect), 
+         trait_name = case_when(
+           .default = trait_name,
+           trait_name == "sla" ~ "sla_cm2_g",
+           trait_name == "dry_mass" ~ "dry_mass_g",
+           trait_name == "veg_height" ~ "plant_height_cm",
+           trait_name == "wet_mass" ~ "wet_mass_g",
+           trait_name == "leaf_area" ~ "leaf_area_cm2",
+           trait_name == "leaf_thickness" ~ "leaf_thickness_mm"
+           )) %>% 
   filter(trait_name %in% c("plant_height_cm", "wet_mass_g", "dry_mass_g", "leaf_area_cm2", "leaf_thickness_mm", "sla_cm2_g",
                         "ldmc")) %>% 
   dplyr::select(c(plot_id, site, plot, elevation, aspect, trait_name, trait_value, species, tier, year)) %>% 
@@ -1501,6 +1514,9 @@ pe.traits.fin <- pe.traits %>%
          tier = paste0("Peru_", year)) %>% 
   dplyr::select(-c(leaf_number))
 
+unique(pe.traits.fin$tier)
+pe.traits.fin[tier == "Peru_2020" & trait_name == "p_percent" & treatment == "C", ]
+
 names(sv.traits) #
 sv.traits.fin <- sv.traits %>%
   mutate(aspect = NA, 
@@ -1545,7 +1561,16 @@ traits.combined.raw <- rbind(ch.traits.fin,
                            species = gsub("_", " ", species), 
                            species = str_to_sentence(species),
                            trait_name = ifelse(trait_name == "mean_leaf_thickness_mm", "leaf_thickness_mm", trait_name)
-                         )
+                         ) %>% 
+  mutate(gradient = case_when(
+    grepl("South_Africa", tier) ~ "Drakensberg", 
+    grepl("Peru", tier) ~ "Central Andes", 
+    grepl("China", tier) ~ "Eastern Himalayas", 
+    grepl("Colorado", tier) ~ "Rocky Mountains", 
+    grepl("Norway", tier) ~ "Southern Scandes", 
+    grepl("Svalbard", tier) ~ "Svalbard" 
+  ))
+
 
 mean_narm <- function(x){m <- mean(x, na.rm = T); return(m)}
 
@@ -1567,7 +1592,15 @@ traits.stoich <- traits.combined.raw %>%
   dplyr::select(-c("c_percent", "n_percent", "p_percent")) %>% 
   pivot_longer(cols = c("cp_ratio", "np_ratio"), 
                names_to = "trait_name", values_to = "trait_value") %>% 
-  filter(!is.na(trait_value))
+  filter(!is.na(trait_value)) %>% 
+  mutate(gradient = case_when(
+    grepl("South_Africa", tier) ~ "Drakensberg", 
+    grepl("Peru", tier) ~ "Central Andes", 
+    grepl("China", tier) ~ "Eastern Himalayas", 
+    grepl("Colorado", tier) ~ "Rocky Mountains", 
+    grepl("Norway", tier) ~ "Southern Scandes", 
+    grepl("Svalbard", tier) ~ "Svalbard" 
+  ))
 
 summary(traits.stoich)
 
@@ -1584,7 +1617,15 @@ traits.stoich.co <- traits.combined.raw %>%
   dplyr::select(-c("c_percent", "n_percent", "p_percent")) %>% 
   pivot_longer(cols = c("cn_ratio"), 
                names_to = "trait_name", values_to = "trait_value") %>% 
-  filter(!is.na(trait_value))
+  filter(!is.na(trait_value)) %>% 
+  mutate(gradient = case_when(
+    grepl("South_Africa", tier) ~ "Drakensberg", 
+    grepl("Peru", tier) ~ "Central Andes", 
+    grepl("China", tier) ~ "Eastern Himalayas", 
+    grepl("Colorado", tier) ~ "Rocky Mountains", 
+    grepl("Norway", tier) ~ "Southern Scandes", 
+    grepl("Svalbard", tier) ~ "Svalbard" 
+  ))
 
 
 traits.combined <- rbind(traits.combined.raw, traits.stoich, traits.stoich.co)
@@ -1593,6 +1634,8 @@ setdiff(names(traits.combined.raw), names(traits.stoich))
 setdiff(names(sv.traits.fin), names(no.traits.fin))
 
 unique(traits.combined$trait_name)
+table(traits.combined$gradient)
+
 fwrite(traits.combined, "data/processed_data/preliminary_data/prelim_traits.csv")
 ## cover --------------------------
 

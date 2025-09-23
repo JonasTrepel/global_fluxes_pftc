@@ -9,10 +9,11 @@ trait <- fread("data/processed_data/preliminary_data/prelim_traits.csv") %>%
   rename(PlotID = plot_id, 
          Site = site, 
          Tier = tier, 
+         Gradient = gradient, 
          Taxon = species,
          Trait = trait_name, 
          Value = trait_value) %>% 
-  dplyr::select(PlotID, Site, Tier, Trait, Value, Taxon) %>% 
+  dplyr::select(PlotID, Site, Tier, Trait, Value, Taxon, Gradient) %>% 
   filter(!is.na(Value)) %>% 
   filter(!Taxon == "" ) %>% 
   filter(!(Trait == "sla_cm2_g" & Value > 1000))
@@ -42,24 +43,41 @@ trait <- trait %>%
   filter(!(er > 2.25 & n < 4 & !is.na(sd))) %>% 
   select(-c(Tmd:er)) %>% ungroup()
 
-table(trait[trait$Tier == "Colorado_2018", ]$Trait)
+table(trait[trait$Tier == "South_Africa_2023", ]$Trait)
 
 community <- fread("data/processed_data/preliminary_data/prelim_cover.csv") %>% 
+  mutate(gradient = case_when(
+    grepl("South_Africa", tier) ~ "Drakensberg", 
+    grepl("Peru", tier) ~ "Central Andes", 
+    grepl("China", tier) ~ "Eastern Himalayas", 
+    grepl("Colorado", tier) ~ "Rocky Mountains", 
+    grepl("Norway", tier) ~ "Southern Scandes", 
+    grepl("Svalbard", tier) ~ "Svalbard" 
+  )) %>% 
   rename(PlotID = plot_id, 
          Site = site, 
          Tier = tier, 
+         Gradient = gradient, 
          Taxon = species,
-         Cover = cover) %>% dplyr::select(PlotID, Site, Tier, Cover, Taxon) %>%
+         Cover = cover) %>% dplyr::select(PlotID, Site, Tier, Cover, Taxon, Gradient) %>%
   filter(!Taxon == "" )
 
+table(community$Gradient)
 unique(community$PlotID)
-unique(trait[grepl("US", trait$PlotID),]$PlotID)
+unique(trait[grepl("South_Africa", trait$Tier),]$Taxon)
+unique(community[grepl("South_Africa", community$Tier),]$Taxon)
+
 unique(community[grepl("US", community$PlotID),]$Taxon)
 
+trait_taxa <- unique(trait[grepl("South_Africa", trait$Tier), ]$Taxon)
+community_taxa <- unique(community[grepl("South_Africa", community$Tier), ]$Taxon)
+(common_taxa <- intersect(trait_taxa, community_taxa))
 
+
+table(trait[grepl("South_Africa", trait$Tier), ]$Value)
 # Hirarchy: 
 
-#"plot_id" nested in "site" which is nested in "tier" 
+#"plot_id" nested in "site" which is nested in "tier" which is nested in gradient (somewhat)
 
 
 ### start with trait filling
@@ -76,7 +94,7 @@ trait_filling <- trait_fill(
   value_col = "Value",
   
   # specifies sampling hierarchy
-  scale_hierarchy = c("Tier", "Site", "PlotID"),
+  scale_hierarchy = c("Gradient", "Tier", "Site", "PlotID"),
   
   # min number of samples
   min_n_in_sample = 5, 
@@ -97,14 +115,16 @@ np_bootstrapped_moments <- trait_np_bootstrap(
 )
 
 np_bootstrapped_moments
-np_bootstrapped_moments[np_bootstrapped_moments$Tier == "Colorado_2018" & np_bootstrapped_moments$Trait == "n_percent", ]
+np_bootstrapped_moments[np_bootstrapped_moments$Tier == "South_Africa_2023" &
+                          np_bootstrapped_moments$Trait == "sla_cm2_g", ]
 
 # summarizes bootstrapping output
 sum_boot_moment <- trait_summarise_boot_moments(
   np_bootstrapped_moments
 )
 
-sum_boot_moment[sum_boot_moment$Tier == "Colorado_2018" & sum_boot_moment$Trait == "n_percent", ]
+sum_boot_moment[sum_boot_moment$Tier == "South_Africa_2023" & sum_boot_moment$Trait == "sla_cm2_g", ]
+sum_boot_moment[sum_boot_moment$Tier == "Peru_2018" & sum_boot_moment$Trait == "p_percent", ]
 
 sum_boot_moment
 unique(sum_boot_moment[grepl("US", sum_boot_moment$PlotID),]$mean)
@@ -114,6 +134,8 @@ sum_boot_moment <- sum_boot_moment
 fwrite(sum_boot_moment, "data/processed_data/preliminary_data/prelim_traitstrap.csv")
 
 unique(sum_boot_moment$Trait)
+unique(sum_boot_moment$Tier)
+
 sum_boot_moment %>% 
   filter(Trait == "sla_cm2_g") %>% 
   ggplot(aes(x = Tier, y = mean)) + 

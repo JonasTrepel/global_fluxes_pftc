@@ -241,7 +241,7 @@ dt_mod_1 <- dt_flux %>%
   left_join(dt_wg) %>% 
   left_join(dt_sr) %>% 
   left_join(dt_coords) %>% 
-  filter(!is.na(sla_cm2_g)) %>% 
+  #filter(!is.na(sla_cm2_g)) %>% 
   as.data.table() %>% 
   unique() %>% 
   mutate(
@@ -269,8 +269,9 @@ dt_mod_1 <- dt_flux %>%
     country == "Norway" ~ "Southern Scandes", 
     country == "Svalbard" ~ "Svalbard" 
   ))
+dt_mod_1
 
-
+summary(dt_mod_1)
 ## PCAs -----------------------
 #dt_mod %>% group_by(site) %>% summarize(mean_h = mean(plant_height_cm, na.rm = T)) %>% print(n = 50)
 
@@ -527,8 +528,10 @@ dt_mod <- dt_mod_1 %>%
     temperature_gpp = temperature_mean, 
     temperature_gpp_anomaly_country = temperature_mean_anomaly_country, 
     temperature_gpp_country_mean = temperature_mean_country_mean, 
-  )
-dt_mod[(is.na(dt_mod$morph_traits_pc1_anomaly_country)), ]$plot_id
+  ) %>% 
+  filter(!is.na(sla_cm2_g))
+
+dt_mod[(is.na(dt_mod$all_traits_pc1_anomaly_country)), ]$plot_id
 
 
 fwrite(dt_mod, "data/processed_data/clean_data/global_fluxes_main_data.csv")
