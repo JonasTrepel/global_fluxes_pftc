@@ -35,7 +35,7 @@ library(tidylog)
 
 # China ---------------------
 
-ch.meta <- fread("data/raw_data/china/metaCH.csv") %>% 
+ch_meta <- fread("data/raw_data/china/metach.csv") %>% 
   rename(site = Site, 
          elevation = Elevation, 
          latitude = Latitude, 
@@ -46,44 +46,21 @@ ch.meta <- fread("data/raw_data/china/metaCH.csv") %>%
 
 ## Flux data --------------------
 
-#Data that I've found on OSF which shouldn't be there though. 
-ch.flux.2016.2 <- get(load("data/raw_data/china/standardControlFluxCH_2016.Rdata"))
-glimpse(ch.flux.2016.2)
-
-# odd. let's ignore that for now and continue with the data we got from Inge
-
-# Data directly from Inge
-
-#### 2015 --------------
-ch.flux.2015 <- fread("data/raw_data/china/PFTC_CO2flux_2015.txt") # Data from Inge
-
-ggplot(data = ch.flux.2015) +
-  geom_point(aes(x=NEE_exp, y = NEE_lm)) +
-  geom_abline() #interesting. It looks like NEE exp is constantly higher than Lm. perhaps more conservative to go for lm?
-
-table(ch.flux.2015$type) # ah, only respiration anyways. 
-#Given that we don't have an objective way to select the better flux (R2 is of course always better for the non-linear), 
-#we should probably leave it out for now 
-
 #### 2016 ---------
 # https://www.nature.com/articles/s41597-020-0529-0#Sec14
-ch.flux.2016.raw <- fread("data/raw_data/china/PFTC_CO2flux_all_limits.txt") # Data from Inge
-glimpse(ch.flux.2016.raw)
-table(ch.flux.2016.raw$site)
-table(ch.flux.2016.raw$type)
-table(ch.flux.2016.raw$block)
-table(ch.flux.2016.raw$datetime)
+ch_flux_2016_raw <- fread("data/raw_data/china/PFTC_CO2flux_all_limits.txt") # Data from Inge
+glimpse(ch_flux_2016_raw)
 
-quantile(ch.flux.2016.raw$PAR, na.rm = T)
+quantile(ch_flux_2016_raw$PAR, na.rm = T)
 
-names(ch.flux.2016.raw)
-unique(ch.flux.2016.raw$type)
-ch.flux.2016 <- ch.flux.2016.raw %>% 
+unique(ch_flux_2016_raw$type)
+
+ch_flux_2016 <- ch_flux_2016_raw %>% 
   mutate(flux_best = NEE_lm,
          tier = "China_2016", 
          elevation = as.numeric(gsub("elev", "", site))) %>%
   dplyr::select(c(datetime, type, elevation, treatment, block, temp.C, flux_best, tier, PAR)) %>% 
-  left_join(ch.meta) %>% 
+  left_join(ch_meta) %>% 
   mutate(plot_id = paste0("CH_",site, block), 
          type = ifelse(type == "photo", "nee", "reco")) %>% 
   rename(temperature = temp.C, 
@@ -91,10 +68,10 @@ ch.flux.2016 <- ch.flux.2016.raw %>%
          par = PAR) %>% 
   filter(treatment %in% c("c", "otc"))
   
-table(ch.flux.2016$block)
-table(ch.flux.2016$plot_id)
+table(ch_flux_2016$block)
+table(ch_flux_2016$plot_id)
 
-table(ch.flux.2016$treatment)
+table(ch_flux_2016$treatment)
 
 # c = control, 
 # otc = open top chamber 
@@ -111,24 +88,18 @@ table(ch.flux.2016$treatment)
 
 
 
-ggplot(data = ch.flux.2016) + 
+ggplot(data = ch_flux_2016) + 
   geom_boxplot(aes(x = type, y = flux_best)) +
   geom_jitter(aes(x = type, y = flux_best)) #This is weird. why all the negative fluxes in the photo part?
 #also, I guess they followed the convention that negative fluxes represent outgonig CO2 while positive ones is uptake
-
-ggplot(data = ch.flux.2016[type == "nee"]) + 
-  geom_jitter(aes(x = temperature, y = flux_best)) +
-  ylim(-20, 20) +
-  geom_smooth(aes(x = temperature, y = flux_best), method = "lm") # no strong relationship 
-##
 
 
 ## Traits ---------------------------------
 
 #chemical 
-ch.cht.raw <- fread("data/raw_data/china/PFTC1.2_China_2015_2016_ChemicalTraits.csv") 
+ch_cht_raw <- fread("data/raw_data/china/PFTC1.2_China_2015_2016_ChemicalTraits.csv") 
 
-ch.cht <- ch.cht.raw %>% 
+ch_cht <- ch_cht_raw %>% 
   mutate(plot_id = paste0("CH_", destBlockID), 
          year = year(Date),
          tier = "China_2016", 
@@ -145,14 +116,14 @@ ch.cht <- ch.cht.raw %>%
          cn_ratio = CN_ratio) %>% 
   dplyr::select(c(species, site, elevation, treatment, date, tier, p_percent, c_percent, n_percent, cn_ratio, plot_id, leaf_number)) %>% 
   pivot_longer(cols = c("p_percent", "c_percent", "n_percent", "cn_ratio"), names_to = "trait_name", values_to = "trait_value") %>% 
-  left_join(ch.meta)
+  left_join(ch_meta)
 
 
 #leaves 
-ch.lt.raw <- fread("data/raw_data/china/PFTC1.2_China_2015_2016_LeafTraits.csv")
-names(ch.lt.raw)
+ch_lt_raw <- fread("data/raw_data/china/PFTC1.2_China_2015_2016_LeafTraits.csv")
+names(ch_lt_raw)
 #leaf number 
-ch.lt <- ch.lt.raw %>% 
+ch_lt <- ch_lt_raw %>% 
   mutate(plot_id = paste0("CH_", destBlockID), 
          year = year(Date),
          tier = "China_2016") %>% 
@@ -173,32 +144,32 @@ ch.lt <- ch.lt.raw %>%
            sla_cm2_g, ldmc, date, plot_id, leaf_number, tier)) %>% 
   pivot_longer(cols = c("wet_mass_g", "dry_mass_g", "mean_leaf_thickness_mm", "leaf_area_cm2", 
            "sla_cm2_g", "ldmc"), names_to = "trait_name", values_to = "trait_value") %>% 
-  left_join(ch.meta)
+  left_join(ch_meta)
 
 
-names(ch.cht)
-names(ch.lt)
+names(ch_cht)
+names(ch_lt)
 
-quantile(ch.lt.raw$SLA_cm2_g, na.rm = T )
+quantile(ch_lt_raw$SLA_cm2_g, na.rm = T )
 #bind
-ch.traits.raw <- rbind(ch.lt, ch.cht)
+ch_traits_raw <- rbind(ch_lt, ch_cht)
 
-ch.traits <- ch.traits.raw %>% 
+ch_traits <- ch_traits_raw %>% 
   mutate(treatment = tolower(treatment)) %>% 
   filter(treatment %in% c("c", "otc"))
-unique(ch.traits$treatment)
+unique(ch_traits$treatment)
 
 ## Cover and Biomass ----------------------------------------
-ch.bio.raw <- fread("data/raw_data/china/China_2016_Biomass_cleaned.csv")
-table(ch.bio.raw$site)
-table(ch.bio.raw$plot)
-table(ch.flux.2016$plot_id) #cool - we have plot level data here, but plot naming is not consistent between traits and fluxes
-table(ch.traits$plot_id)
+ch_bio_raw <- fread("data/raw_data/china/China_2016_Biomass_cleaned.csv")
+table(ch_bio_raw$site)
+table(ch_bio_raw$plot)
+table(ch_flux_2016$plot_id) #cool - we have plot level data here, but plot naming is not consistent between traits and fluxes
+table(ch_traits$plot_id)
 
-unique(ch.bio.raw$plot)
-unique(ch.traits$plot_id)
+unique(ch_bio_raw$plot)
+unique(ch_traits$plot_id)
 
-ch.bio <- ch.bio.raw %>% 
+ch_bio <- ch_bio_raw %>% 
   mutate(plot_gsub = gsub("I-", "", plot), 
          plot_id = paste0("CH_", site, plot_gsub), 
          tier = "China_2016") %>% 
@@ -206,28 +177,28 @@ ch.bio <- ch.bio.raw %>%
   dplyr::select(-plot_gsub)
 
 
-ch.tr <- ch.traits %>% 
+ch_tr <- ch_traits %>% 
   dplyr::select(plot_id, treatment) %>% unique()
 
-ch.height.trait <- ch.bio %>% 
+ch_height_trait <- ch_bio %>% 
   dplyr::select(species, plot_id, site, tier,
                 trait_value = height) %>% 
   mutate(trait_name = "plant_height_cm", 
          leaf_number = NA, 
          treatment = NA, date = NA) %>% 
-  left_join(ch.meta)
+  left_join(ch_meta)
   
   
 ## Summary -------------------------------
 
-ch.flux.2016
-setdiff(names(ch.traits), names(ch.height.trait))
-ch.traits <- rbind(ch.traits, ch.height.trait) %>% unique()
-ch.bio #no reasonable plot ID either... 
+ch_flux_2016
+setdiff(names(ch_traits), names(ch_height_trait))
+ch_traits <- rbind(ch_traits, ch_height_trait) %>% unique()
+ch_bio #no reasonable plot ID either... 
 
-unique(ch.flux.2016$plot_id)
-unique(ch.bio$plot_id)
-unique(ch.traits$plot_id)
+unique(ch_flux_2016$plot_id)
+unique(ch_bio$plot_id)
+unique(ch_traits$plot_id)
 
 
 
@@ -235,33 +206,84 @@ unique(ch.traits$plot_id)
 # Peru  ------------------------------
 #https://www.nature.com/articles/s41597-024-02980-3
 
-pe.meta.raw <- fread("data/raw_data/peru/PU.10_PFTC3.10_2020_Peru_Coordinates.csv")
+pe_meta_raw <- fread("data/raw_data/peru/PU.10_PFTC3.10_2020_Peru_Coordinates.csv")
 
-names(pe.meta.raw) <- tolower(names(pe.meta.raw))
+names(pe_meta_raw) <- tolower(names(pe_meta_raw))
 
-pe.meta <- pe.meta.raw %>% 
+pe_meta <- pe_meta_raw %>% 
   rename(plot = plotid) %>% 
   filter(!is.na(plot)) %>%
   mutate(plot_id = paste0("PE_", site, "_", treatment ,"_",  plot)) %>% dplyr::select(-comment) %>% 
   dplyr::select(plot_id, elevation, longitude, latitude, burn_year, plot)
 
+# PAR data -------------------
+
+pe_par_2018_nd <- fread("data/raw_data/peru/peru_ecosystem_flux_output_2018.csv") %>%
+  mutate( Treatment = ifelse(Site == "TRE" & Treatment == "B", "NB", Treatment),
+          plot_id = paste0("PE_", Site, "_", Treatment ,"_",  Plot), 
+         year = 2018, 
+         type = case_when(Flux == "P" ~ "nee", Flux == "R" ~ "reco")) %>%
+  dplyr::select(plot_id, par = PAR, type) %>%
+  unique() %>% 
+  mutate(tier = "Peru_2018")
+  
+pe_par_2019 <- fread("data/raw_data/peru/Flux_tent_environment_data_2019.csv") %>%
+  mutate(Treatment = ifelse(Site == "TRE" & Treatment == "B", "NB", Treatment),
+         plot_id = paste0("PE_", Site, "_", Treatment ,"_",  Plot), 
+         mean_par = rowMeans(select(., contains("PAR")), na.rm = TRUE),
+         date = dmy(Date), 
+         type = case_when(Flux_type == "p" ~ "nee", Flux_type == "r" ~ "reco")) %>%
+  filter(!is.na(type)) %>% 
+  dplyr::select(plot_id, date, par = mean_par, type) %>%
+  unique() %>% 
+  mutate(tier = "Peru_2019")
+
+pe_par_2020 <- fread("data/raw_data/peru/Tent_flux_env_data_all_plots.xlsx - tent_flux_env_data_control_2020.csv") %>%
+  mutate(Treatment = ifelse(Site == "TRE" & Treatment == "B", "NB", Treatment),
+         plot_id = paste0("PE_", Site, "_", Treatment ,"_",  Plot), 
+         date = dmy(Date), 
+         type = case_when(Flux == "P" ~ "nee", Flux == "R" ~ "reco")) %>%
+  filter(!is.na(type)) %>% 
+  dplyr::select(plot_id, date, par = PAR, type) %>%
+  unique() %>% 
+  mutate(tier = "Peru_2020")
 
 ## Flux data ----------------------------
 
-pe.flux.raw <- fread("data/raw_data/peru/PFTC3_Puna_PFTC5_Peru_2018_2020_Cflux.csv")
-names(pe.flux.raw)
-unique(pe.flux.raw[,.(site, treatment)])
+pe_flux_raw <- fread("data/raw_data/peru/PFTC3_Puna_PFTC5_Peru_2018_2020_Cflux.csv")
+names(pe_flux_raw)
+unique(pe_flux_raw[,.(site, treatment)])
 
 
-pe.flux <- pe.flux.raw %>% 
+pe_flux_2018_dates <- pe_flux_raw %>% 
+  filter(year == 2018) %>% 
+  mutate(date = paste0(day, "-", month, "-", year),
+         plot_id = paste0("PE_", site, "_", treatment ,"_",  plot_id)) %>%
+  unique() %>% 
+  dplyr::select(date, plot_id) %>% 
+  unique()
+
+unique(pe_flux_2018_dates$date)
+pe_par_2018 <- pe_par_2018_nd %>% left_join(pe_flux_2018_dates) %>% 
+  mutate(date = dmy(date))
+
+pe_par <- rbind(pe_par_2018, pe_par_2019, pe_par_2020) %>% 
+  unique() %>% 
+  filter(!is.na(date))
+
+
+n_distinct(pe_flux_2018_dates$plot_id) #thank god, only one date per plot! 
+
+
+pe_flux <- pe_flux_raw %>% 
   rename(plot = plot_id, 
          type = flux, 
-         temperature = t_ave) %>%  #some temperatures (if this column even is temperature) are oddly low: quantile(pe.flux.raw$t_ave, c(0.05, 0.95)) 
+         temperature = t_ave) %>%  #some temperatures (if this column even is temperature) are oddly low: quantile(pe_flux_raw$t_ave, c(0.05, 0.95)) 
                                     # no way it was -60°C there. fix below
   mutate(
     tier = paste0("Peru_", year), 
     flux_best = linear_model,
-    treatment = ifelse(site == "TRE" & treatment == "B", "NB", treatment), ###--> to be able to use the metadata as there seem to be a discrepancy between the treatment. It's NB in metadata and B in the flux data 
+    treatment = ifelse(site == "TRE" & treatment == "B", "NB", treatment), ###--> to be able to use the metadata as there seem to be a discrepancy between the treatment_ It's NB in metadata and B in the flux data 
     plot_id = paste0("PE_", site, "_", treatment ,"_",  plot),
     temperature = ifelse(temperature < -10, NA, temperature),
     date = paste0(day, "-", month, "-", year), 
@@ -269,35 +291,25 @@ pe.flux <- pe.flux.raw %>%
     type = ifelse(grepl("nee", type), "nee", type), 
     treatment = tolower(treatment), 
     par = NA, 
-    date = as.Date(date, format = "%d-%B-%Y"), 
-    date = format(date)) %>% 
+    date = as.Date(date, format = "%d-%B-%Y")) %>% 
   dplyr::select(c(type, temperature, plot_id, flux_best, tier, date, site, treatment)) %>% 
-  left_join(pe.meta) 
-
-
-ggplot(data = pe.flux) + 
-  geom_boxplot(aes(x = type, y = flux_best)) +
-  geom_hline(yintercept = 0) +
-  geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative. But wtf is NEE1, NEE2, NEE3?
-
-
-ggplot(data = pe.flux[grepl("nee", type), ]) + 
-  geom_jitter(aes(x = temperature, y = flux_best)) +
-  geom_smooth(aes(x = temperature, y = flux_best), method = "lm") #nothing going on here?
-
+  left_join(pe_meta)  %>% 
+  as.data.table() %>%
+  unique() %>% 
+  left_join(pe_par)
 
 ## Trait data ----------------------------
 
-pe.t.raw <- fread("data/raw_data/peru/PFTC3-Puna-PFTC5_Peru_2018-2020_FunctionalTraits_clean.csv")
+pe_t_raw <- fread("data/raw_data/peru/PFTC3-Puna-PFTC5_Peru_2018-2020_FunctionalTraits_clean.csv")
 
-unique(pe.t.raw$trait)
-quantile(pe.t.raw[pe.t.raw$trait == "sla_cm2_g" & course == "PFTC3", ]$value , na.rm = T )
-quantile(pe.t.raw[pe.t.raw$trait == "c_percent" & course == "PFTC3", ]$value , na.rm = T )
-unique(pe.t.raw[pe.t.raw$trait == "c_percent" & year == 2019, ]$value)
-sum(is.na(unique(pe.t.raw[pe.t.raw$trait == "n_percent" & course == "PFTC5", ]$value)))
+unique(pe_t_raw$trait)
+quantile(pe_t_raw[pe_t_raw$trait == "sla_cm2_g" & course == "PFTC3", ]$value , na.rm = T )
+quantile(pe_t_raw[pe_t_raw$trait == "c_percent" & course == "PFTC3", ]$value , na.rm = T )
+unique(pe_t_raw[pe_t_raw$trait == "c_percent" & year == 2019, ]$value)
+sum(is.na(unique(pe_t_raw[pe_t_raw$trait == "n_percent" & course == "PFTC5", ]$value)))
 
 
-pe.traits <- pe.t.raw %>% 
+pe_traits <- pe_t_raw %>% 
   rename(trait_name = trait, 
          trait_value = value, 
          plot = plot_id, 
@@ -309,15 +321,15 @@ pe.traits <- pe.t.raw %>%
   mutate( tier = paste0("Peru_", year), 
     plot_id = paste0("PE_", site, "_", treatment ,"_",  plot)) %>% 
   dplyr::select(c(species, site, elevation, treatment, plot_id, leaf_number, trait_name, trait_value, burn_year, year)) %>% 
-  left_join(pe.meta)  %>% dplyr::select(-plot)
+  left_join(pe_meta)  %>% dplyr::select(-plot)
 
-unique(pe.traits$trait_name)
-unique(pe.traits[,.(site, treatment)])
+unique(pe_traits$trait_name)
+unique(pe_traits[,.(site, treatment)])
 
 
 ## Biomass/Height -----------------------------
 
-pe.height <- fread("data/raw_data/peru/PFTC3-Puna-Peru_2018-2019_CommunityStructure_clean.csv") %>% 
+pe_height <- fread("data/raw_data/peru/PFTC3-Puna-Peru_2018-2019_CommunityStructure_clean.csv") %>% 
   filter(variable == "median_height") %>% 
   mutate(
     tier = paste0("Peru_", year)) %>% 
@@ -328,9 +340,9 @@ pe.height <- fread("data/raw_data/peru/PFTC3-Puna-Peru_2018-2019_CommunityStruct
 
 ## Cover -----------------------------
 
-pe.cover.raw <- fread("data/raw_data/peru/PFTC3-Puna-PFTC5_Peru_2018-2020_CommunityCover_clean.csv")
+pe_cover_raw <- fread("data/raw_data/peru/PFTC3-Puna-PFTC5_Peru_2018-2020_CommunityCover_clean.csv")
 
-pe.cover <- pe.cover.raw %>% 
+pe_cover <- pe_cover_raw %>% 
   mutate(tier = paste0("Peru_", year),
          plot_id = paste0("PE_", site, "_", treatment ,"_",  plot_id)) %>% 
   rename(species = taxon)
@@ -338,27 +350,27 @@ pe.cover <- pe.cover.raw %>%
 
 ## Summary -----------------------------
 
-pe.flux
-pe.traits
-#pe.bio #no plot ID... # but site - prob. better than nothing 
-pe.cover
-unique(pe.flux$plot_id)
-unique(pe.traits$plot_id)
-unique(pe.cover$plot_id)
+pe_flux
+pe_traits
+#pe_bio #no plot ID... # but site - prob. better than nothing 
+pe_cover
+unique(pe_flux$plot_id)
+unique(pe_traits$plot_id)
+unique(pe_cover$plot_id)
 
 # Svalbard  ------------------------------
 
-sv.meta.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_metaItex.csv")
-sv.coords.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_Coordinates_ITEX.csv")
-sv.coords.grad <- fread("data/raw_data/svalbard/PFTC4_Svalbard_Coordinates_Gradient.csv") %>% 
+sv_meta_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_metaItex.csv")
+sv_coords_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_Coordinates_ITEX.csv")
+sv_coords.grad <- fread("data/raw_data/svalbard/PFTC4_Svalbard_Coordinates_Gradient.csv") %>% 
   mutate(plot_id = paste0("SV_", Gradient, Site, PlotID)) %>% 
   rename(elevation = Elevation_m,
          longitude = Longitude_E,
          latitude = Latitude_N) %>% 
   select(plot_id, elevation, latitude, longitude)
 
-sv.meta <- sv.meta.raw %>% 
-  left_join(sv.coords.raw) %>% 
+sv_meta <- sv_meta_raw %>% 
+  left_join(sv_coords_raw) %>% 
   dplyr::select(-c(V8, V9, V10, V11, V12, V13, V14, Project, New_Site_name)) %>% 
   rename(Latitude = Latitude_N, 
          Longitude = Longitude_E, 
@@ -370,20 +382,20 @@ sv.meta <- sv.meta.raw %>%
          Treatment = ifelse(Treatment == "CTL", "c", "otc")) %>% 
   dplyr::select(-c(plotid, plot, Treatment, PlotID, Site))
 
-names(sv.meta) <- tolower(names(sv.meta))
+names(sv_meta) <- tolower(names(sv_meta))
 
 
 ## Flux data ----------------------------
 #https://www.nature.com/articles/s41597-023-02467-7
 
-#sv.flux.raw <- fread("data/raw_data/svalbard/Cflux_SV_ITEX_2018.csv") 
-sv.flux.raw <- get(load("data/raw_data/svalbard/ITEX_all.Rdata"))
-glimpse(sv.flux.raw)
-names(sv.flux.raw)  <- tolower(names(sv.flux.raw))
+#sv_flux_raw <- fread("data/raw_data/svalbard/Cflux_SV_ITEX_2018.csv") 
+sv_flux_raw <- get(load("data/raw_data/svalbard/ITEX_all.Rdata"))
+glimpse(sv_flux_raw)
+names(sv_flux_raw)  <- tolower(names(sv_flux_raw))
 #a first glimpse suggests that the weather was shit all the time and the PAR was unreasonable low. 
 #we may have to exclude Svalbard
-glimpse(sv.flux.raw)
-sv.flux <- sv.flux.raw %>% 
+glimpse(sv_flux_raw)
+sv_flux <- sv_flux_raw %>% 
   pivot_longer(cols = c(nee_ln, er_ln), names_to = "type", values_to = "flux_best") %>% 
   rename(plot = plotid) %>% 
   mutate(
@@ -398,14 +410,14 @@ sv.flux <- sv.flux.raw %>%
   group_by(site, plot_id, plot, type) %>% 
   slice_max(par) %>% 
   ungroup() %>% 
-  left_join(sv.meta, by = c("plot_id")) %>% as.data.table() 
+  left_join(sv_meta, by = c("plot_id")) %>% as.data.table() 
 
-setdiff(sv.meta$plot_id, sv.flux$plot_id)
-setdiff(sv.flux$plot_id, sv.meta$plot_id)
+setdiff(sv_meta$plot_id, sv_flux$plot_id)
+setdiff(sv_flux$plot_id, sv_meta$plot_id)
 
 # Svalbard gradients
 
-sv.flux2 <- fread("data/raw_data/svalbard/Cflux_SV_Gradient_2018.csv") %>% 
+sv_flux2 <- fread("data/raw_data/svalbard/Cflux_SV_Gradient_2018.csv") %>% 
   setNames(tolower(names(.))) %>% 
   rename(flux_best = nee,
          type = cover,
@@ -430,31 +442,20 @@ sv.flux2 <- fread("data/raw_data/svalbard/Cflux_SV_Gradient_2018.csv") %>%
   group_by(site, plot_id, plot, type) %>% 
   slice_max(par) %>% 
   ungroup() %>% 
-  left_join(., sv.coords.grad)
+  left_join(., sv_coords.grad)
 
-sv.flux <- bind_rows(sv.flux, sv.flux2 %>% mutate(date = dmy(date),
+sv_flux <- bind_rows(sv_flux, sv_flux2 %>% mutate(date = dmy(date),
                                                   site = as.character(site)))
-
-ggplot(data = sv.flux) + 
-  geom_boxplot(aes(x = type, y = flux_best)) +
-  geom_hline(yintercept = 0) +
-  geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative.
-
-ggplot(data = sv.flux) + 
-  geom_boxplot(aes(x = treatment, y = temperature)) +
-  geom_hline(yintercept = 0) +
-  geom_jitter(aes(x = treatment, y = temperature)) #CO2 uptake = positive, release = negative.
-
 
 ## Trait data ----------------------------
 
 ### ITEX 
-sv.t.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_ITEX_Traits.csv")
-names(sv.t.raw)  <- tolower(names(sv.t.raw))
-table(sv.t.raw$trait)
+sv_t_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_ITEX_Traits.csv")
+names(sv_t_raw)  <- tolower(names(sv_t_raw))
+table(sv_t_raw$trait)
 
 
-sv.traits.itex <- sv.t.raw %>% 
+sv_traits_itex <- sv_t_raw %>% 
   rename(trait_name = trait, 
        trait_value = value, 
        plot = plotid, 
@@ -476,13 +477,13 @@ sv.traits.itex <- sv.t.raw %>%
   filter(trait_name %in% c("plant_height_cm", "wet_mass_g", "dry_mass_g", "mean_leaf_thickness_mm", "leaf_area_cm2", "sla_cm2_g",
                            "ldmc", "p_percent", "c_percent", "n_percent", "cn_ratio")) %>% 
   dplyr::select(c(species, site, elevation, treatment, plot_id, trait_name, trait_value, longitude, latitude, tier, year))
-sv.traits.itex
+sv_traits_itex
 
 ## Gradient 
 
-sv.t.grad.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Gradient_Traits.csv")
+sv_t_grad_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Gradient_Traits.csv")
 
-sv.gradient.t <- sv.t.grad.raw %>% 
+sv_gradient_t <- sv_t_grad_raw %>% 
   rename(trait_name = Trait, 
          trait_value = Value, 
          plot = PlotID, 
@@ -507,16 +508,16 @@ sv.gradient.t <- sv.t.grad.raw %>%
                            "ldmc", "p_percent", "c_percent", "n_percent", "cn_ratio")) %>% 
   dplyr::select(c(species, site, elevation, treatment, plot_id, trait_name, trait_value, longitude, latitude, tier, year))
 
-sv.traits <- rbind(sv.traits.itex, sv.gradient.t)
+sv_traits <- rbind(sv_traits_itex, sv_gradient_t)
 
 ## Biomass/Height -----------------------------
 
 # can't find any biomass for svalbard (which i guess makes sense)
 
-sv.height.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2003_2015_ITEX_Community_Structure.csv") %>% 
+sv_height_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2003_2015_ITEX_Community_Structure.csv") %>% 
   filter(Year == 2015)
-names(sv.height.raw)  <- tolower(names(sv.height.raw))
-sv.height.itex <- sv.height.raw %>% 
+names(sv_height_raw)  <- tolower(names(sv_height_raw))
+sv_height_itex <- sv_height_raw %>% 
   mutate(plot = gsub("CH", "CAS", plotid), 
          plot = gsub("SB", "BIS", plot), 
          plot = gsub("DH", "DRY", plot), 
@@ -526,10 +527,10 @@ sv.height.itex <- sv.height.raw %>%
          tier = paste0("Svalbard_", year), 
          plot_id = paste0("SV_", site, plot)) %>% dplyr::select(plot_id, height)
 
-sv.height.raw.gr <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Community_Structure_Gradient.csv") 
-names(sv.height.raw.gr)  <- tolower(names(sv.height.raw.gr))
+sv_height_raw.gr <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Community_Structure_Gradient.csv") 
+names(sv_height_raw.gr)  <- tolower(names(sv_height_raw.gr))
 
-sv.gradient.height <- sv.height.raw.gr %>% 
+sv_gradient_height <- sv_height_raw.gr %>% 
   filter(variable == "MedianHeight_cm") %>% 
   rename(
          plot = plotid, 
@@ -543,13 +544,13 @@ sv.gradient.height <- sv.height.raw.gr %>%
   ) %>% 
   dplyr::select(height, plot_id)
 
-sv.height <- rbind(sv.height.itex, sv.gradient.height)
+sv_height <- rbind(sv_height_itex, sv_gradient_height)
 
 ## Cover -----------------------
 
-sv.cover.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2003_2015_ITEX_Community.csv")
-names(sv.cover.raw)  <- tolower(names(sv.cover.raw))
-sv.cover.itex <- sv.cover.raw %>% 
+sv_cover_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2003_2015_ITEX_Community.csv")
+names(sv_cover_raw)  <- tolower(names(sv_cover_raw))
+sv_cover_itex <- sv_cover_raw %>% 
   mutate(plot = gsub("CH", "CAS", plotid), 
          plot = gsub("SB", "BIS", plot), 
          plot = gsub("DH", "DRY", plot), 
@@ -564,10 +565,10 @@ sv.cover.itex <- sv.cover.raw %>%
          species = taxon) %>% 
   dplyr::select(site, plot_id, cover, species, tier)
 
-sv.cover.g.raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Community_Gradient.csv")
-names(sv.cover.g.raw)  <- tolower(names(sv.cover.g.raw))
+sv_cover_g_raw <- fread("data/raw_data/svalbard/PFTC4_Svalbard_2018_Community_Gradient.csv")
+names(sv_cover_g_raw)  <- tolower(names(sv_cover_g_raw))
 
-sv.cover.gradient <- sv.cover.g.raw %>% 
+sv_cover_gradient <- sv_cover_g_raw %>% 
   mutate(
     tier = paste0("Svalbard_", year), 
     plot_id = paste0("SV_", gradient, site, plotid),
@@ -576,17 +577,17 @@ sv.cover.gradient <- sv.cover.g.raw %>%
     species = str_to_sentence(taxon)) %>% 
   dplyr::select(site, plot_id, cover, species, tier)
 
-sv.cover <- rbind(sv.cover.gradient, sv.cover.itex)
+sv_cover <- rbind(sv_cover_gradient, sv_cover_itex)
 
 ## Summary -----------------------------
 
-sv.flux
-sv.traits
-sv.cover
+sv_flux
+sv_traits
+sv_cover
 
-unique(sv.flux$plot_id)
-unique(sv.traits$plot_id)
-unique(sv.cover$plot_id)
+unique(sv_flux$plot_id)
+unique(sv_traits$plot_id)
+unique(sv_cover$plot_id)
 
 
 # Norway ------------------------------
@@ -595,11 +596,11 @@ unique(sv.cover$plot_id)
 
 ## Flux data ----------------------------
 
-no.flux.raw <- fread("data/raw_data/norway/PFTC6_24h_cflux_allsites_2022.csv") 
-quantile(no.flux.raw$PARavg, na.rm = T)
+no_flux_raw <- fread("data/raw_data/norway/PFTC6_24h_cflux_allsites_2022.csv") 
+quantile(no_flux_raw$PARavg, na.rm = T)
 
-plot(no.flux.raw$flux, no.flux.raw$flux_corrected)
-no.flux.raw2 <- no.flux.raw %>% 
+plot(no_flux_raw$flux, no_flux_raw$flux_corrected)
+no_flux_raw2 <- no_flux_raw %>% 
   mutate(rowID = paste0("Row", 1:nrow(.)), 
          Minute = minute(datetime), 
          Hour = hour(datetime), 
@@ -626,11 +627,11 @@ no.flux.raw2 <- no.flux.raw %>%
   ) %>%  dplyr::select(destSiteID, turfID, type, temp_airavg, flux_corrected, datetime, PARavg, warming)
 
 
-glimpse(no.flux.raw)
-table(no.flux.raw$flag)
-hist(no.flux.raw$PARavg)
+glimpse(no_flux_raw)
+table(no_flux_raw$flag)
+hist(no_flux_raw$PARavg)
 
-no.flux <- no.flux.raw2 %>% 
+no_flux <- no_flux_raw2 %>% 
   rename(temperature = temp_airavg, 
          flux_best = flux_corrected) %>% 
   mutate(hour = hour(datetime), 
@@ -667,39 +668,39 @@ no.flux <- no.flux.raw2 %>%
   dplyr::select(c(turfID, type, temperature, datetime, flux_best, site, tier, plot_id, par, treatment, elevation, longitude, latitude)) %>% 
   as.data.table()#no idea what's going on here w plot ID etc
          
-unique(no.flux[,c("site", "turfID")])
+unique(no_flux[,c("site", "turfID")])
 
-ggplot(data = no.flux) + 
+ggplot(data = no_flux) + 
   geom_boxplot(aes(x = type, y = flux_best)) +
   geom_hline(yintercept = 0) +
   geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative
 
 
-ggplot(data = no.flux[grepl("nee", type), ]) + 
+ggplot(data = no_flux[grepl("nee", type), ]) + 
   geom_jitter(aes(x = temperature, y = flux_best)) +
   geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
 
 ## Trait data ----------------------------
 
 
-no.t.threed.raw <- fread("data/raw_data/norway/PFTC6_ThreeD_clean_leaf_traits_2022.csv") 
-names(no.t.threed.raw)
-unique(no.t.threed.raw$siteID)
-unique(no.t.threed.raw$Namount_kg_ha_y)
+no_t_threed_raw <- fread("data/raw_data/norway/PFTC6_ThreeD_clean_leaf_traits_2022.csv") 
+names(no_t_threed_raw)
+unique(no_t_threed_raw$siteID)
+unique(no_t_threed_raw$Namount_kg_ha_y)
 
-unique(no.t.threed.raw$destSiteID)
+unique(no_t_threed_raw$destSiteID)
 
-unique(no.t.threed.raw[siteID %in% c("Vikesland") & warming == "A", ]$blockID)
+unique(no_t_threed_raw[siteID %in% c("Vikesland") & warming == "A", ]$blockID)
 
-unique(no.t.threed.raw[siteID %in% c("Vikesland") & warming == "W", .(blockID, turfID)])
-
-
-unique(no.flux[site %in% c("Vik"), ]$turfID)
-
-quantile(no.t.threed.raw[no.t.threed.raw$trait == "sla_cm2_g", ]$value , na.rm = T )
+unique(no_t_threed_raw[siteID %in% c("Vikesland") & warming == "W", .(blockID, turfID)])
 
 
-no.traits.raw <- no.t.threed.raw %>% 
+unique(no_flux[site %in% c("Vik"), ]$turfID)
+
+quantile(no_t_threed_raw[no_t_threed_raw$trait == "sla_cm2_g", ]$value , na.rm = T )
+
+
+no_traits_raw <- no_t_threed_raw %>% 
   rename(trait_name = trait,
          trait_value = value) %>% 
   filter(trait_name %in% c("plant_height_cm", "wet_mass_g", "dry_mass_g", "mean_leaf_thickness_mm", "leaf_area_cm2", "sla_cm2_g",
@@ -749,21 +750,21 @@ no.traits.raw <- no.t.threed.raw %>%
   dplyr::select(c(blockID, plot_id, site, elevation, aspect, trait_name, trait_value, species, tier, treatment,
            longitude, latitude, year, date, datetime))
   
-unique(no.traits.raw$site)
-unique(no.traits.raw$elevation)
-unique(no.flux$plot_id)
+unique(no_traits_raw$site)
+unique(no_traits_raw$elevation)
+unique(no_flux$plot_id)
 
 
 
-#no.traits %>% dplyr::select(site, treatment, turfID) %>% unique()
-#unique(no.traits$trait_name)
+#no_traits %>% dplyr::select(site, treatment, turfID) %>% unique()
+#unique(no_traits$trait_name)
 
 
 
 ## Biomass/Height -----------------------------
 
 ## nothing available on OSF: https://osf.io/fcbw4/
-## get height the dodgy way (from traits)
+## get height the funky way (from traits)
 ## will do below because I need the cover 
 
 ## Cover --------------------------------
@@ -835,43 +836,43 @@ threeD_community <- read_csv("data/raw_data/norway/Three-D_clean_cover_2019-2022
          plot_id = paste0("NO_", destSiteID, "_", turfID)) |>
   group_by(siteID, species, plot_id) |>
   summarise(cover = mean(cover)) %>% 
-  filter(plot_id %in% unique(no.traits.raw$plot_id)) %>% 
+  filter(plot_id %in% unique(no_traits_raw$plot_id)) %>% 
   dplyr::select(siteID, species, plot_id, cover) %>% 
   rename(site = siteID) 
 threeD_community
 vcg_community
 
 
-no.cover <- rbind(threeD_community, vcg_community) %>% 
+no_cover <- rbind(threeD_community, vcg_community) %>% 
   mutate(plot_id = ifelse(site %in% c("Hog", "Vik"), NA, plot_id), 
          tier = paste0("Norway_2022"))
 
-no.cover.ch <- rbind(threeD_community, vcg_community) %>% 
+no_cover_ch <- rbind(threeD_community, vcg_community) %>% 
   mutate(tier = paste0("Norway_2022"))
 
-summary(no.cover)
-unique(no.cover$site)
+summary(no_cover)
+unique(no_cover$site)
 
 
 ## Summary -----------------------------
 
-no.flux
-no.traits <- no.traits.raw %>% 
+no_flux
+no_traits <- no_traits_raw %>% 
   left_join(turfBlockLeg) %>% 
   mutate(plot_id = ifelse(is.na(plot_id), plot_id_vcg, plot_id)) %>% #
   dplyr::select(-plot_id_vcg)
-no.traits     
-no.cover
+no_traits     
+no_cover
 
 ## Height --------
-no.median.cover <- no.cover.ch %>% 
+no_median.cover <- no_cover_ch %>% 
   group_by(plot_id) %>% 
   summarize(medianCov = median(cover, na.rm = T))
 
-no.height <- no.traits %>% 
+no_height <- no_traits %>% 
   filter(trait_name == "plant_height_cm") %>% 
-  left_join(no.cover.ch[, c("plot_id", "cover", "species")]) %>% 
-  left_join(no.median.cover) %>% 
+  left_join(no_cover_ch[, c("plot_id", "cover", "species")]) %>% 
+  left_join(no_median.cover) %>% 
   mutate(cover = ifelse(is.na(cover), medianCov, cover)) %>% 
   group_by(plot_id) %>% 
   summarize(
@@ -882,8 +883,8 @@ no.height <- no.traits %>%
 
 # Colorado ------------------------------
 
-us.meta.raw <- fread("data/raw_data/colorado/rmbl_site_info.csv")
-us.meta <- us.meta.raw %>% 
+us_meta_raw <- fread("data/raw_data/colorado/rmbl_site_info.csv")
+us_meta <- us_meta_raw %>% 
   rename(
     latitude = lat, 
     longitude = long, 
@@ -894,15 +895,15 @@ us.meta <- us.meta.raw %>%
 
 ## Flux data ----------------------------
 
-us.flux.raw <- fread("data/raw_data/colorado/rmbl_gradient_flux_data_12042023.csv")
+us_flux_raw <- fread("data/raw_data/colorado/rmbl_gradient_flux_data_12042023.csv")
 
-unique(us.flux.raw$time)
-unique(us.flux.raw$plot)
-unique(us.flux.raw$season)
+unique(us_flux_raw$time)
+unique(us_flux_raw$plot)
+unique(us_flux_raw$season)
 
 
-unique(us.flux.raw$site)
-us.flux <- us.flux.raw %>% 
+unique(us_flux_raw$site)
+us_flux <- us_flux_raw %>% 
   rename(flux_best = linear, 
          temperature = x7500_amb_temp) %>% #or better the measured one?
   mutate(
@@ -933,53 +934,41 @@ us.flux <- us.flux.raw %>%
   dplyr::select(c(flux_best, temperature, site, date, season, type, plot, plot_id, tier)) %>% 
   filter(!is.na(type)) %>% 
   filter(site %in% c("almont", "cbt", "road", "pfeiler" ,"pbm" , "cinnamon") & type %in% c("nee", "reco")) %>% 
-  left_join(us.meta) %>% filter(!is.na(flux_best)) %>% 
+  left_join(us_meta) %>% filter(!is.na(flux_best)) %>% 
   filter(season == "Peak")
-us.flux
-us.flux.raw[time == "DAY RESP"]
+us_flux
+us_flux_raw[time == "DAY RESP"]
 
 
-ggplot(data = us.flux) + 
+ggplot(data = us_flux) + 
   geom_boxplot(aes(x = type, y = flux_best)) +
   geom_hline(yintercept = 0) +
   geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative.
 
-quantile(us.flux$temperature, na.rm = TRUE)
-ggplot(data = us.flux[grepl("nee", type), ]) + 
+quantile(us_flux$temperature, na.rm = TRUE)
+ggplot(data = us_flux[grepl("nee", type), ]) + 
   geom_jitter(aes(x = temperature, y = flux_best)) +
   geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
   
-unique(us.flux$site)
+unique(us_flux$site)
+table(us_flux$tier)
+
 
 ## Trait data ----------------------------
 
-us.t.raw <- fread("data/raw_data/colorado/rmbl_trait_data_master.csv")
-glimpse(us.t.raw) 
+us_t_raw <- fread("data/raw_data/colorado/rmbl_trait_data_master.csv")
+glimpse(us_t_raw) 
 
-unique(us.t.raw$site)
-unique(us.t.raw[us.t.raw$site == "Cinnamon", ]$plot)
-unique(us.t.raw[us.t.raw$site == "Cinnamon", ]$plot_name)
-unique(us.t.raw[us.t.raw$site == "Cinnamon", ]$plot_code)
-unique(us.t.raw[us.t.raw$site == "Almont", ]$plot)
-unique(us.t.raw[us.t.raw$site == "CBT" & !is.na(plot), ]$year)
-unique(us.t.raw[us.t.raw$site == "Almont" & !is.na(plot), ]$year)
-unique(us.t.raw[us.t.raw$site == "Cinnamon" & !is.na(plot), ]$year)
-unique(us.t.raw[us.t.raw$site == "Road" & !is.na(plot), ]$year)
-unique(us.t.raw[us.t.raw$site == "PBM" & !is.na(plot), ]$year)
-unique(us.t.raw[us.t.raw$site == "Pfeiler" & !is.na(plot), ]$year)
-
-
-unique(us.t.raw[!is.na(us.t.raw$height), ]$plot)
 
 #get plant height since this does not seem to be available for plots with numbers otherwise
-us_pl_h <- us.t.raw %>%
+us_pl_h <- us_t_raw %>%
   filter(!is.na(height)) %>% 
   dplyr::select(height, species) %>% 
   group_by(species) %>% 
   summarize(height = mean(height, na.rm = T))
 
 
-us.traits <- us.t.raw %>% 
+us_traits <- us_t_raw %>% 
   filter(!is.na(plot)) %>% 
   dplyr::select(-height) %>% 
   left_join(us_pl_h) %>% 
@@ -1012,18 +1001,18 @@ us.traits <- us.t.raw %>%
                        "ldmc", "p_percent", "c_percent", "n_percent", "cn_ratio", "mean_leaf_thickness_mm"), 
                names_to = "trait_name", values_to = "trait_value") %>% 
   dplyr::select(c(plot_id, site, plot, trait_name, trait_value, species, year, tier)) %>% 
-  left_join(us.meta) %>% #vast majority (like 60,000) is NA for the plot. 
+  left_join(us_meta) %>% #vast majority (like 60,000) is NA for the plot_ 
   #filter(!grepl("NA", plot_id)) %>% 
   mutate(trait_value = ifelse(year == 2016 & trait_name == "leaf_area_cm2", trait_value*10, trait_value))
 
-us.traits[us.traits$site == "pbm" & us.traits$trait_name == "p_percent", ]$trait_value
+us_traits[us_traits$site == "pbm" & us_traits$trait_name == "p_percent", ]$trait_value
 
-us.traits
-unique(us.traits[us.traits$site == "cinnamon", ]$plot)
+us_traits
+unique(us_traits[us_traits$site == "cinnamon", ]$plot)
 
 ## Biomass/Height -----------------------------
 #cover
-us.coverH.raw <- fread("data/raw_data/colorado/veg_cover_data_rmbl.csv") %>% 
+us_coverH_raw <- fread("data/raw_data/colorado/veg_cover_data_rmbl.csv") %>% 
   mutate(site = tolower(site),
          plot = tolower(plot), 
          plot_id = paste("US_", site, plot), 
@@ -1031,35 +1020,35 @@ us.coverH.raw <- fread("data/raw_data/colorado/veg_cover_data_rmbl.csv") %>%
          tier = paste0("Colorado_", year), 
          vegCover = (herb + shrub + grass + cactus + forb)) %>% 
   filter(tier %in% c("Colorado_2016", "Colorado_2018")) %>% 
-  filter(plot_id %in% unique(us.flux$plot_id)) %>% 
+  filter(plot_id %in% unique(us_flux$plot_id)) %>% 
   dplyr::select(plot_id, tier, vegCover, site) %>% 
   group_by(tier, site, plot_id) %>% 
   summarize(vegCover = mean(vegCover, na.rm = T))
 
 
 ## Height -------------
-us.height.raw <- fread("data/raw_data/colorado/veg_height_data_rmbl.csv") %>% 
+us_height_raw <- fread("data/raw_data/colorado/veg_height_data_rmbl.csv") %>% 
   mutate(site = tolower(site),
          plot = tolower(plot), 
          plot_id = paste("US_", site, plot), 
          plot_id = gsub(" ", "", plot_id),
          tier = paste0("Colorado_", year)) %>% 
   filter(tier %in% c("Colorado_2016", "Colorado_2018")) %>% 
-  filter(plot_id %in% unique(us.flux$plot_id)) %>% 
+  filter(plot_id %in% unique(us_flux$plot_id)) %>% 
   rename(vegHeight = mean) %>% 
   dplyr::select(plot_id, tier, vegHeight, site) %>% unique() %>% 
   group_by(tier, site, plot_id) %>% 
   summarize(vegHeight = mean(vegHeight, na.rm = T))
 
-us.height <- us.height.raw %>% 
-  left_join(us.coverH.raw) %>% unique()
+us_height <- us_height_raw %>% 
+  left_join(us_coverH_raw) %>% unique()
 
 
 # don't have anything yet
 
 ## Cover --------------------------
 
-us.cover <- fread("data/raw_data/colorado/rmbl_plot_data_2016.csv") %>% 
+us_cover <- fread("data/raw_data/colorado/rmbl_plot_data_2016.csv") %>% 
   mutate(site = tolower(site),
          plot = tolower(plot), 
          plot_id = paste("US_", site, plot), 
@@ -1081,29 +1070,29 @@ us.cover <- fread("data/raw_data/colorado/rmbl_plot_data_2016.csv") %>%
   rename(site_id = site) 
   
 
-#unique(us.cover.raw$treatment)
+#unique(us_cover_raw$treatment)
 ## Summary -----------------------------
 
-us.flux
-us.traits
+us_flux
+us_traits
 
-unique(us.traits$plot_id)
+unique(us_traits$plot_id)
 
-unique(us.flux$plot_id)
+unique(us_flux$plot_id)
 
 # South Africa ------------------------------
 
 
 ##metadata 
 library(sf) 
-sa.wp.raw <- read_sf("data/raw_data/south_africa/PFCT7_site_waypoints.gpx") %>%
+sa_wp_raw <- read_sf("data/raw_data/south_africa/PFCT7_site_waypoints.gpx") %>%
   dplyr::select(name) %>%
   filter(name != "PFTC5 E4")
 
-sa.wp.coords <- st_coordinates(sa.wp.raw)
+sa_wp_coords <- st_coordinates(sa_wp_raw)
 
-sa.wp <- sa.wp.raw %>% 
-  cbind(sa.wp.coords) %>% 
+sa_wp <- sa_wp_raw %>% 
+  cbind(sa_wp_coords) %>% 
   rename(latitude = Y, 
          longitude = X) %>%
   mutate(
@@ -1140,14 +1129,14 @@ sa.wp <- sa.wp.raw %>%
   ) %>% as.data.table()
 
 # Function to infer plots 2-4
-calc.intermediate.plots <- function(site.data) {
-  lat1 <- site.data$latitude[site.data$plot == 1]
-  lon1 <- site.data$longitude[site.data$plot == 1]
-  lat5 <- site.data$latitude[site.data$plot == 5]
-  lon5 <- site.data$longitude[site.data$plot == 5]
+calc_intermediate_plots <- function(site_data) {
+  lat1 <- site_data$latitude[site_data$plot == 1]
+  lon1 <- site_data$longitude[site_data$plot == 1]
+  lat5 <- site_data$latitude[site_data$plot == 5]
+  lon5 <- site_data$longitude[site_data$plot == 5]
   
   data.frame(
-    unique_site = unique(site.data$unique_site),
+    unique_site = unique(site_data$unique_site),
     plot = 2:4,
     latitude = c(
       (3 * lat1 + lat5) / 4,
@@ -1159,34 +1148,34 @@ calc.intermediate.plots <- function(site.data) {
       (lon1 + lon5) / 2,
       (lon1 + 3 * lon5) / 4
     ), 
-    aspect = unique(site.data$aspect), 
-    elevation = unique(site.data$elevation), 
-    site = unique(site.data$site)
+    aspect = unique(site_data$aspect), 
+    elevation = unique(site_data$elevation), 
+    site = unique(site_data$site)
   )
 }
 
 # Calculate intermediate plots for each site
-intermediate.plots <- sa.wp %>%
+intermediate_plots <- sa_wp %>%
   group_by(unique_site) %>%
-  do(calc.intermediate.plots(.))
+  do(calc_intermediate_plots(.))
 
 # Combine original and intermediate plots
-sa.wp2 <- bind_rows(sa.wp, intermediate.plots) %>%
+sa_wp2 <- bind_rows(sa_wp, intermediate_plots) %>%
   arrange(unique_site, plot) %>% filter(!is.na(aspect)) %>% mutate(site = paste0(elevation, aspect))
 
-sa.wp.sf <- st_as_sf(sa.wp2, 
+sa_wp_sf <- st_as_sf(sa_wp2, 
                      coords = c("longitude", "latitude"), 
                      crs = 4326)
-mapview::mapview(sa.wp.sf)
+mapview::mapview(sa_wp_sf)
 
-fwrite(sa.wp2, "data/raw_data/south_africa/PFCT7_plot_locations_clean.csv")
+fwrite(sa_wp2, "data/raw_data/south_africa/PFCT7_plot_locations_clean.csv")
 
 
 ### get dates 
 
-sa.meta.raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023.csv")
+sa_meta_raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023.csv")
 
-sa.meta <- sa.meta.raw %>% 
+sa_meta <- sa_meta_raw %>% 
   filter(day_night == "day")  %>% 
   filter(flag %in% c("okay", "manual_flux_time_selection"))%>% 
   mutate(unique_site = paste0(site_id, "_", aspect)) %>%
@@ -1200,22 +1189,66 @@ sa.meta <- sa.meta.raw %>%
   filter(discard == "keep") %>% 
   dplyr::select(-discard)
 
-sa.meta
+sa_meta
 
-sa.wp3 <- sa.wp2 %>% left_join(sa.meta)
+sa_wp3 <- sa_wp2 %>% left_join(sa_meta)
 
 
 ## Flux data ----------------------------
-#temperature first... 
+#temperature first_.. 
 
 sa_temp <- fread("data/raw_data/south_africa/pftc7_flux_par_and_tmp.csv") %>% 
   dplyr::select(file, date, temperature, par) %>% 
-  unique()
+  unique() %>% 
+  mutate(par = case_when(
+    .default = par, #update NAs using field notebook
+    file == "1_2000_east_1_day_photo.txt" & date == as.Date("2023-12-03") ~ 838.1,
+    file == "1_2000_east_1_day_resp.txt" & date == as.Date("2023-12-03") ~ 5.1,
+    file == "1_2000_east_2_day_photo.txt" & date == as.Date("2023-12-03") ~ 944.3,
+    file == "1_2000_east_2_day_redo_resp.txt" & date == as.Date("2023-12-03") ~ 5.9,
+    file == "1_2000_east_2_day_resp.txt" & date == as.Date("2023-12-03") ~ 5.9,
+    file == "1_2000_east_3_day_photo.txt" & date == as.Date("2023-12-03") ~ 884.2,
+    file == "1_2000_east_3_day_resp.txt" & date == as.Date("2023-12-03") ~ 5.9,
+    file == "1_2000_east_4_day_photo.txt" & date == as.Date("2023-12-03") ~ 719,
+    file == "1_2000_east_4_day_resp.txt" & date == as.Date("2023-12-03") ~ 5.9,
+    file == "1_2000_east_5_day_photo.txt" & date == as.Date("2023-12-03") ~ 609.2,
+    file == "1_2000_west_1_day_photo.txt" & date == as.Date("2023-12-03") ~ 979.5,
+    file == "1_2000_west_1_day_redo2_resp.txt" & date == as.Date("2023-12-03") ~ 5.7,
+    file == "1_2000_west_1_day_redo_resp.txt" & date == as.Date("2023-12-03") ~ 5.6,
+    file == "1_2000_west_2_day_photo.txt" & date == as.Date("2023-12-03") ~ 1123,
+    file == "1_2000_west_2_day_resp.txt" & date == as.Date("2023-12-03") ~ 6.8,
+    file == "1_2000_west_3_day_photo.txt" & date == as.Date("2023-12-03") ~ 970,
+    file == "1_2000_west_3_day_resp.txt" & date == as.Date("2023-12-03") ~ 6.3,
+    file == "1_2000_west_4_day_photo.txt" & date == as.Date("2023-12-03") ~ 1007,
+    file == "1_2000_west_4_day_resp.txt" & date == as.Date("2023-12-03") ~ 6.8,
+    file == "2_2200_east_1_day_photo.txt" & date == as.Date("2023-12-05") ~ 1390,
+    file == "2_2200_east_1_day_resp.txt" & date == as.Date("2023-12-05") ~ 2.7,
+    file == "2_2200_east_2_day_photo.txt" & date == as.Date("2023-12-05") ~ 1261,
+    file == "2_2200_east_2_day_resp.txt" & date == as.Date("2023-12-05") ~ 3.3,
+    file == "2_2200_east_3_day_photo.txt" & date == as.Date("2023-12-05") ~ 1200,
+    file == "2_2200_east_3_day_resp.txt" & date == as.Date("2023-12-05") ~ 2.9,
+    file == "2_2200_east_4_day_photo.txt" & date == as.Date("2023-12-05") ~ 1128,
+    file == "2_2200_east_4_day_resp.txt" & date == as.Date("2023-12-05") ~ 3.5,
+    file == "2_2200_east_5_day_photo.txt" & date == as.Date("2023-12-05") ~ 1152,
+    file == "2_2200_east_5_day_redo2_photo.txt" & date == as.Date("2023-12-05") ~ 449,
+    file == "2_2200_east_5_day_redo_photo.txt" & date == as.Date("2023-12-05") ~ 670,
+    file == "2_2200_east_5_day_resp.txt" & date == as.Date("2023-12-05") ~ 3.2,
+    file == "2_2200_west_1_day_photo.txt" & date == as.Date("2023-12-05") ~ 1023,
+    file == "2_2200_west_1_day_redo_photo.txt" & date == as.Date("2023-12-05") ~ 1068,
+    file == "2_2200_west_1_day_resp.txt" & date == as.Date("2023-12-05") ~ 2.5,
+    file == "2_2200_west_2_day_photo.txt" & date == as.Date("2023-12-05") ~ 1172,
+    file == "2_2200_west_2_day_resp.txt" & date == as.Date("2023-12-05") ~ 2.3,
+    file == "2_2200_west_3_day_photo.txt" & date == as.Date("2023-12-05") ~ 1174,
+    file == "2_2200_west_3_day_resp.txt" & date == as.Date("2023-12-05") ~ 6.4,
+    file == "2_2200_west_4_day_photo.txt" & date == as.Date("2023-12-05") ~ 677,
+    file == "2_2200_west_4_day_resp.txt" & date == as.Date("2023-12-05") ~ 6.4,
+    file == "2_2200_west_5_day_photo.txt" & date == as.Date("2023-12-05") ~ 1071,
+    file == "2_2200_west_5_day_resp.txt" & date == as.Date("2023-12-05") ~ 7))
 
 #https://docs.google.com/document/d/1P2X-3IIQE6IQwvgvDQe9YJLqVWd2srqzxJZWWoM3mig/edit
-sa.flux.raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023_with_file.csv")
-names(sa.flux.raw)
-sa.flux <- sa.flux.raw %>% 
+sa_flux_raw <- fread("data/raw_data/south_africa/x_PFTC7_clean_ecosystem_fluxes_2023_with_file.csv")
+names(sa_flux_raw)
+sa_flux <- sa_flux_raw %>% 
   unique() %>% 
   left_join(sa_temp) %>% 
   filter(flag %in% c("okay", "manual_flux_time_selection")) %>% 
@@ -1232,34 +1265,25 @@ sa.flux <- sa.flux.raw %>%
            flux_type == "resp_night" ~ "night_reco", 
          )) %>% 
   dplyr::select(c(plot_id, tier, flux_best, type, site, plot, aspect, temperature, par, elevation)) %>% 
-  left_join(sa.wp3) %>% 
+  left_join(sa_wp3) %>% 
   filter(type != "night_reco")
 
-range(sa.flux[type == "nee", flux_best], na.rm = T)
-range(sa.flux[type == "reco", flux_best], na.rm = T)
+range(sa_flux[type == "nee", flux_best], na.rm = T)
+range(sa_flux[type == "reco", flux_best], na.rm = T)
 
-sum(!is.na(sa.flux$flux_best))
-summary(sa.flux)
-ggplot(data = sa.flux) + 
-  geom_boxplot(aes(x = type, y = flux_best)) +
-  geom_hline(yintercept = 0) +
-  geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative. But wtf is NEE1, NEE2, NEE3?
 
-ggplot(data = sa.flux[grepl("nee", type), ]) + 
-  geom_jitter(aes(x = temperature, y = flux_best)) +
-  geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
-
-ggplot(data = sa.flux[grepl("nee", type), ]) + 
-  geom_jitter(aes(x = par, y = flux_best)) +
-  geom_smooth(aes(x = par, y = flux_best), method = "gam")
+sa_flux %>% 
+  filter(is.na(par)) %>% 
+  select(plot_id, type) %>% 
+  unique()
 
 ## Trait data ----------------------------
 
-sa.t.raw <- fread("data/raw_data/south_africa/iv_PFTC7_clean_elevationgradient_traits_2023.csv")
-table(sa.t.raw$problem_flag)
-table(sa.t.raw$traits)
+sa_t_raw <- fread("data/raw_data/south_africa/iv_PFTC7_clean_elevationgradient_traits_2023.csv")
+table(sa_t_raw$problem_flag)
+table(sa_t_raw$traits)
 
-sa.traits <- sa.t.raw %>% 
+sa_traits <- sa_t_raw %>% 
   rename(elevation = elevation_m_asl, 
          site = site_id, 
          plot = plot_id, 
@@ -1283,16 +1307,16 @@ sa.traits <- sa.t.raw %>%
   filter(trait_name %in% c("plant_height_cm", "wet_mass_g", "dry_mass_g", "leaf_area_cm2", "leaf_thickness_mm", "sla_cm2_g",
                         "ldmc")) %>% 
   dplyr::select(c(plot_id, site, plot, elevation, aspect, trait_name, trait_value, species, tier, year)) %>% 
-  left_join(sa.wp2)
+  left_join(sa_wp2)
     
-unique(sa.traits$species)
+unique(sa_traits$species)
 ## Biomass -----------------------------
 
 ## I don't think we have clean biomass data yet 
 
 ## Cover --------------------------------
-sa.cover.raw <- fread("data/raw_data/south_africa/i_PFTC7_clean_elevationgradient_community_2023.csv")
-sa.cover <- sa.cover.raw %>% 
+sa_cover_raw <- fread("data/raw_data/south_africa/i_PFTC7_clean_elevationgradient_community_2023.csv")
+sa_cover <- sa_cover_raw %>% 
   rename(site = site_id, 
          plot = plot_id) %>% 
   mutate(tier = "South_Africa_2023", 
@@ -1305,9 +1329,9 @@ sa.cover <- sa.cover.raw %>%
 
 ## Height ------------
 
-sa.height.raw <- fread("data/raw_data/south_africa/ii_PFTC7_clean_elevationgradient_community_structure_2023.csv")
+sa_height_raw <- fread("data/raw_data/south_africa/ii_PFTC7_clean_elevationgradient_community_structure_2023.csv")
 
-sa.height <- sa.height.raw %>% 
+sa_height <- sa_height_raw %>% 
   mutate(tier = "South_Africa_2023",
          plot = round(plot_id, 0),
          plot_id = paste0("SA_", elevation_m_asl, aspect, plot)) %>% 
@@ -1320,15 +1344,15 @@ sa.height <- sa.height.raw %>%
 
 
 ## Summary -----------------------------
-sa.flux 
-sa.traits
+sa_flux 
+sa_traits
 
 # combine everything ---------------------------------------------------
 
 ## fluxes ------------
 
-names(ch.flux.2016)# tier, "datetime", "type", "elevation", "treatment", "plot", "temperature", "flux_best", "site", "latitude", "longitude", "plot_id" 
-ch.flux.2016.fin <- ch.flux.2016 %>% 
+names(ch_flux_2016)# tier, "datetime", "type", "elevation", "treatment", "plot", "temperature", "flux_best", "site", "latitude", "longitude", "plot_id" 
+ch_flux_2016.fin <- ch_flux_2016 %>% 
   mutate(burn_year = NA, 
          datetime = dmy_hm(datetime),
          date = date(datetime),
@@ -1339,8 +1363,8 @@ ch.flux.2016.fin <- ch.flux.2016 %>%
          aspect = NA, 
          season = "not_part_of_the_dataset")
 
-names(pe.flux) #extra = burn_year
-pe.flux.fin <- pe.flux %>% 
+names(pe_flux) #extra = burn_year
+pe_flux_fin <- pe_flux %>% 
   rename(date_old = date) %>% 
   mutate(
        date = gsub("March", "03", date_old),
@@ -1357,8 +1381,8 @@ pe.flux.fin <- pe.flux %>%
   dplyr::select(-date_old)
 
 
-names(sv.flux) 
-sv.flux.fin <- sv.flux %>% 
+names(sv_flux) 
+sv_flux_fin <- sv_flux %>% 
   mutate(burn_year = NA, 
          datetime = as_datetime(NA),
          aspect = NA, 
@@ -1367,8 +1391,8 @@ sv.flux.fin <- sv.flux %>%
          year = year(date), 
          season = "not_part_of_the_dataset")
 
-names(no.flux) #
-no.flux.fin <- no.flux %>%
+names(no_flux) #
+no_flux_fin <- no_flux %>%
   mutate(burn_year = NA,
          date = date(datetime),
          date = as_date(date, format = '%Y.%m.%d'),
@@ -1376,8 +1400,8 @@ no.flux.fin <- no.flux %>%
          aspect = NA,
          season = "not_part_of_the_dataset") %>% rename(plot = turfID)
 
-names(us.flux)
-us.flux.fin <- us.flux %>% 
+names(us_flux)
+us_flux_fin <- us_flux %>% 
   mutate(burn_year = NA, 
          datetime = as_datetime(NA), 
          date = as_date(date), 
@@ -1387,12 +1411,12 @@ us.flux.fin <- us.flux %>%
          treatment = NA,
          par = NA)
 
-setdiff(names(no.flux.fin), names(pe.flux.fin))
-setdiff(names(pe.flux.fin), names(no.flux.fin))
+setdiff(names(no_flux_fin), names(pe_flux_fin))
+setdiff(names(pe_flux_fin), names(no_flux_fin))
 
 
-names(sa.flux)
-sa.flux.fin <- sa.flux %>% 
+names(sa_flux)
+sa_flux_fin <- sa_flux %>% 
   mutate(burn_year = NA, 
          datetime = as_datetime(NA), 
          date = as_date(date, format = '%Y.%m.%d'),
@@ -1402,20 +1426,20 @@ sa.flux.fin <- sa.flux %>%
   filter(!type == "night_reco") %>% 
   dplyr::select(-unique_site)
 
-fluxes.combined.raw <- rbind(ch.flux.2016.fin, 
-                         pe.flux.fin, 
-                         sv.flux.fin, 
-                         no.flux.fin,
-                         us.flux.fin, 
-                         sa.flux.fin)
+fluxes.combined_raw <- rbind(ch_flux_2016.fin, 
+                         pe_flux_fin, 
+                         sv_flux_fin, 
+                         no_flux_fin,
+                         us_flux_fin, 
+                         sa_flux_fin)
 
-setdiff(names(ch.flux.2016.fin), names(sa.flux.fin))
-setdiff(names(sa.flux.fin), names(ch.flux.2016.fin))
+setdiff(names(ch_flux_2016.fin), names(sa_flux_fin))
+setdiff(names(sa_flux_fin), names(ch_flux_2016.fin))
 
 
-unique(fluxes.combined.raw[grepl("Peru", tier), ]$treatment)
+unique(fluxes.combined_raw[grepl("Peru", tier), ]$treatment)
 
-fluxes.combined <- fluxes.combined.raw %>% 
+fluxes.combined <- fluxes.combined_raw %>% 
   mutate(treatment = ifelse(is.na(treatment), "c", treatment),
          location = case_when(
     grepl("China", tier) ~ "China", 
@@ -1477,87 +1501,87 @@ fluxes.combined2 <- fluxes.combined %>%
   dplyr::select(plot_id, tier, date, longitude, latitude) %>% 
   unique()
 
-flux.sf <- st_as_sf(fluxes.combined2, 
+flux_sf <- st_as_sf(fluxes.combined2, 
                     coords = c("longitude", "latitude"), 
                     crs = 4326)
 
-mapview::mapview(flux.sf)
+mapview::mapview(flux_sf)
 
-flux.sf2 <- flux.sf %>% 
+flux_sf2 <- flux_sf %>% 
   dplyr::select(plot_id, tier, date) %>% 
   mutate(date = paste0(date), 
          flux_id = paste0(plot_id, 1:nrow(.))) %>% st_make_valid()
-str(flux.sf2)
-mapview::mapview(flux.sf2)
-n_distinct(flux.sf2$plot_id)
-n_distinct(flux.sf2$flux_id)
+str(flux_sf2)
+mapview::mapview(flux_sf2)
+n_distinct(flux_sf2$plot_id)
+n_distinct(flux_sf2$flux_id)
 
-st_write(flux.sf2, "data/processed_data/preliminary_data/prelim_flux_loc.gpkg", append = FALSE)
-st_write(flux.sf2, "data/processed_data/preliminary_data/prelim_flux_loc.shp", append = FALSE)
+st_write(flux_sf2, "data/processed_data/preliminary_data/prelim_flux_loc.gpkg", append = FALSE)
+st_write(flux_sf2, "data/processed_data/preliminary_data/prelim_flux_loc.shp", append = FALSE)
 
-mapview::mapview(flux.sf2 %>% filter(plot_id == "PE_ACJ_C_1"))
+mapview::mapview(flux_sf2 %>% filter(plot_id == "PE_ACJ_C_1"))
 
 
 ## traits ---------------------------------
 
-names(ch.traits) #get rid of date and replace w year because who cares
+names(ch_traits) #get rid of date and replace w year because who cares
 
-ch.traits.fin <- ch.traits %>% 
+ch_traits.fin <- ch_traits %>% 
   mutate(burn_year = NA, 
          aspect = NA, 
          date = as_date(date),
          year = year(date)) %>% dplyr::select(-date, -leaf_number)
 
-names(pe.traits)
-pe.traits.fin <- pe.traits %>%
+names(pe_traits)
+pe_traits.fin <- pe_traits %>%
   mutate(aspect = NA,
          tier = paste0("Peru_", year)) %>% 
   dplyr::select(-c(leaf_number))
 
-unique(pe.traits.fin$tier)
-pe.traits.fin[tier == "Peru_2020" & trait_name == "p_percent" & treatment == "C", ]
+unique(pe_traits.fin$tier)
+pe_traits.fin[tier == "Peru_2020" & trait_name == "p_percent" & treatment == "C", ]
 
-names(sv.traits) #
-sv.traits.fin <- sv.traits %>%
+names(sv_traits) #
+sv_traits.fin <- sv_traits %>%
   mutate(aspect = NA, 
          burn_year = NA)
-unique(sv.traits$tier)
-# names(no.traits) #not yet finished 
-no.traits.fin <- no.traits %>%
+unique(sv_traits$tier)
+# names(no_traits) #not yet finished 
+no_traits.fin <- no_traits %>%
   mutate(aspect = NA, 
          burn_year = NA) %>% dplyr::select(-datetime, -date, -blockID)
 
-unique(no.traits.fin$trait_name)
+unique(no_traits.fin$trait_name)
 
-names(us.traits) # get rd of 
-us.traits.fin <- us.traits %>%
+names(us_traits) # get rd of 
+us_traits.fin <- us_traits %>%
      mutate(aspect = NA, 
             burn_year = NA, 
             treatment = NA) %>% dplyr::select(-plot)
-unique(us.traits.fin$site)
-us.traits.fin[us.traits.fin$trait_name == "p_percent" & 
-                us.traits.fin$site == "road", ]$trait_value
+unique(us_traits.fin$site)
+us_traits.fin[us_traits.fin$trait_name == "p_percent" & 
+                us_traits.fin$site == "road", ]$trait_value
 
 
-names(sa.traits) # get rd of 
+names(sa_traits) # get rd of 
 
-sa.traits.fin <- sa.traits %>% 
+sa_traits.fin <- sa_traits %>% 
   mutate(burn_year = NA, 
          treatment = NA) %>% dplyr::select(-plot, - unique_site)
 
-names(ch.traits.fin)
-      names(pe.traits.fin) 
-      names(sv.traits.fin)  
-      names(no.traits.fin) 
-      names(us.traits.fin) 
-      names(sa.traits.fin) 
+names(ch_traits.fin)
+      names(pe_traits.fin) 
+      names(sv_traits.fin)  
+      names(no_traits.fin) 
+      names(us_traits.fin) 
+      names(sa_traits.fin) 
 
-traits.combined.raw <- rbind(ch.traits.fin, 
-                         pe.traits.fin, 
-                         sv.traits.fin, 
-                         no.traits.fin,
-                         us.traits.fin,
-                         sa.traits.fin) %>% mutate(
+traits.combined_raw <- rbind(ch_traits.fin, 
+                         pe_traits.fin, 
+                         sv_traits.fin, 
+                         no_traits.fin,
+                         us_traits.fin,
+                         sa_traits.fin) %>% mutate(
                            species = gsub("_", " ", species), 
                            species = str_to_sentence(species),
                            trait_name = ifelse(trait_name == "mean_leaf_thickness_mm", "leaf_thickness_mm", trait_name)
@@ -1574,12 +1598,12 @@ traits.combined.raw <- rbind(ch.traits.fin,
 
 mean_narm <- function(x){m <- mean(x, na.rm = T); return(m)}
 
-traits.combined.raw[traits.combined.raw$tier == "Colorado_2016" &
-    traits.combined.raw$trait_name == "n_percent", ]$trait_value
+traits.combined_raw[traits.combined_raw$tier == "Colorado_2016" &
+    traits.combined_raw$trait_name == "n_percent", ]$trait_value
 
 
 
-traits.stoich <- traits.combined.raw %>% 
+traits.stoich <- traits.combined_raw %>% 
   filter(trait_name %in% c("p_percent", "c_percent", "n_percent")) %>% 
   pivot_wider(names_from = "trait_name",
               values_from = "trait_value",
@@ -1604,7 +1628,7 @@ traits.stoich <- traits.combined.raw %>%
 
 summary(traits.stoich)
 
-traits.stoich.co <- traits.combined.raw %>% 
+traits.stoich_co <- traits.combined_raw %>% 
   filter(tier == "Colorado_2016") %>% 
   filter(trait_name %in% c("p_percent", "c_percent", "n_percent")) %>% 
   pivot_wider(names_from = "trait_name",
@@ -1628,10 +1652,10 @@ traits.stoich.co <- traits.combined.raw %>%
   ))
 
 
-traits.combined <- rbind(traits.combined.raw, traits.stoich, traits.stoich.co)
+traits.combined <- rbind(traits.combined_raw, traits.stoich, traits.stoich_co)
 
-setdiff(names(traits.combined.raw), names(traits.stoich))
-setdiff(names(sv.traits.fin), names(no.traits.fin))
+setdiff(names(traits.combined_raw), names(traits.stoich))
+setdiff(names(sv_traits.fin), names(no_traits.fin))
 
 unique(traits.combined$trait_name)
 table(traits.combined$gradient)
@@ -1640,59 +1664,59 @@ fwrite(traits.combined, "data/processed_data/preliminary_data/prelim_traits.csv"
 ## cover --------------------------
 
 #china
-ch.cover.final <- ch.bio %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
+ch_cover_final <- ch_bio %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
   rename(site_id = site) 
 
 #peru
-pe.cover.final <- pe.cover %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
+pe_cover_final <- pe_cover %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
   rename(site_id = site)
 
 #svalbard
 ###  taking the mean cover of all the previous years 
-sv.cover.final <- sv.cover %>% 
+sv_cover_final <- sv_cover %>% 
   rename(site_id = site) %>% 
   group_by(site_id, plot_id, species) %>% 
   summarize(cover = mean(cover, na.rm = T)) %>% 
   mutate(tier = "Svalbard_2018", 
          species = str_to_sentence(species))
-table(sv.cover.final$tier)
+table(sv_cover_final$tier)
 
 # norway  
-no.cover.final <- no.cover %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
+no_cover_final <- no_cover %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
   rename(site_id = site)
 
 # colorado 
-us.cover.final <- us.cover 
+us_cover_final <- us_cover 
 
 #south africa
-sa.cover.final <- sa.cover %>% 
+sa_cover_final <- sa_cover %>% 
   mutate(site = paste0(elevation_m_asl, aspect)) %>% dplyr::select(site, plot_id, cover, species, tier) %>% 
   rename(site_id = site) 
 
 
-# Combine multiple data frames (ch.cover.final, pe.cover.final, sv.cover.final, sa.cover.final)
-# into one data frame 'cover.all.raw'. Then, rename 'site_id' column to 'site'.
+# Combine multiple data frames (ch_cover_final, pe_cover_final, sv_cover_final, sa_cover_final)
+# into one data frame 'cover_all_raw'. Then, rename 'site_id' column to 'site'.
 # Group the data by 'site', 'plot_id', 'tier', and 'species', and calculate
 # the mean cover value for each group
-cover.all.raw <- rbind(ch.cover.final, pe.cover.final, sv.cover.final, no.cover.final, sa.cover.final) %>% 
+cover_all_raw <- rbind(ch_cover_final, pe_cover_final, sv_cover_final, no_cover_final, sa_cover_final) %>% 
   rename(site = site_id) %>% 
   group_by(tier, site, plot_id, species) %>% 
   summarize(cover = mean(cover, na.rm = T))
 
 # Calculate the mean cover for each tier and store it in 'tier.means'.
-tier.means <- cover.all.raw %>% 
+tier.means <- cover_all_raw %>% 
   group_by(tier) %>% 
   summarize(cover_tm = median(cover, na.rm = T))
 
-# Select unique combinations of 'site', 'plot_id', 'tier', and 'species' from 'traits.combined' dataset.
-all.trait.species <- traits.combined %>% 
+# Select unique combinations of 'site', 'plot_id', 'tier', and 'species' from 'traits.combined' dataset_
+all.trait_species <- traits.combined %>% 
   dplyr::select(site, plot_id, tier, species) %>% unique()
 
-# Merge 'all.trait.species' with 'cover.all.raw' by matching columns, keeping all unique rows.
+# Merge 'all.trait_species' with 'cover_all_raw' by matching columns, keeping all unique rows.
 # Then merge the result with 'tier.means'. Replace NA values in 'cover' with 'cover_tm' (mean cover per tier)
 # or with 1 if 'cover_tm' is also NA.
-all.trait.species.comb <- all.trait.species %>%
-  left_join(cover.all.raw) %>%
+all.trait_species.comb <- all.trait_species %>%
+  left_join(cover_all_raw) %>%
   unique() %>% 
   left_join(tier.means) %>% 
   mutate(cover = ifelse(is.na(cover), cover_tm, cover)) %>% 
@@ -1700,14 +1724,14 @@ all.trait.species.comb <- all.trait.species %>%
          species = gsub("_", " ", species), 
          species = str_to_sentence(species))
 
-# Output summary statistics of the final data frame 'all.trait.species.comb'.
-summary(all.trait.species.comb)
+# Output summary statistics of the final data frame 'all.trait_species.comb'.
+summary(all.trait_species.comb)
 
-fwrite(all.trait.species.comb, "data/processed_data/preliminary_data/prelim_cover.csv")
+fwrite(all.trait_species.comb, "data/processed_data/preliminary_data/prelim_cover.csv")
 
 ## species richness 
 
-dt.sp <- all.trait.species.comb %>% 
+dt_sp <- all.trait_species.comb %>% 
   group_by(tier, plot_id) %>% 
   summarize(SpeciesRichness = n()) %>% 
   mutate(VegPlotSizeM2 = case_when(
@@ -1719,46 +1743,46 @@ dt.sp <- all.trait.species.comb %>%
     grepl("Svalbard", tier) ~ 0.75*0.75, 
   )) 
 
-fwrite(dt.sp, "data/processed_data/preliminary_data/prelim_species_richness.csv")
+fwrite(dt_sp, "data/processed_data/preliminary_data/prelim_species_richness.csv")
 
 
 ## height n cover ---------
 
 #china
-ch.ch <- ch.bio %>% 
+ch_ch <- ch_bio %>% 
   group_by(tier, site, plot_id) %>% 
   summarize(
     vegHeight = sum(height * cover, na.rm = TRUE) / sum(cover, na.rm = TRUE), 
     coverSum = sum(cover, na.rm = T))
 
 #peru
-pe.height
+pe_height
 
-pe.cover2 <- pe.cover %>% 
-  left_join(pe.height) %>% 
+pe_cover2 <- pe_cover %>% 
+  left_join(pe_height) %>% 
   group_by(tier, site, plot_id) %>%
   summarize(coverSum = sum(cover))
   
   
-pe.ch <- pe.cover2 %>% 
-  left_join(pe.height) %>% 
+pe_ch <- pe_cover2 %>% 
+  left_join(pe_height) %>% 
   rename(vegHeight = height) %>% 
   dplyr::select(-treatment)
 
 #svalbard 
 
-sv.ch <- sv.cover %>% 
-  left_join(sv.height) %>%
+sv_ch <- sv_cover %>% 
+  left_join(sv_height) %>%
   group_by(tier, site, plot_id) %>% 
   summarize(coverSum = sum(cover, na.rm = T), 
             vegHeight = mean(height, na.rm = T)) %>% 
   filter(tier %in% c("Svalbard_2015", "Svalbard_2018")) %>% 
   mutate(tier = "Svalbard_2018")
-unique(sv.ch$tier)
+unique(sv_ch$tier)
 ## norway
 
-no.ch <- no.cover.ch %>% 
-  left_join(no.height) %>% 
+no_ch <- no_cover_ch %>% 
+  left_join(no_height) %>% 
   rename(height = meanHeight) %>%
   group_by(tier, site, plot_id) %>% 
   summarize(coverSum = sum(cover, na.rm = T), 
@@ -1766,15 +1790,15 @@ no.ch <- no.cover.ch %>%
 
 ## colorado 
 
-us.ch <- us.height %>% rename(
+us_ch <- us_height %>% rename(
   coverSum = vegCover,
 )
 
 ## South Africa 
 
-sa.ch <- sa.cover %>% 
+sa_ch <- sa_cover %>% 
   mutate(site = paste0(elevation_m_asl, aspect)) %>% 
-  left_join(sa.height) %>% 
+  left_join(sa_height) %>% 
   rename(height = meanHeight) %>%
   group_by(tier, site, plot_id) %>% 
   summarize(coverSum = sum(cover, na.rm = T), 
@@ -1782,7 +1806,7 @@ sa.ch <- sa.cover %>%
   mutate(site = as.character(site))
  
 ## combine
-allCovHeight <- rbind(ch.ch, pe.ch, sv.ch, no.ch, us.ch, sa.ch) %>% 
+allCovHeight <- rbind(ch_ch, pe_ch, sv_ch, no_ch, us_ch, sa_ch) %>% 
   mutate(HeightXCover = vegHeight*coverSum)
 
 fwrite(allCovHeight, "data/processed_data/preliminary_data/prelim_coverXheight.csv")
@@ -1790,7 +1814,7 @@ fwrite(allCovHeight, "data/processed_data/preliminary_data/prelim_coverXheight.c
 
 # ## spatial autocorrelation --------------------------------
 # 
-# sac <- flux.sf2 %>% dplyr::select(plot_id) %>% group_by(plot_id) %>% summarize() #%>% as.data.table() %>% mutate(geometry = NULL) %>% unique()
+# sac <- flux_sf2 %>% dplyr::select(plot_id) %>% group_by(plot_id) %>% summarize() #%>% as.data.table() %>% mutate(geometry = NULL) %>% unique()
 # 
 # ### spatial predictors: ------
 # library(spatialRF)

@@ -539,6 +539,6 @@ summary(dt_mod[dt_mod$gradient == "Drakensberg", ]$par_nee)
 
 
 dt_mod %>%
-  filter(gradient == "Drakensberg") %>%
-  dplyr::select(plot_id, par_nee, par_reco, temperature_nee) %>% 
-  View()
+  ggplot() +
+  geom_point(aes(x = par_nee, y = nee, color = gradient)) +
+  geom_smooth(aes(x = par_nee, y = nee), method = "lm")
