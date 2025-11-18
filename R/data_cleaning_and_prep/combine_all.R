@@ -45,10 +45,8 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
             temperature_reco = mean(temperature_reco, na.rm = T), 
             par_nee = mean(par_nee, na.rm =T),
             par_reco = mean(par_reco, na.rm =T)) %>% 
-  mutate(plot_id = as.character(plot_id),
-         nee = ifelse(tier %in% c("South_Africa_2023"), nee, nee*-1), 
-         reco = ifelse(tier %in% c("South_Africa_2023"), reco, reco*-1)) %>% 
-  filter(tier %in% c("China_2016", "Colorado_2016", "Svalbard_2018",
+  mutate(plot_id = as.character(plot_id)) %>% 
+  filter(tier %in% c("China_2016", "Colorado_2023", "Svalbard_2018",
                      "Norway_2022", "Peru_2018", "South_Africa_2023")) %>%
   filter(nee > -20 & nee < 10 & reco > 0 & reco < 20) %>% #assuming all else are wrong 
   #filter(treatment == "c") %>% # peru, we also include naturally burned sites (cause fire is also part of the system e.g., in SA)
@@ -57,7 +55,7 @@ table(dt_flux_t$tier)
 table(dt_flux$tier)
 summary(dt_flux[dt_flux$tier == "South_Africa_2023", ]$par_reco)
 
-#Colorado 2018 and Peru 2019 have the most control plots, which is why we will go with them for now 
+#Colorado 2013 and Peru 2019 have the most control plots, which is why we will go with them for now 
 #But for Peru 2018 we have leaf traits, so we go for this one instead. 
 # And for Colorado 2016 we have lead P and only three plots less, so we go for it :)
 
@@ -70,13 +68,18 @@ dt_trait_raw <- fread("data/processed_data/preliminary_data/prelim_traitstrap.cs
          plot_id = PlotID)
 
 glimpse(dt_trait_raw)
+
 dt_trait_raw[dt_trait_raw$tier == "Norway_2022" & Trait == "cn_ratio", ]
-dt_trait_mean <- dt_trait_raw %>% dplyr::select(tier, site, plot_id, Trait, mean) %>% 
+unique(dt_trait_raw$tier)
+dt_trait_mean <- dt_trait_raw %>% dplyr::select(Gradient, tier, site, plot_id, Trait, mean) %>% 
   pivot_wider(values_from = mean, names_from = Trait) %>% unique() %>% 
   mutate(sla_cm2_g = ifelse(is.infinite(sla_cm2_g), NA, sla_cm2_g)) %>% 
-  dplyr::select(tier, site, plot_id, plant_height_cm, dry_mass_g, ldmc, leaf_area_cm2, sla_cm2_g, wet_mass_g,
+  dplyr::select(Gradient, tier, site, plot_id, plant_height_cm, dry_mass_g, ldmc, leaf_area_cm2, sla_cm2_g, wet_mass_g,
                 n_percent, cn_ratio, p_percent, c_percent, cp_ratio, np_ratio) %>% 
-  group_by(tier, site, plot_id) %>% 
+  # filter(tier %in% c("China_2016", "Colorado_2023", "Colorado_2016",
+  #                    "Colorado_2018", "Svalbard_2018",
+  #                    "Norway_2022", "Peru_2018", "South_Africa_2023")) %>% 
+  group_by(Gradient, site, plot_id) %>% 
   summarize(
     dry_mass_g = mean(dry_mass_g, na.rm = T), 
     plant_height_cm = mean(plant_height_cm, na.rm = T), 
@@ -542,3 +545,4 @@ dt_mod %>%
   ggplot() +
   geom_point(aes(x = par_nee, y = nee, color = gradient)) +
   geom_smooth(aes(x = par_nee, y = nee), method = "lm")
+

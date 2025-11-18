@@ -1,5 +1,6 @@
 ## GLOBAL FLUXES 
 ## April 23, 2024
+## Update: Nov 17. 2025
 
 ## INITIAL DATA CLEANING AND COMBINATION 
 
@@ -405,12 +406,18 @@ sv_flux <- sv_flux_raw %>%
     treatment = ifelse(treatment == "CTL", "c", "otc"), 
     par = par, 
     temperature = ifelse(!is.na(cantemp_light), (cantemp_light + cantemp_dark)/2, cantemp_dark), 
-    type = ifelse(type == "nee_ln", "nee", "reco")) %>% 
+    type = ifelse(type == "nee_ln", "nee", "reco"), 
+    flux_best = ifelse(type == "nee", flux_best*-1, flux_best)) %>% 
   dplyr::select(c(type, plot_id, flux_best, tier, date, site, treatment, plot, par, temperature)) %>% 
   group_by(site, plot_id, plot, type) %>% 
   slice_max(par) %>% 
   ungroup() %>% 
   left_join(sv_meta, by = c("plot_id")) %>% as.data.table() 
+
+sv_flux %>% 
+  ggplot() + 
+  geom_boxplot(aes(x = type, y = flux_best)) +
+  geom_jitter(aes(x = type, y = flux_best))
 
 setdiff(sv_meta$plot_id, sv_flux$plot_id)
 setdiff(sv_flux$plot_id, sv_meta$plot_id)
@@ -437,16 +444,26 @@ sv_flux2 <- fread("data/raw_data/svalbard/Cflux_SV_Gradient_2018.csv") %>%
     tier = paste0("Svalbard_", year(dmy(date))), 
     plot_id = paste0("SV_", gradient, site, plot),
     treatment = "c", 
-    site = paste0(gradient, site)) %>% 
+    site = paste0(gradient, site),
+    flux_best = ifelse(type == "nee", flux_best*-1, flux_best)) %>% 
   dplyr::select(c(type, plot_id, flux_best, tier, date, site, treatment, plot, par, temperature)) %>% 
   group_by(site, plot_id, plot, type) %>% 
   slice_max(par) %>% 
   ungroup() %>% 
   left_join(., sv_coords.grad)
 
+sv_flux2 %>% 
+  ggplot() + 
+  geom_boxplot(aes(x = type, y = flux_best)) +
+  geom_jitter(aes(x = type, y = flux_best))
+
 sv_flux <- bind_rows(sv_flux, sv_flux2 %>% mutate(date = dmy(date),
                                                   site = as.character(site)))
 
+sv_flux %>% 
+  ggplot() + 
+  geom_boxplot(aes(x = type, y = flux_best)) +
+  geom_jitter(aes(x = type, y = flux_best))
 ## Trait data ----------------------------
 
 ### ITEX 
@@ -893,62 +910,108 @@ us_meta <- us_meta_raw %>%
   mutate(site = tolower(site)) %>% 
   dplyr::select(-lat_long)
 
+## PAR ------
+
+us_par_raw <- fread("data/raw_data/colorado/rmbl_par_2020_2024_raw.csv") %>% 
+  mutate(par_with_tent = as.numeric(par_with_tent)) %>% 
+  filter(!is.na(par_with_tent)) %>% 
+  dplyr::select(-c(V11, V12, V13, V14, V15))
+
+table(us_par_raw$season)
+
+us_par <- us_par_raw %>% 
+  mutate(site = tolower(site),
+         season = tolower(season), 
+         date = mdy(Date), 
+         year = year(date), 
+         tier = paste0("Colorado_", year),
+         plot_id = paste0("US_", site, plot),
+         type = "nee", 
+         plot = as.character(plot)) %>% 
+  dplyr::select(c(par = par_with_tent, site, date, season, type, plot, plot_id, tier)) %>% 
+  unique()
+  
+  
+
 ## Flux data ----------------------------
 
 us_flux_raw <- fread("data/raw_data/colorado/rmbl_gradient_flux_data_12042023.csv")
+load("data/raw_data/colorado/nee_summary_2003_2023.RData")
+us_flux_raw <- good_nee_summary %>% 
+  as.data.table()
+
+
+glimpse(us_flux_raw)
+table(us_flux_raw$time)
 
 unique(us_flux_raw$time)
 unique(us_flux_raw$plot)
 unique(us_flux_raw$season)
 
+hist(us_flux_raw$tav)
+
 
 unique(us_flux_raw$site)
 us_flux <- us_flux_raw %>% 
-  rename(flux_best = linear, 
-         temperature = x7500_amb_temp) %>% #or better the measured one?
+  rename(flux_best = nee_lm, 
+         temperature = tav) %>% #or better the measured one?
   mutate(
-    site = tolower(site),
-    plot = gsub("RESP", "", plot), 
-    plot = gsub("A1II", "1", plot), 
-    plot = gsub("A1I", "1", plot), 
-    plot = gsub("A2I", "2", plot), 
-    plot = gsub("A2II", "2", plot), 
-    plot = gsub("B1II", "1", plot), 
-    plot = gsub("B1I", "1", plot), 
-    plot = gsub("B2II", "2", plot), 
-    plot = gsub("B2I", "2", plot), 
-    plot = gsub("C1II", "1", plot), 
-    plot = gsub("C1I", "1", plot), 
-    plot = gsub("C2II", "2", plot), 
-    plot = gsub("C2I", "2", plot), 
-    plot = gsub("2I", "2", plot), 
-    plot = tolower(plot),
+    # site = tolower(site),
+    # plot = gsub("RESP", "", plot), 
+    # plot = gsub("A1II", "1", plot), 
+    # plot = gsub("A1I", "1", plot), 
+    # plot = gsub("A2I", "2", plot), 
+    # plot = gsub("A2II", "2", plot), 
+    # plot = gsub("B1II", "1", plot), 
+    # plot = gsub("B1I", "1", plot), 
+    # plot = gsub("B2II", "2", plot), 
+    # plot = gsub("B2I", "2", plot), 
+    # plot = gsub("C1II", "1", plot), 
+    # plot = gsub("C1I", "1", plot), 
+    # plot = gsub("C2II", "2", plot), 
+    # plot = gsub("C2I", "2", plot), 
+    # plot = gsub("2I", "2", plot), 
+    # plot = tolower(plot),
     temperature = ifelse(temperature < -10, NA, temperature),
     tier = paste0("Colorado_", year),
     plot_id = paste0("US_", site, plot),
     type = case_when(
-      time == "DAY" ~ "nee", 
-      time == "DAY RESP" ~ "reco",
-      time == "NIGHT" ~ "night_reco"),
+      time == "day" ~ "nee", 
+      time == "dayresp" ~ "reco",
+      time == "nightresp" ~ "night_reco"),
     plot_id = paste0("US_", site, plot)) %>% 
   dplyr::select(c(flux_best, temperature, site, date, season, type, plot, plot_id, tier)) %>% 
   filter(!is.na(type)) %>% 
   filter(site %in% c("almont", "cbt", "road", "pfeiler" ,"pbm" , "cinnamon") & type %in% c("nee", "reco")) %>% 
-  left_join(us_meta) %>% filter(!is.na(flux_best)) %>% 
-  filter(season == "Peak")
-us_flux
-us_flux_raw[time == "DAY RESP"]
+  left_join(us_meta) %>%
+  filter(!is.na(flux_best), !is.na(temperature)) %>% 
+  filter(season == "peak", plot %in% c("1", "2", "3", "4", "5")) %>%
+  mutate(date_chr = str_replace_all(date, "[^0-9]", ""),
+         date_chr = str_pad(date_chr, width = 8, side = "left", pad = "0"),
+         date_chr = ifelse(date_chr == "18072017", "07182017", date_chr), 
+         date = mdy(date_chr)) %>% 
+  dplyr::select(-date_chr) %>% 
+  left_join(us_par) %>% 
+  mutate(par = ifelse(type == "nee", par, 2))
+  
+us_flux[is.na(us_flux$date), ]
+table(us_flux$plot)
 
-
-ggplot(data = us_flux) + 
+ggplot(data = us_flux %>% 
+         mutate(year = year(date))) + 
   geom_boxplot(aes(x = type, y = flux_best)) +
   geom_hline(yintercept = 0) +
+  facet_wrap(~year) +
   geom_jitter(aes(x = type, y = flux_best)) #CO2 uptake = positive, release = negative.
 
 quantile(us_flux$temperature, na.rm = TRUE)
 ggplot(data = us_flux[grepl("nee", type), ]) + 
   geom_jitter(aes(x = temperature, y = flux_best)) +
   geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
+
+ggplot(data = us_flux[grepl("nee", type), ]) + 
+  geom_jitter(aes(x = par, y = flux_best)) +
+  geom_smooth(aes(x = par, y = flux_best), method = "lm")
   
 unique(us_flux$site)
 table(us_flux$tier)
@@ -1263,7 +1326,8 @@ sa_flux <- sa_flux_raw %>%
            flux_type == "nee" ~ "nee", 
            flux_type == "resp_day" ~ "reco", 
            flux_type == "resp_night" ~ "night_reco", 
-         )) %>% 
+         ), 
+         flux_best = flux_best*-1) %>% 
   dplyr::select(c(plot_id, tier, flux_best, type, site, plot, aspect, temperature, par, elevation)) %>% 
   left_join(sa_wp3) %>% 
   filter(type != "night_reco")
@@ -1271,6 +1335,9 @@ sa_flux <- sa_flux_raw %>%
 range(sa_flux[type == "nee", flux_best], na.rm = T)
 range(sa_flux[type == "reco", flux_best], na.rm = T)
 
+sa_flux %>%
+  ggplot() +
+  geom_boxplot(aes(x = type, y = flux_best))
 
 sa_flux %>% 
   filter(is.na(par)) %>% 
@@ -1376,7 +1443,6 @@ pe_flux_fin <- pe_flux %>%
        date = as_date(date, format = '%Y-%m-%d'),
        year = year(date), 
        aspect = NA, 
-       par = NA,
        season = "not_part_of_the_dataset") %>% 
   dplyr::select(-date_old)
 
@@ -1408,8 +1474,7 @@ us_flux_fin <- us_flux %>%
          date = as_date(date, format = '%Y.%m.%d'),
          year = year(date), 
          aspect = NA, 
-         treatment = NA,
-         par = NA)
+         treatment = NA)
 
 setdiff(names(no_flux_fin), names(pe_flux_fin))
 setdiff(names(pe_flux_fin), names(no_flux_fin))
@@ -1426,7 +1491,7 @@ sa_flux_fin <- sa_flux %>%
   filter(!type == "night_reco") %>% 
   dplyr::select(-unique_site)
 
-fluxes.combined_raw <- rbind(ch_flux_2016.fin, 
+fluxes_combined_raw <- rbind(ch_flux_2016.fin, 
                          pe_flux_fin, 
                          sv_flux_fin, 
                          no_flux_fin,
@@ -1437,9 +1502,9 @@ setdiff(names(ch_flux_2016.fin), names(sa_flux_fin))
 setdiff(names(sa_flux_fin), names(ch_flux_2016.fin))
 
 
-unique(fluxes.combined_raw[grepl("Peru", tier), ]$treatment)
+unique(fluxes_combined_raw[grepl("Peru", tier), ]$treatment)
 
-fluxes.combined <- fluxes.combined_raw %>% 
+fluxes_combined <- fluxes_combined_raw %>% 
   mutate(treatment = ifelse(is.na(treatment), "c", treatment),
          location = case_when(
     grepl("China", tier) ~ "China", 
@@ -1451,23 +1516,29 @@ fluxes.combined <- fluxes.combined_raw %>%
   ), 
   location = as.factor(location)) %>% 
   filter(!tier %in% c("Colorado_2009", "Colorado_2010")) %>% 
-  filter(treatment %in% c("c", "nb", "b"))
+  filter(treatment %in% c("c", "nb", "b")) %>% 
+  mutate(flux_best = flux_best*-1)
 
 
-unique(fluxes.combined[is.na(fluxes.combined$latitude), ])
-table(fluxes.combined$type)
-unique(fluxes.combined[tier == "South_Africa_2023", ]$par)
+fluxes_combined %>% 
+  filter(tier == "Svalbard_2018") %>% 
+  ggplot() +
+  geom_jitter(aes(x = type, y= flux_best, color = tier))
+
+unique(fluxes_combined[is.na(fluxes_combined$latitude), ])
+table(fluxes_combined$type)
+unique(fluxes_combined[tier == "Colorado_2022", ]$par)
 
 
-fwrite(fluxes.combined, "data/processed_data/preliminary_data/prelim_fluxes.csv")
+#fwrite(fluxes_combined, "data/processed_data/preliminary_data/prelim_fluxes.csv")
 
-nrow(fluxes.combined[type == "nee" & !grepl("Colo", tier), ])
-nrow(fluxes.combined[type == "reco" & !grepl("Colo", tier), ])
+nrow(fluxes_combined[type == "nee" & !grepl("Colo", tier), ])
+nrow(fluxes_combined[type == "reco" & !grepl("Colo", tier), ])
 
 
 
-nrow(fluxes.combined[type == "nee" & treatment != "otc", ])
-ggplot(data = fluxes.combined[type == "nee" & treatment != "otc", ]) + 
+nrow(fluxes_combined[type == "nee" & treatment != "otc", ])
+ggplot(data = fluxes_combined[type == "nee" & treatment != "otc", ]) + 
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_jitter(aes(x = temperature, y = flux_best, color = tier), size = 2, alpha = 0.75) +
   scale_color_viridis_d() +
@@ -1475,7 +1546,15 @@ ggplot(data = fluxes.combined[type == "nee" & treatment != "otc", ]) +
   theme_bw() +
   geom_smooth(aes(x = temperature, y = flux_best), method = "lm")
 
-ggplot(data = fluxes.combined[treatment != "otc", ]) + 
+ggplot(data = fluxes_combined[type == "nee" & treatment != "otc", ]) + 
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_jitter(aes(x = par, y = flux_best, color = tier), size = 2, alpha = 0.75) +
+  scale_color_viridis_d() +
+  labs(y = "NEE", y = "PAR") +
+  theme_bw() +
+  geom_smooth(aes(x = par, y = flux_best), method = "lm")
+
+ggplot(data = fluxes_combined[treatment != "otc", ]) + 
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_jitter(aes(x = type, y = flux_best, color = location), size = 1.5, alpha = 0.75) +
   geom_boxplot(aes(x = type, y = flux_best), size = 1, alpha = 0.75) +
@@ -1483,29 +1562,33 @@ ggplot(data = fluxes.combined[treatment != "otc", ]) +
   labs(y = "Flux (µmol C02/m2/s)", x = "Flux type", color = "Location") +
   theme_bw()
 
-fwrite(fluxes.combined, "data/processed_data/preliminary_data/prelim_fluxes.csv")
+##### CURRENTLY: Positve NEE = Carbon release; Negative REco = carbon update 
+
+
+fwrite(fluxes_combined, "data/processed_data/preliminary_data/prelim_fluxes.csv")
 
 
 
-unique(fluxes.combined[is.na(par),]$tier)
+unique(fluxes_combined[type == "nee" & !is.na(par),]$tier)
 
-m0 <- lm(flux_best ~ 1, data = fluxes.combined[type == "nee" & treatment != "otc", ])
+m0 <- lm(flux_best ~ 1, data = fluxes_combined[type == "nee" & treatment != "otc", ])
 summary(m0)
 
-m1 <- lm(flux_best ~ temperature, data = fluxes.combined[type == "nee" & treatment != "otc", ])
+m1 <- lm(flux_best ~ temperature, data = fluxes_combined[type == "nee" & treatment != "otc", ])
 summary(m1)
 
 
 
-fluxes.combined2 <- fluxes.combined %>%
+fluxes_combined2 <- fluxes_combined %>%
   dplyr::select(plot_id, tier, date, longitude, latitude) %>% 
   unique()
 
-flux_sf <- st_as_sf(fluxes.combined2, 
+flux_sf <- st_as_sf(fluxes_combined2, 
                     coords = c("longitude", "latitude"), 
                     crs = 4326)
 
 mapview::mapview(flux_sf)
+
 
 flux_sf2 <- flux_sf %>% 
   dplyr::select(plot_id, tier, date) %>% 
