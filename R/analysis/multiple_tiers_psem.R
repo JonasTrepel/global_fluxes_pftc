@@ -21,7 +21,7 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     nee, reco, gpp,
     
     # environmental 
-    elevation, map, mat,
+    downscaled_temp, map, mat,
     temperature_nee, temperature_reco, temperature_gpp,
     
     # trait means 
@@ -44,8 +44,9 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     temperature_gpp_anomaly_country,
     temperature_nee_anomaly_country,
     temperature_reco_anomaly_country,
-    elevation_anomaly_country,
-    elevation_anomaly_country,
+    downscaled_temp_anomaly_country,
+    downscaled_temp_anomaly_country,
+    par_nee_anomaly_country,
     
     leaf_area_anomaly_country, 
     sla_anomaly_country, 
@@ -60,11 +61,11 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     # # p_percent_anomaly_country,
     # # cn_ratio_anomaly_country,
     # # c_percent_anomaly_country,
-    # par_anomaly_country,
+    # par_nee_anomaly_country,
     # soil_moisture_anomaly_country,
     # woodiness_t1_anomaly_country,
     # grassiness_t1_anomaly_country
-  ) #%>% filter(complete.cases(.))
+  ) %>% filter(!is.na(morph_traits_pc1_anomaly_country))
 
 dt <- dt_raw %>% 
   dplyr::select(-c(nee, reco, gpp, lat)) %>% 
@@ -88,7 +89,8 @@ m_t1_nee <- psem(
   
   #model for flux
   glmmTMB(nee_anomaly_country ~
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -110,7 +112,7 @@ m_t1_reco <- psem(
   
   #model for flux
   glmmTMB(reco_anomaly_country ~
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -131,7 +133,8 @@ m_t1_gpp <- psem(
   
   #model for flux
   glmmTMB(gpp_anomaly_country ~
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -158,7 +161,7 @@ m_t2_nee <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -166,18 +169,16 @@ m_t2_nee <- psem(
   #model for flux
   glmmTMB(nee_anomaly_country ~
             temperature_nee_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
   
   # Correlated errors
-  # height_x_cover_anomaly_country %~~% morph_traits_pc1_anomaly_country,
-  # height_x_cover_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # morph_traits_pc1_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
-  # temperature_nee_anomaly_country %~~% morph_traits_pc1_anomaly_country,
-  # temperature_nee_anomaly_country %~~% morph_traits_pc2_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  
   
   data = dt
 )
@@ -196,7 +197,7 @@ m_t2_reco <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -204,7 +205,7 @@ m_t2_reco <- psem(
   #model for flux
   glmmTMB(reco_anomaly_country ~
             temperature_reco_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -232,7 +233,7 @@ m_t2_gpp <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -240,12 +241,15 @@ m_t2_gpp <- psem(
   #model for flux
   glmmTMB(gpp_anomaly_country ~
             temperature_gpp_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
   
   # Correlated errors
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
 
   data = dt
 )
@@ -268,14 +272,14 @@ m_t3_nee <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for biomass
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -284,19 +288,18 @@ m_t3_nee <- psem(
   #model for flux
   glmmTMB(nee_anomaly_country ~
             temperature_nee_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             height_x_cover_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
   
   # Correlated errors
-    height_x_cover_anomaly_country %~~% temperature_nee_anomaly_country,
-  # height_x_cover_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # morph_traits_pc1_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
-  # temperature_nee_anomaly_country %~~% morph_traits_pc1_anomaly_country,
-  # temperature_nee_anomaly_country %~~% morph_traits_pc2_anomaly_country,
+  height_x_cover_anomaly_country %~~% temperature_nee_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt
 )
@@ -315,14 +318,14 @@ m_t3_reco <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for biomass
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -331,7 +334,7 @@ m_t3_reco <- psem(
   #model for flux
   glmmTMB(reco_anomaly_country ~
             temperature_reco_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             height_x_cover_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
@@ -360,14 +363,14 @@ m_t3_gpp <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for biomass
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -376,19 +379,19 @@ m_t3_gpp <- psem(
   #model for flux
   glmmTMB(gpp_anomaly_country ~
             temperature_gpp_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             height_x_cover_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
   
   # Correlated errors
   height_x_cover_anomaly_country %~~% temperature_gpp_anomaly_country,
-  # height_x_cover_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # morph_traits_pc1_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  # temperature_reco_anomaly_country %~~% height_x_cover_anomaly_country,
-  # temperature_reco_anomaly_country %~~% morph_traits_pc1_anomaly_country,
-  # temperature_reco_anomaly_country %~~% morph_traits_pc2_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  
   
   data = dt
 )
@@ -407,7 +410,7 @@ m_t4_nee_1 <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -415,21 +418,21 @@ m_t4_nee_1 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla / ldmc axis 
   glmmTMB(morph_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area / dry mass axis 
   glmmTMB(morph_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -440,7 +443,8 @@ m_t4_nee_1 <- psem(
             height_x_cover_anomaly_country +
             morph_traits_pc1_anomaly_country + 
             morph_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -452,7 +456,11 @@ m_t4_nee_1 <- psem(
   temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_nee_anomaly_country %~~% morph_traits_pc1_anomaly_country,
   temperature_nee_anomaly_country %~~% morph_traits_pc2_anomaly_country,
-  
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  morph_traits_pc1_anomaly_country %~~% par_nee_anomaly_country,
+  morph_traits_pc2_anomaly_country %~~% par_nee_anomaly_country,
   data = dt
 )
 ss_t4_nee_1 <- summary(m_t4_nee_1)
@@ -469,7 +477,7 @@ m_t4_nee_2 <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -477,21 +485,21 @@ m_t4_nee_2 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -502,7 +510,8 @@ m_t4_nee_2 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -514,6 +523,11 @@ m_t4_nee_2 <- psem(
   temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_nee_anomaly_country %~~% sla_anomaly_country,
   temperature_nee_anomaly_country %~~% leaf_area_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  leaf_area_anomaly_country %~~% par_nee_anomaly_country,
+  sla_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt
 )
@@ -532,7 +546,7 @@ m_t4_nee_3 <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -540,21 +554,21 @@ m_t4_nee_3 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla / ldmc axis 
   glmmTMB(all_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area / dry mass axis 
   glmmTMB(all_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -565,7 +579,8 @@ m_t4_nee_3 <- psem(
             height_x_cover_anomaly_country +
             all_traits_pc1_anomaly_country + 
             all_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -577,7 +592,11 @@ m_t4_nee_3 <- psem(
   temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_nee_anomaly_country %~~% all_traits_pc1_anomaly_country,
   temperature_nee_anomaly_country %~~% all_traits_pc2_anomaly_country,
-  
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  all_traits_pc1_anomaly_country %~~% par_nee_anomaly_country,
+  all_traits_pc2_anomaly_country %~~% par_nee_anomaly_country,
   data = dt_at 
 )
 ss_t4_nee_3 <- summary(m_t4_nee_3)
@@ -593,7 +612,7 @@ m_t4_nee_4 <- psem(
   
   # model for temperature
   glmmTMB(temperature_nee_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -601,21 +620,21 @@ m_t4_nee_4 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -626,7 +645,8 @@ m_t4_nee_4 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -638,6 +658,11 @@ m_t4_nee_4 <- psem(
   temperature_nee_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_nee_anomaly_country %~~% sla_anomaly_country,
   temperature_nee_anomaly_country %~~% leaf_area_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_nee_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  leaf_area_anomaly_country %~~% par_nee_anomaly_country,
+  sla_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt_at
 )
@@ -658,7 +683,7 @@ m_t4_reco_1 <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -666,21 +691,21 @@ m_t4_reco_1 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla / ldmc axis 
   glmmTMB(morph_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area / dry mass axis 
   glmmTMB(morph_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -691,7 +716,7 @@ m_t4_reco_1 <- psem(
             height_x_cover_anomaly_country +
             morph_traits_pc1_anomaly_country + 
             morph_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -720,7 +745,7 @@ m_t4_reco_2 <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -728,21 +753,21 @@ m_t4_reco_2 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -753,7 +778,7 @@ m_t4_reco_2 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -783,7 +808,7 @@ m_t4_reco_3 <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -791,21 +816,21 @@ m_t4_reco_3 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla / ldmc axis 
   glmmTMB(all_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area / dry mass axis 
   glmmTMB(all_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -816,7 +841,7 @@ m_t4_reco_3 <- psem(
             height_x_cover_anomaly_country +
             all_traits_pc1_anomaly_country + 
             all_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -845,7 +870,7 @@ m_t4_reco_4 <- psem(
   
   # model for temperature
   glmmTMB(temperature_reco_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -853,21 +878,21 @@ m_t4_reco_4 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -878,7 +903,7 @@ m_t4_reco_4 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -910,7 +935,7 @@ m_t4_gpp_1 <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -918,21 +943,21 @@ m_t4_gpp_1 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla / ldmc axis 
   glmmTMB(morph_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area / dry mass axis 
   glmmTMB(morph_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -943,7 +968,8 @@ m_t4_gpp_1 <- psem(
             height_x_cover_anomaly_country +
             morph_traits_pc1_anomaly_country + 
             morph_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -955,6 +981,11 @@ m_t4_gpp_1 <- psem(
   temperature_gpp_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_gpp_anomaly_country %~~% morph_traits_pc1_anomaly_country,
   temperature_gpp_anomaly_country %~~% morph_traits_pc2_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  morph_traits_pc1_anomaly_country %~~% par_nee_anomaly_country,
+  morph_traits_pc2_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt
 )
@@ -972,7 +1003,7 @@ m_t4_gpp_2 <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
@@ -980,21 +1011,21 @@ m_t4_gpp_2 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -1005,7 +1036,8 @@ m_t4_gpp_2 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt),
@@ -1017,6 +1049,11 @@ m_t4_gpp_2 <- psem(
   temperature_gpp_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_gpp_anomaly_country %~~% sla_anomaly_country,
   temperature_gpp_anomaly_country %~~% leaf_area_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  sla_anomaly_country %~~% par_nee_anomaly_country,
+  leaf_area_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt
 )
@@ -1035,7 +1072,7 @@ m_t4_gpp_3 <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -1043,21 +1080,21 @@ m_t4_gpp_3 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla / ldmc axis 
   glmmTMB(all_traits_pc1_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area / dry mass axis 
   glmmTMB(all_traits_pc2_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -1068,7 +1105,8 @@ m_t4_gpp_3 <- psem(
             height_x_cover_anomaly_country +
             all_traits_pc1_anomaly_country + 
             all_traits_pc2_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -1080,6 +1118,11 @@ m_t4_gpp_3 <- psem(
   temperature_gpp_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_gpp_anomaly_country %~~% all_traits_pc1_anomaly_country,
   temperature_gpp_anomaly_country %~~% all_traits_pc2_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  all_traits_pc1_anomaly_country %~~% par_nee_anomaly_country,
+  all_traits_pc2_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt_at 
 )
@@ -1096,7 +1139,7 @@ m_t4_gpp_4 <- psem(
   
   # model for temperature
   glmmTMB(temperature_gpp_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
@@ -1104,21 +1147,21 @@ m_t4_gpp_4 <- psem(
   
   # model for veg volume / biomass 
   glmmTMB(height_x_cover_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for sla 
   glmmTMB(sla_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site),
           na.action = na.omit,
           data = dt_at),
   
   # model for lead area
   glmmTMB(leaf_area_anomaly_country ~ 
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -1129,7 +1172,8 @@ m_t4_gpp_4 <- psem(
             height_x_cover_anomaly_country +
             sla_anomaly_country + 
             leaf_area_anomaly_country +
-            elevation_anomaly_country +
+            downscaled_temp_anomaly_country +
+            par_nee_anomaly_country +
             ( 1 | site), 
           na.action = na.omit,
           data = dt_at),
@@ -1141,6 +1185,11 @@ m_t4_gpp_4 <- psem(
   temperature_gpp_anomaly_country %~~% height_x_cover_anomaly_country,
   temperature_gpp_anomaly_country %~~% sla_anomaly_country,
   temperature_gpp_anomaly_country %~~% leaf_area_anomaly_country,
+  downscaled_temp_anomaly_country %~~% par_nee_anomaly_country,
+  temperature_gpp_anomaly_country %~~% par_nee_anomaly_country,
+  height_x_cover_anomaly_country %~~% par_nee_anomaly_country,
+  sla_anomaly_country %~~% par_nee_anomaly_country,
+  leaf_area_anomaly_country %~~% par_nee_anomaly_country,
   
   data = dt_at
 )
@@ -1270,7 +1319,7 @@ dt_est <- dt_res %>%
     clean_term =  case_when(
       .default = predictor,
       grepl("temperature_", predictor) ~ "Inst. Temperature",
-      predictor == "elevation_anomaly_country" ~ "Elevation",
+      predictor == "downscaled_temp_anomaly_country" ~ "Growing Season Temp.",
       predictor == "height_x_cover_anomaly_country"      ~ "'Biomass'",
       predictor == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
       predictor == "morph_traits_pc2_anomaly_country"          ~ "Morph. Traits PC2",
@@ -1279,6 +1328,7 @@ dt_est <- dt_res %>%
       predictor == "chem_traits_pc1_anomaly_country"          ~ "Chem. Traits PC1",
       predictor == "chem_traits_pc2_anomaly_country"          ~ "Chem. Traits PC2",
       predictor == "sla_anomaly_country"                 ~ "SLA",
+      predictor == "par_nee_anomaly_country"                 ~ "PAR",
       predictor == "leaf_area_anomaly_country"           ~ "Leaf Area"), 
     significance = case_when(
       .default = "Non significant", 
@@ -1294,7 +1344,8 @@ dt_est <- dt_res %>%
                                    "All Traits PC2", "All Traits PC1",
                                    "Morph. Traits PC2", "Morph. Traits PC1",
                                    "Inst. Temperature",
-                                   "Elevation")),
+                                   "Growing Season Temp.", 
+                                   "PAR")),
     response = factor(response,
                       levels = c("gpp_anomaly_country",
                                  "nee_anomaly_country",
@@ -1586,14 +1637,16 @@ ggsave(plot = p_t4_lt_w_at_dt ,
 #### Compare flux model AICs------------
 #NEE
 fm_t1_nee <- glmmTMB(nee_anomaly_country ~
-          elevation_anomaly_country +
+          downscaled_temp_anomaly_country +
+            par_nee_anomaly_country + 
           ( 1 | site), na.action = na.omit,
           data = dt)
 summary(fm_t1_nee)
 
 fm_t2_nee <- glmmTMB(nee_anomaly_country ~
                        temperature_nee_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
+                       par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t2_nee)
@@ -1601,28 +1654,31 @@ summary(fm_t2_nee)
 
 fm_t3_nee <- glmmTMB(nee_anomaly_country ~
                        temperature_nee_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        height_x_cover_anomaly_country +
+                       par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t3_nee)
 
 fm_t4_nee_1 <- glmmTMB(nee_anomaly_country ~
                        temperature_nee_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        height_x_cover_anomaly_country +
                        morph_traits_pc1_anomaly_country +
                        morph_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t4_nee_1)
 
 fm_t4_nee_2 <- glmmTMB(nee_anomaly_country ~
                        temperature_nee_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
+                         par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t4_nee_2)
@@ -1631,14 +1687,14 @@ summary(fm_t4_nee_2)
 #Reco
 
 fm_t1_reco <- glmmTMB(reco_anomaly_country ~
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t1_reco)
 
 fm_t2_reco <- glmmTMB(reco_anomaly_country ~
                        temperature_reco_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t2_reco)
@@ -1646,7 +1702,7 @@ summary(fm_t2_reco)
 
 fm_t3_reco <- glmmTMB(reco_anomaly_country ~
                        temperature_reco_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        height_x_cover_anomaly_country +
                        ( 1 | site), na.action = na.omit,
                      data = dt)
@@ -1654,7 +1710,7 @@ summary(fm_t3_reco)
 
 fm_t4_reco_1 <- glmmTMB(reco_anomaly_country ~
                          temperature_reco_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          morph_traits_pc1_anomaly_country +
                          morph_traits_pc2_anomaly_country +
@@ -1664,7 +1720,7 @@ summary(fm_t4_reco_1)
 
 fm_t4_reco_2 <- glmmTMB(reco_anomaly_country ~
                          temperature_reco_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
@@ -1674,14 +1730,16 @@ summary(fm_t4_reco_2)
 
 #Gpp
 fm_t1_gpp <- glmmTMB(gpp_anomaly_country ~
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
+                       par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t1_gpp)
 
 fm_t2_gpp <- glmmTMB(gpp_anomaly_country ~
                        temperature_gpp_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
+                       par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t2_gpp)
@@ -1689,28 +1747,31 @@ summary(fm_t2_gpp)
 
 fm_t3_gpp <- glmmTMB(gpp_anomaly_country ~
                        temperature_gpp_anomaly_country +
-                       elevation_anomaly_country +
+                       downscaled_temp_anomaly_country +
                        height_x_cover_anomaly_country +
+                       par_nee_anomaly_country + 
                        ( 1 | site), na.action = na.omit,
                      data = dt)
 summary(fm_t3_gpp)
 
 fm_t4_gpp_1 <- glmmTMB(gpp_anomaly_country ~
                          temperature_gpp_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          morph_traits_pc1_anomaly_country +
                          morph_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country + 
                          ( 1 | site), na.action = na.omit,
                        data = dt)
 summary(fm_t4_gpp_1)
 
 fm_t4_gpp_2 <- glmmTMB(gpp_anomaly_country ~
                          temperature_gpp_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
+                         par_nee_anomaly_country + 
                          ( 1 | site), na.action = na.omit,
                        data = dt)
 summary(fm_t4_gpp_2)

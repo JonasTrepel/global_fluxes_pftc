@@ -54,6 +54,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
 table(dt_flux_t$tier)
 table(dt_flux$tier)
 summary(dt_flux[dt_flux$tier == "South_Africa_2023", ]$par_reco)
+dt_flux_t[dt_flux_t$tier == "Peru_2019", ]$date
 
 #Colorado 2013 and Peru 2019 have the most control plots, which is why we will go with them for now 
 #But for Peru 2018 we have leaf traits, so we go for this one instead. 
@@ -112,35 +113,6 @@ scale(as.numeric(dt_trait_mean$sla_cm2_g))
 #spatial predictors -------------------
 dt_sps <- fread("data/processed_data/preliminary_data/spatial_predictors.csv") 
 
-#remotely sensed covariates ---------------------
-dt_rs_not_sa <- fread("data/environmental_data/predictors.csv") %>% 
-  mutate(plot_id = as.character(plot_id), 
-         date = as_date(date)) %>% 
-  dplyr::select(-"flux_id") %>% 
-  filter(!grepl("SA", plot_id))
-
-dt_flux_dates <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") 
-sa_dates <- dt_flux_dates[grepl("SA", dt_flux_dates$plot_id), c("plot_id", "date")] %>% unique() %>% mutate(date = as_date(date))
-
-dt_rs_sa <- fread("data/environmental_data/predictors.csv") %>% 
-  mutate(plot_id = as.character(plot_id), 
-         date = as_date(date)) %>% 
-  dplyr::select(-"flux_id", -"date") %>% 
-  filter(grepl("SA", plot_id)) %>% 
-  left_join(sa_dates)
-
-dt_rs <- rbind(dt_rs_not_sa, dt_rs_sa) %>% 
-  dplyr::select(T_diff1, T_diff7, T_diff14,
-                T_diff28, plot_id) %>% 
-  group_by(plot_id) %>% 
-  summarize(
-    temp_diff_day = mean(T_diff1, na.rm = T), 
-    temp_diff_week = mean(T_diff7, na.rm = T), 
-    temp_diff_fortnight = mean(T_diff14, na.rm = T), 
-    temp_iff_month = mean(T_diff28, na.rm = T), 
-    
-  )
-hist(dt_rs$temp_diff_week)
 
 #get lon and lat --------------------
 dt_loc <- read_sf("data/processed_data/preliminary_data/prelim_flux_loc.gpkg")
@@ -173,6 +145,10 @@ sbb <- st_union(pb) %>%
 dt_coords$spatial_block <- st_intersects(p, sbb) %>% as.numeric()
 
 # get climate -----------------------
+
+dt_dc <- fread("data/environmental_data/downscaled_climate.csv") %>% 
+  rename(downscaled_temp = T2m,
+         downscaled_vpd = VPD)
 
 dt_clim <- fread("data/environmental_data/climate.csv") %>%
   rename(MAP = annual_precipitation, 
@@ -240,7 +216,7 @@ dt_mod_1 <- dt_flux %>%
   left_join(dt_fd) %>% 
   left_join(dt_ch) %>% 
   left_join(dt_sps) %>% 
-  left_join(dt_rs) %>% 
+  left_join(dt_dc) %>% 
   left_join(dt_wg) %>% 
   left_join(dt_sr) %>% 
   left_join(dt_coords) %>% 
@@ -446,6 +422,8 @@ dt_mod <- dt_mod_1 %>%
     mmp_country_mean = mean(mmp, na.rm = TRUE), 
     map_country_mean = mean(map, na.rm = TRUE), 
     mat_country_mean = mean(mat, na.rm = TRUE), 
+    downscaled_temp_mean = mean(downscaled_temp, na.rm = T), 
+    downscaled_vpd_mean = mean(downscaled_vpd, na.rm = T),
     sla_country_mean = mean(sla_cm2_g, na.rm = TRUE), 
     leaf_area_country_mean = mean(leaf_area_cm2, na.rm = TRUE),
     plant_height_country_mean = mean(plant_height_cm, na.rm = TRUE),
@@ -487,6 +465,8 @@ dt_mod <- dt_mod_1 %>%
     gpp_anomaly_country = gpp - gpp_country_mean,
     reco_anomaly_country = reco - reco_country_mean,
     nee_anomaly_country = nee - nee_country_mean,
+    downscaled_temp_anomaly_country = downscaled_temp - downscaled_temp_mean, 
+    downscaled_vpd_anomaly_country = downscaled_vpd - downscaled_vpd_mean, 
     sla_anomaly_country = sla_cm2_g - sla_country_mean,
     leaf_area_anomaly_country = leaf_area_cm2 - leaf_area_country_mean,
     plant_height_anomaly_country = plant_height_cm - plant_height_country_mean,
@@ -540,9 +520,12 @@ dt_mod[(is.na(dt_mod$all_traits_pc1_anomaly_country)), ]$plot_id
 fwrite(dt_mod, "data/processed_data/clean_data/global_fluxes_main_data.csv")
 summary(dt_mod[dt_mod$gradient == "Drakensberg", ]$par_nee)
 
-
 dt_mod %>%
   ggplot() +
   geom_point(aes(x = par_nee, y = nee, color = gradient)) +
   geom_smooth(aes(x = par_nee, y = nee), method = "lm")
 
+plot(dt_mod$downscaled_temp_anomaly_country, dt_mod$downscaled_vpd_anomaly_country)
+cor.test(dt_mod$downscaled_temp_anomaly_country, dt_mod$downscaled_vpd_anomaly_country)
+
+cor.test(dt_mod$downscaled_temp_anomaly_country, dt_mod$elevation_anomaly_country)

@@ -8,14 +8,15 @@ library(MetBrewer)
 library(gridExtra)
 
 dt <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
-  select(country, spatial_block, site, plot_id, mmp, mat, elevation, 
+  select(country, spatial_block, site, plot_id, mmp, downscaled_temp, elevation, 
          temperature_nee, temperature_reco, temperature_gpp,
          height_x_cover, sla_cm2_g, ldmc, leaf_area_cm2, nee, reco, gpp,
-         lat, lon, species_richness, gradient
+         lat, lon, gradient
   ) %>% 
   rename(local_temperature = temperature_gpp) %>% 
   filter(complete.cases(.))
 table(dt$gradient)
+
 sf_fluxes <- read_sf("data/processed_data/preliminary_data/prelim_flux_loc.gpkg") %>% 
   rename(plot_id = plot_id) 
 
@@ -25,7 +26,7 @@ dt_sf <- dt %>%
   st_transform(crs = 'ESRI:54009') %>% 
   mutate(gradient = fct_reorder(gradient, lat)) 
 
-mapview(dt_sf)
+mapview(sf_fluxes)
 
 world <- rnaturalearth::ne_countries() %>% filter(!name_en == "Antarctica") %>% st_transform(crs = 'ESRI:54009')
 
@@ -49,7 +50,7 @@ map_e <- grid.arrange(p_empty, map, widths = c(0.5, 2), ncol = 2)
 
 units <- c(
   elevation = "m",
-  mat = "°C",
+  downscaled_temp = "°C",
   mmp = "mm",
   nee = "µmol m⁻² s⁻¹",
   reco = "µmol m⁻² s⁻¹",
@@ -68,7 +69,7 @@ dt_units <- data.table(
   unit = units)
 
 dt_long <- dt %>% 
-  pivot_longer(cols = c(elevation, mat, mmp, nee, reco, gpp, ldmc, species_richness,
+  pivot_longer(cols = c(elevation, downscaled_temp, mmp, nee, reco, gpp, ldmc,
                         sla_cm2_g, leaf_area_cm2, local_temperature, height_x_cover), 
                names_to = "var_name", values_to = "var_value") %>% 
   left_join(dt_units) %>% 
@@ -82,7 +83,7 @@ dt_long <- dt %>%
          plotvar_name = gsub("nee", "NEE", plotvar_name), 
          plotvar_name = gsub("reco", "Reco", plotvar_name), 
          plotvar_name = gsub("elevation", "Elevation", plotvar_name), 
-         plotvar_name = gsub("mat", "MAT", plotvar_name), 
+         plotvar_name = gsub("downscaled_temp", "Growing Season\nTemperature", plotvar_name), 
          plotvar_name = gsub("mmp", "MMP", plotvar_name), 
          plotvar_name = gsub("species_richness", "Species Richness", plotvar_name), 
          
@@ -90,11 +91,11 @@ dt_long <- dt %>%
 
 library(ggridges)
 pba1 <- dt_long %>%
-  filter(var_name %in% c("elevation", "mat", "local_temperature", "height_x_cover")) %>% 
+  filter(var_name %in% c("elevation", "downscaled_temp", "local_temperature", "height_x_cover")) %>% 
   mutate(gradient = fct_reorder(gradient, lat), 
          plotvar_name = factor(plotvar_name, levels = c(
                                                         "Elevation (m)", 
-                                                        "MAT (°C)", 
+                                                        "Growing Season\nTemperature (°C)", 
                                                         "Inst. Temperature (°C)", 
                                                         "'Biomass'"))) %>%
   ggplot() +
@@ -113,7 +114,7 @@ pba1 <- dt_long %>%
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
         panel.border = element_rect(color = NA), 
         panel.background = element_rect(fill = "snow"), 
-        strip.text.x = element_text(size = 14), 
+        strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 14, face = "bold"), 
         strip.background = element_rect(fill = "linen", color = "linen") )
 pba1
@@ -145,14 +146,14 @@ pba3 <- dt_long %>%
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
         panel.border = element_rect(color = NA), 
         panel.background = element_rect(fill = "snow"), 
-        strip.text.x = element_text(size = 14), 
+        strip.text.x = element_text(size = 12), 
         strip.text.y = element_text(size = 14, face = "bold"), 
         strip.background = element_rect(fill = "linen", color = "linen") )
 pba3
 
 #pba_fus <- grid.arrange(pba1, pba2, ncol = 2)             
 
-comb_plot_a <- grid.arrange(pba1, map_e, pba3, heights = c(1.1, 1.5, 1.2), 
+comb_plot_a <- grid.arrange(pba1, map_e, pba3, heights = c(1.2, 1.5, 1.2), 
                           padding = unit(0.5, "lines"))
 ggsave(plot = comb_plot_a, "builds/plots/map.png", dpi = 600, height = 10.5, width = 10.5)
 
