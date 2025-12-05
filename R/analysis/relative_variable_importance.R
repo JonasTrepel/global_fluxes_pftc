@@ -12,7 +12,7 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     nee, reco, gpp,
     
     # environmental 
-    elevation, map, mat,
+    downscaled_temp, map, mat,
     temperature_nee, temperature_reco, temperature_gpp,
     
     # trait means 
@@ -35,8 +35,8 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     temperature_gpp_anomaly_country,
     temperature_nee_anomaly_country,
     temperature_reco_anomaly_country,
-    elevation_anomaly_country,
-    elevation_anomaly_country,
+    downscaled_temp_anomaly_country,
+    downscaled_temp_anomaly_country,
     
     leaf_area_anomaly_country, 
     sla_anomaly_country, 
@@ -51,11 +51,11 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     # # p_percent_anomaly_country,
     # # cn_ratio_anomaly_country,
     # # c_percent_anomaly_country,
-    # par_anomaly_country,
+     par_nee_anomaly_country,
     # soil_moisture_anomaly_country,
     # woodiness_t1_anomaly_country,
     # grassiness_t1_anomaly_country
-  ) #%>% filter(complete.cases(.))
+  ) %>% filter(!is.na(morph_traits_pc1_anomaly_country))
 
 m_dat <- dt_raw %>% 
   dplyr::select(-c(nee, reco, gpp, lat)) %>% 
@@ -77,30 +77,33 @@ m_dat <- dt_raw %>%
 
 fm_t4_nee_1 <- glmmTMB(nee_anomaly_country ~
                          temperature_nee_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          morph_traits_pc1_anomaly_country +
                          morph_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country +
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_nee_1)
 
 fm_t4_nee_2 <- glmmTMB(nee_anomaly_country ~
                          temperature_nee_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
+                         par_nee_anomaly_country +
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_nee_2)
 
 fm_t4_nee_3 <- glmmTMB(nee_anomaly_country ~
                          temperature_nee_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          all_traits_pc1_anomaly_country +
                          all_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country +
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_nee_3)
@@ -111,7 +114,7 @@ summary(fm_t4_nee_3)
 
 fm_t4_reco_1 <- glmmTMB(reco_anomaly_country ~
                          temperature_reco_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          morph_traits_pc1_anomaly_country +
                          morph_traits_pc2_anomaly_country +
@@ -121,7 +124,7 @@ summary(fm_t4_reco_1)
 
 fm_t4_reco_2 <- glmmTMB(reco_anomaly_country ~
                          temperature_reco_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
@@ -131,7 +134,7 @@ summary(fm_t4_reco_2)
 
 fm_t4_reco_3 <- glmmTMB(reco_anomaly_country ~
                          temperature_reco_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          all_traits_pc1_anomaly_country +
                          all_traits_pc2_anomaly_country +
@@ -142,30 +145,33 @@ summary(fm_t4_reco_3)
 #Gpp
 fm_t4_gpp_1 <- glmmTMB(gpp_anomaly_country ~
                          temperature_gpp_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          morph_traits_pc1_anomaly_country +
                          morph_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country + 
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_gpp_1)
 
 fm_t4_gpp_2 <- glmmTMB(gpp_anomaly_country ~
                          temperature_gpp_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          leaf_area_anomaly_country +
                          sla_anomaly_country +
+                         par_nee_anomaly_country + 
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_gpp_2)
 
 fm_t4_gpp_3 <- glmmTMB(gpp_anomaly_country ~
                          temperature_gpp_anomaly_country +
-                         elevation_anomaly_country +
+                         downscaled_temp_anomaly_country +
                          height_x_cover_anomaly_country +
                          all_traits_pc1_anomaly_country +
                          all_traits_pc2_anomaly_country +
+                         par_nee_anomaly_country + 
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(fm_t4_gpp_3)
@@ -225,8 +231,9 @@ dt_vp <- dt_res_fm %>%
   clean_term =  case_when(
     .default = predictor,
     grepl("temperature_", predictor) ~ "Inst. Temperature",
-    predictor == "elevation_anomaly_country" ~ "Elevation",
+    predictor == "downscaled_temp_anomaly_country" ~ "Growing Season Temp.",
     predictor == "height_x_cover_anomaly_country"      ~ "'Biomass'",
+    predictor == "par_nee_anomaly_country"      ~ "PAR",
     predictor == "morph_traits_pc1_anomaly_country"          ~ "Morph. Traits PC1",
     predictor == "morph_traits_pc2_anomaly_country"          ~ "Morph. Traits PC2",
     predictor == "all_traits_pc1_anomaly_country"          ~ "All Traits PC1",
@@ -244,7 +251,8 @@ dt_vp <- dt_res_fm %>%
                                    "All Traits PC2", "All Traits PC1",
                                    "Morph. Traits PC2", "Morph. Traits PC1",
                                    "Inst. Temperature",
-                                   "Elevation")))
+                                   "Growing Season Temp.",
+                                   "PAR")))
 
 
 

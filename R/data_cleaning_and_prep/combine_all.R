@@ -512,7 +512,7 @@ dt_mod <- dt_mod_1 %>%
     temperature_gpp_anomaly_country = temperature_mean_anomaly_country, 
     temperature_gpp_country_mean = temperature_mean_country_mean, 
   ) %>% 
-  filter(!is.na(sla_cm2_g))
+  filter(!is.na(morph_traits_pc1_anomaly_country))
 
 dt_mod[(is.na(dt_mod$all_traits_pc1_anomaly_country)), ]$plot_id
 
