@@ -155,8 +155,10 @@ m_dat <- dt_mod %>%
   left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
   distinct()
 
-
-
+m_dat %>% 
+  ggplot(aes(x = log_positive_nee_anomaly_country, y = positive_nee_anomaly_country)) +
+  geom_point() +
+  facet_wrap(~gradient)
 ## Prepare models -------
 # NEEE
 m_nee_t1_1 <- glmmTMB(positive_nee_anomaly_country ~
@@ -365,6 +367,7 @@ p_s = dt_p %>%
   geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
   geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
                   position = position_dodge(width = .5)) +
+  labs(y = NULL, x = "Estimate", color = "Tier") +
   facet_wrap(~response)
 p_s  
 
@@ -377,5 +380,11 @@ p_f = dt_p %>%
   geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
   geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
                   position = position_dodge(width = .5)) +
+  labs(y = NULL, x = "Estimate", color = "Tier") +
   facet_wrap(~response)
 p_f 
+
+
+library(patchwork)
+(p_comb = p_s / p_f)
+ggsave(plot = p_comb, "builds/plots/supplement/log_transformed_fluxes.png", dpi = 600, height = 6, width = 8)
