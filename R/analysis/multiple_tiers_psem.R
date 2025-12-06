@@ -79,6 +79,8 @@ dt <- dt_raw %>%
   left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
   distinct()
 
+
+cor.test(dt$par_nee_anomaly_country, dt$temperature_nee_anomaly_country)
 #########################################################################
 ###########################    FIRST TIER     ###########################
 #########################################################################
@@ -674,7 +676,7 @@ plot(m_t4_nee_4)
 anova(m_t4_nee_4)
 
 
-AIC(m_t4_nee_4)[1] - AIC(m_t4_nee_3)[1] #aic with leaf traits instead of all traits PCA lower 
+AIC(m_t4_nee_2)[1] - AIC(m_t4_nee_1)[1] #aic with leaf traits instead of all traits PCA lower 
 
 # 2. Reco ------------------------------------------
 ## Moprhological Trait PCA --------------------
@@ -800,6 +802,7 @@ AIC(m_t4_reco_2)
 plot(m_t4_reco_2)
 anova(m_t4_reco_2)
 
+AIC(m_t4_reco_2)[1] - AIC(m_t4_reco_1)[1]
 ## All Traits PCA --------------------
 dt_at <- dt %>% filter(!is.na(all_traits_pc1_anomaly_country))
 
@@ -1063,6 +1066,9 @@ LLchisq(m_t4_gpp_2)
 AIC(m_t4_gpp_2)
 plot(m_t4_gpp_2)
 anova(m_t4_gpp_2)
+
+AIC(m_t4_gpp_2)[1] - AIC(m_t4_gpp_1)[1]
+
 
 ## All Traits PCA --------------------
 dt_at <- dt %>% filter(!is.na(all_traits_pc1_anomaly_country))
@@ -1394,13 +1400,13 @@ p_t1_flux <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_1" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t1_flux
 
@@ -1415,13 +1421,13 @@ p_t2_flux <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_2" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5) +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t2_flux
 
@@ -1429,13 +1435,13 @@ p_t2_pred <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_2" & response_tier == "veg" & grepl("gpp", model_name)) %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t2_pred
 
@@ -1452,13 +1458,13 @@ p_t3_flux <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_3" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t3_flux
 
@@ -1466,13 +1472,13 @@ p_t3_pred <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_3" & response_tier == "veg"  & grepl("gpp", model_name)) %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t3_pred
 
@@ -1491,13 +1497,13 @@ p_t4_flux_ts <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "traits_separately" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_flux_ts
 
@@ -1505,13 +1511,13 @@ p_t4_pred_ts <- dt_est %>%
   filter(!grepl("ntercept", predictor) & grepl("gpp", model_name)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "traits_separately" & response_tier == "veg") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_pred_ts
 
@@ -1528,13 +1534,13 @@ p_t4_flux_mtpca <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "morph_traits_pca" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_flux_mtpca
 
@@ -1542,13 +1548,13 @@ p_t4_pred_mtpca <- dt_est %>%
   filter(!grepl("ntercept", predictor) & grepl("gpp", model_name)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "morph_traits_pca" & response_tier == "veg") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_pred_mtpca
 
@@ -1565,13 +1571,13 @@ p_t4_flux_atpca <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "all_traits_pca" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_flux_atpca
 
@@ -1579,13 +1585,13 @@ p_t4_pred_atpca <- dt_est %>%
   filter(!grepl("ntercept", predictor) & grepl("gpp", model_name)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "all_traits_pca" & response_tier == "veg") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_pred_atpca
 
@@ -1601,13 +1607,13 @@ p_t4_flux_lt_w_at_dt <- dt_est %>%
   filter(!grepl("ntercept", predictor)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "leaf_traits_with_all_traits_data" & response_tier == "flux") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_flux_lt_w_at_dt 
 
@@ -1615,13 +1621,13 @@ p_t4_pred_lt_w_at_dt  <- dt_est %>%
   filter(!grepl("ntercept", predictor) & grepl("gpp", model_name)) %>% 
   filter(model_tier == "tier_4" & predictor_tier == "leaf_traits_with_all_traits_data" & response_tier == "veg") %>% 
   ggplot() +
-  geom_vline(xintercept = 0, linewidth = 1, linetype = "dotted", color = "grey25") +
+  geom_vline(xintercept = 0, linewidth = 1, linetype = "dashed", color = "grey25") +
   geom_pointrange(aes(y = clean_term, x = estimate, xmin = ci_lb, xmax = ci_ub, color = significance),
                   linewidth = 1.2, size = 0.9, alpha = 0.9) +
   scale_color_manual(values = c("Non significant" = "grey", "Significantly positive" = "#4B802E","Significantly negative" = "#A4428B")) +
   facet_wrap(~clean_response, scales = "free_x", ncol = 5)  +
   theme_bw() +
-  labs(x = "Estimate", y = "",) +
+  labs(x = "Coefficient Estimate (±95 % CI)", y = "",) +
   theme_est
 p_t4_pred_lt_w_at_dt 
 
@@ -1899,7 +1905,7 @@ p_ic <- dt_fm %>%
     shape = "IC", 
     linetype = "IC"
   ) +
-  scale_linetype_manual(values = c("solid", "dotted", "dashed")) +
+  scale_linetype_manual(values = c("solid", "dashed", "dashed")) +
   scale_color_met_d(name = "Egypt") +
   theme_minimal() +
   theme(legend.position = "right",

@@ -32,7 +32,7 @@ predict_with_ci <- function(model, data, response_name,
       )
   }
   
-  # Rename columns appropriately
+  # Rename cols
   #colnames(pred_df) <- c("response_name", paste(response_name, c("pred", "se", "ci_lb", "ci_ub"), sep = "_"), "country")
   
   return(pred_df)

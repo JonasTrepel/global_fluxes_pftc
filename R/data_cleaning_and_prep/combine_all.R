@@ -16,6 +16,9 @@ table(dt_flux_t[dt_flux_t$treatment == "c", ]$tier)
 table(dt_flux_t[dt_flux_t$treatment == "c" & tier == "Peru_2018", ]$month)
 summary(dt_flux_t[dt_flux_t$tier == "South_Africa_2023", ]$par)
 
+dt_flux_t %>% 
+  select(month, tier) %>% 
+  unique()
 
 dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>% 
   dplyr::select(type, elevation, treatment, temperature, flux_best, tier, site, plot_id, date, year, par) %>%
@@ -39,7 +42,7 @@ dt_flux <- fread("data/processed_data/preliminary_data/prelim_fluxes.csv") %>%
   filter(!(tier == "Svalbard_2018" & site == "ITEX")) %>% #remove itex experiment
   group_by(country, tier, elevation, treatment,
            site, plot_id) %>% 
-  summarize(nee = mean(nee, na.rm = T), #in case there are multiple measurements per plot and year
+  summarize(nee = mean(nee, na.rm = T), 
             reco = mean(reco, na.rm = T), 
             temperature_nee = mean(temperature_nee, na.rm = T), 
             temperature_reco = mean(temperature_reco, na.rm = T), 
@@ -292,13 +295,13 @@ p_m_t <- ggplot() +
                   size = 4, color = "black") +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
-  labs(title = "a)", 
+  labs(title = "A", 
        subtitle = "PCA Morphological Traits",
        x = paste0("PC1 (", percent_var_m_t[1], "% variance)"),
        y = paste0("PC2 (", percent_var_m_t[2], "% variance)")) +
   theme_minimal() +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0, size = 14, face = "bold"),
+        plot.title = element_text(hjust = 0, size = 14),
         panel.grid = element_line(color = "snow2"), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
@@ -380,14 +383,14 @@ p_a_t <- ggplot() +
                   size = 4, color = "black") +
   scale_color_met_d(name = "Archambault") +
   scale_fill_met_d(name = "Archambault") +
-  labs(title = "b)",
+  labs(title = "B",
        subtitle = "PCA All Traits",
        x = paste0("PC1 (", percent_var_a_t[1], "% variance)"),
        y = paste0("PC2 (", percent_var_a_t[2], "% variance)")) +
   theme_minimal() +
   labs(color = "Gradient") +
   theme(legend.position = "right", 
-        plot.title = element_text(hjust = 0, size = 14, face = "bold"),
+        plot.title = element_text(hjust = 0, size = 14),
         panel.grid = element_line(color = "snow2"), 
         axis.text = element_text(size = 12), 
         axis.text.x = element_text(size = 12, angle = 45, hjust = 1), 
@@ -529,3 +532,6 @@ plot(dt_mod$downscaled_temp_anomaly_country, dt_mod$downscaled_vpd_anomaly_count
 cor.test(dt_mod$downscaled_temp_anomaly_country, dt_mod$downscaled_vpd_anomaly_country)
 
 cor.test(dt_mod$downscaled_temp_anomaly_country, dt_mod$elevation_anomaly_country)
+
+dt_mod %>% 
+  mutate(month = month(date_time))

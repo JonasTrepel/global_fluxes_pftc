@@ -23,14 +23,15 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     
     # others 
     height_x_cover, species_richness,
-    functional_diversity_q1, lat,
+    functional_diversity_q1, lat, par_nee,
     
     #pca axis 
     all_traits_pc1, all_traits_pc2,
     chem_traits_pc1, chem_traits_pc2,
     morph_traits_pc1, morph_traits_pc2,
-    
+
     # Anomalies
+    par_nee_anomaly_country,
     gpp_anomaly_country,
     nee_anomaly_country,
     reco_anomaly_country,
@@ -54,7 +55,6 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     p_percent_anomaly_country,
     cn_ratio_anomaly_country, cp_ratio_anomaly_country, np_ratio_anomaly_country,
     c_percent_anomaly_country,
-    par_anomaly_country,
     soil_moisture_anomaly_country,
     woodiness_anomaly_country,
     grassiness_anomaly_country
@@ -63,45 +63,75 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
 ### PCA and traits ------------------------
 
 morph_traits_data <- dt_raw %>%
-  select(morph_traits_pc1, morph_traits_pc2, #traits_pc3, traits_pc4,
-         sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm)
+  select(
+    PC1 = morph_traits_pc1,
+    PC2 = morph_traits_pc2,
+    SLA = sla_cm2_g,
+    LDMC = ldmc,
+    `Leaf Area` = leaf_area_cm2,
+    `Dry Mass` = dry_mass_g,
+    Height = plant_height_cm
+  )
 
 p_morph_trait_pairs <- ggpairs(morph_traits_data,
         title = "Morphological Traits",
         upper = list(continuous = wrap("cor", size = 3)),
         lower = list(continuous = wrap("smooth", alpha = 0.3)),
-        diag = list(continuous = "densityDiag"))
+        diag = list(continuous = "densityDiag")) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        legend.box="vertical",
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        panel.grid = element_line(color = "snow"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12), 
+        strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_morph_trait_pairs
 ggsave(plot = p_morph_trait_pairs, "builds/plots/supplement/trait_pca_and_morph_traits_pairs.png",
        dpi = 600, height = 8, width = 8)
 
-# Select variable pcas vs traits + height × cover
-chem_traits_data <- dt_raw %>%
-  select(chem_traits_pc1, chem_traits_pc2, 
-         n_percent, cn_ratio, cp_ratio, np_ratio, c_percent, p_percent)
 
-p_chem_trait_pairs <- ggpairs(chem_traits_data,
-                               title = "Chemical Traits",
-                               upper = list(continuous = wrap("cor", size = 3)),
-                               lower = list(continuous = wrap("smooth", alpha = 0.3)),
-                               diag = list(continuous = "densityDiag"))
-
-p_chem_trait_pairs
-ggsave(plot = p_chem_trait_pairs, "builds/plots/supplement/trait_pca_and_chem_traits_pairs.png",
-       dpi = 600, height = 8, width = 8)
 
 # all traits
 all_traits_data <- dt_raw %>%
-  select(all_traits_pc1, all_traits_pc2, 
-         n_percent, cn_ratio, cp_ratio, np_ratio, c_percent, p_percent, 
-         sla_cm2_g, ldmc, leaf_area_cm2, dry_mass_g, plant_height_cm)
+  select(
+    PC1         = all_traits_pc1,
+    PC2         = all_traits_pc2,
+    N          = n_percent,
+    `CN Ratio`    = cn_ratio,
+    `CP Ratio`    = cp_ratio,
+    `NP Ratio`    = np_ratio,
+    C          = c_percent,
+    P          = p_percent,
+    SLA         = sla_cm2_g,
+    LDMC        = ldmc,
+    `Leaf Area` = leaf_area_cm2,
+    `Dry Mass`  = dry_mass_g,
+    Height      = plant_height_cm
+  )
 
 p_all_trait_pairs <- ggpairs(all_traits_data,
                               title = "All Traits",
                               upper = list(continuous = wrap("cor", size = 3)),
                               lower = list(continuous = wrap("smooth", alpha = 0.3)),
-                              diag = list(continuous = "densityDiag"))
+                              diag = list(continuous = "densityDiag")) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        legend.box="vertical",
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        panel.grid = element_line(color = "snow"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 10), 
+        strip.text.y = element_text(size = 10), 
+        strip.background = element_rect(fill = "linen", color = "linen") )
 
 p_all_trait_pairs
 ggsave(plot = p_all_trait_pairs, "builds/plots/supplement/trait_pca_and_all_traits_pairs.png",
