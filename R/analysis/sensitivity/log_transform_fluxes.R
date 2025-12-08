@@ -6,7 +6,7 @@ library(data.table)
 library(glmmTMB)
 
 
-### We may want to check how estimates change if we use -1/kT and ln(flux) instead 
+### Check how estimates change if we use ln(flux) ~ -1/kT   
 
 dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
   dplyr::select(
@@ -53,9 +53,9 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
     par_nee_anomaly_country,
   ) %>% filter(!is.na(morph_traits_pc1_anomaly_country))
 
-hist(dt$nee)
-hist(dt$reco)
-hist(dt$gpp)
+hist(dt_raw$nee)
+hist(dt_raw$reco)
+hist(dt_raw$gpp)
 
 
 dt_raw %>% 
@@ -70,9 +70,9 @@ dt_mod <- dt_raw %>%
     temp_k_reco = temperature_reco + 273.15,
     temp_k_gpp  = temperature_gpp  + 273.15,
     
-    temp_k_nee_trans  = -1 / ((1.38e-23) * temp_k_nee),
-    temp_k_reco_trans = -1 / ((1.38e-23) * temp_k_reco),
-    temp_k_gpp_trans  = -1 / ((1.38e-23) * temp_k_gpp)
+    temp_k_nee_trans  = -1 / ((1.38e-23)*temp_k_nee),
+    temp_k_reco_trans = -1 / ((1.38e-23)*temp_k_reco),
+    temp_k_gpp_trans  = -1 / ((1.38e-23)*temp_k_gpp)
   ) %>%
   group_by(gradient) %>% 
   mutate(
@@ -112,7 +112,7 @@ library(cowplot)
 
 flux_panel <- plot_grid(
   p_nee_flux, p_reco_flux, p_gpp_flux,
-  ncol = 1,
+  ncol = 1
 )
 flux_panel
 
@@ -159,22 +159,62 @@ m_dat %>%
   ggplot(aes(x = log_positive_nee_anomaly_country, y = positive_nee_anomaly_country)) +
   geom_point() +
   facet_wrap(~gradient)
+
 ## Prepare models -------
 # NEEE
+
+#Tier 1 
 m_nee_t1_1 <- glmmTMB(positive_nee_anomaly_country ~
-                         temperature_nee_anomaly_country +
+                        downscaled_temp_anomaly_country +
                          par_nee_anomaly_country +
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(m_nee_t1_1)
 
 m_nee_t1_2 <- glmmTMB(log_positive_nee_anomaly_country ~
-                        temp_k_nee_trans_anomaly +
+                        downscaled_temp_anomaly_country +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_nee_t1_2)
 
+#Tier 2
+m_nee_t2_1 <- glmmTMB(positive_nee_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_nee_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_nee_t2_1)
+
+m_nee_t2_2 <- glmmTMB(log_positive_nee_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_nee_trans_anomaly +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_nee_t2_2)
+
+#Tier 3
+m_nee_t3_1 <- glmmTMB(positive_nee_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_nee_anomaly_country +
+                        height_x_cover_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_nee_t3_1)
+
+m_nee_t3_2 <- glmmTMB(log_positive_nee_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_nee_trans_anomaly +
+                        height_x_cover_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_nee_t3_2)
+
+#Tier 4
 m_nee_t4_1 <- glmmTMB(positive_nee_anomaly_country ~
                      temperature_nee_anomaly_country +
                      downscaled_temp_anomaly_country +
@@ -199,20 +239,58 @@ summary(m_nee_t4_2)
 
 
 # GPP
+#Tier 1 
 m_gpp_t1_1 <- glmmTMB(positive_gpp_anomaly_country ~
-                        temperature_gpp_anomaly_country +
+                        downscaled_temp_anomaly_country +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_gpp_t1_1)
 
 m_gpp_t1_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
-                        temp_k_gpp_trans_anomaly +
+                        downscaled_temp_anomaly_country +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_gpp_t1_2)
 
+#Tier 2
+m_gpp_t2_1 <- glmmTMB(positive_gpp_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_gpp_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_gpp_t2_1)
+
+m_gpp_t2_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_gpp_trans_anomaly +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_gpp_t2_2)
+
+#Tier 3
+m_gpp_t3_1 <- glmmTMB(positive_gpp_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_gpp_anomaly_country +
+                        height_x_cover_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_gpp_t3_1)
+
+m_gpp_t3_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_gpp_trans_anomaly +
+                        height_x_cover_anomaly_country +
+                        par_nee_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_gpp_t3_2)
+
+#Tier 4
 m_gpp_t4_1 <- glmmTMB(positive_gpp_anomaly_country ~
                         temperature_gpp_anomaly_country +
                         downscaled_temp_anomaly_country +
@@ -236,17 +314,52 @@ m_gpp_t4_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
 summary(m_gpp_t4_2)
 
 # Reco
+#Tier 1 
 m_reco_t1_1 <- glmmTMB(positive_reco_anomaly_country ~
-                        temperature_reco_anomaly_country +
+                        downscaled_temp_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_reco_t1_1)
 
 m_reco_t1_2 <- glmmTMB(log_positive_reco_anomaly_country ~
-                        temp_k_reco_trans_anomaly +
+                        downscaled_temp_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_reco_t1_2)
+
+#Tier 2
+m_reco_t2_1 <- glmmTMB(positive_reco_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_reco_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_reco_t2_1)
+
+m_reco_t2_2 <- glmmTMB(log_positive_reco_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_reco_trans_anomaly +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_reco_t2_2)
+
+#Tier 3
+m_reco_t3_1 <- glmmTMB(positive_reco_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temperature_reco_anomaly_country +
+                        height_x_cover_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_reco_t3_1)
+
+m_reco_t3_2 <- glmmTMB(log_positive_reco_anomaly_country ~
+                        downscaled_temp_anomaly_country +
+                        temp_k_reco_trans_anomaly +
+                        height_x_cover_anomaly_country +
+                        ( 1 | site), na.action = na.omit,
+                      data = m_dat)
+summary(m_reco_t3_2)
+
+#Tier 4
 
 m_reco_t4_1 <- glmmTMB(positive_reco_anomaly_country ~
                         temperature_reco_anomaly_country +
@@ -274,16 +387,28 @@ model_list_fm <- list(
   
   m_nee_t1_1 = m_nee_t1_1,
   m_nee_t1_2 = m_nee_t1_2,
+  m_nee_t2_1 = m_nee_t2_1,
+  m_nee_t2_2 = m_nee_t2_2,
+  m_nee_t3_1 = m_nee_t3_1,
+  m_nee_t3_2 = m_nee_t3_2,
   m_nee_t4_1 = m_nee_t4_1,
   m_nee_t4_2 = m_nee_t4_2,
   
   m_gpp_t1_1 = m_gpp_t1_1,
   m_gpp_t1_2 = m_gpp_t1_2,
+  m_gpp_t2_1 = m_gpp_t2_1,
+  m_gpp_t2_2 = m_gpp_t2_2,
+  m_gpp_t3_1 = m_gpp_t3_1,
+  m_gpp_t3_2 = m_gpp_t3_2,
   m_gpp_t4_1 = m_gpp_t4_1,
   m_gpp_t4_2 = m_gpp_t4_2,
   
   m_reco_t1_1 = m_reco_t1_1,
   m_reco_t1_2 = m_reco_t1_2,
+  m_reco_t2_1 = m_reco_t2_1,
+  m_reco_t2_2 = m_reco_t2_2,
+  m_reco_t3_1 = m_reco_t3_1,
+  m_reco_t3_2 = m_reco_t3_2,
   m_reco_t4_1 = m_reco_t4_1,
   m_reco_t4_2 = m_reco_t4_2
   
@@ -318,15 +443,23 @@ dt_p <- dt_res_fm %>%
   mutate(
     predictor_tier = case_when(
       .default = "not_applicable",
-      grepl("t1_1", model_name) ~ "simple_og",
-      grepl("t1_2", model_name) ~ "simple_transformed",
-      grepl("t4_1", model_name) ~ "full_og",
-      grepl("t4_2", model_name) ~ "full_transformed",
+      grepl("t1_1", model_name) ~ "tier_1_og",
+      grepl("t1_2", model_name) ~ "tier_1_transformed",
+      grepl("t2_1", model_name) ~ "tier_2_og",
+      grepl("t2_2", model_name) ~ "tier_2_transformed",
+      grepl("t3_1", model_name) ~ "tier_3_og",
+      grepl("t3_2", model_name) ~ "tier_3_transformed",
+      grepl("t4_1", model_name) ~ "tier_4_og",
+      grepl("t4_2", model_name) ~ "tier_4_transformed",
     ), 
     clean_tier = case_when(
       .default = "not_applicable",
       grepl("t1_1", model_name) ~ "Original",
       grepl("t1_2", model_name) ~ "Transformed",
+      grepl("t2_1", model_name) ~ "Original",
+      grepl("t2_2", model_name) ~ "Transformed",
+      grepl("t3_1", model_name) ~ "Original",
+      grepl("t3_2", model_name) ~ "Transformed",
       grepl("t4_1", model_name) ~ "Original",
       grepl("t4_2", model_name) ~ "Transformed",
     ),
@@ -359,32 +492,100 @@ dt_p <- dt_res_fm %>%
                                    "Growing Season Temp.",
                                    "PAR")))
 
-p_s = dt_p %>% 
+p_t1 = dt_p %>% 
   as.data.table() %>% 
-  filter(grepl("simple", predictor_tier)) %>% 
+  filter(grepl("tier_1", predictor_tier)) %>% 
   filter(!grepl("ntercept", term)) %>% 
   ggplot() +
   geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
   geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
-                  position = position_dodge(width = .5)) +
-  labs(y = NULL, x = "Estimate", color = "Tier") +
+                  position = position_dodge(width = .5), 
+                  linewidth = 1.1, alpha = .8) +
+  labs(y = NULL, x = "Estimate (±95 % CI)", color = "") +
+  scico::scale_color_scico_d(palette = "roma", begin = .15, end = .85) +
+  theme_minimal() +
+  theme(legend.position = "right",
+        panel.grid = element_line(color = "snow"), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") ) +
   facet_wrap(~response)
-p_s  
+p_t1  
 
-
-p_f = dt_p %>% 
+p_t2 = dt_p %>% 
   as.data.table() %>% 
-  filter(!grepl("simple", predictor_tier)) %>% 
+  filter(grepl("tier_2", predictor_tier)) %>% 
   filter(!grepl("ntercept", term)) %>% 
   ggplot() +
   geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
   geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
-                  position = position_dodge(width = .5)) +
-  labs(y = NULL, x = "Estimate", color = "Tier") +
+                  position = position_dodge(width = .5), 
+                  linewidth = 1.1, alpha = .8) +
+  labs(y = NULL, x = "Estimate (±95 % CI)", color = "") +
+  scico::scale_color_scico_d(palette = "roma", begin = .15, end = .85) +
+  theme_minimal() +
+  theme(legend.position = "right",
+        panel.grid = element_line(color = "snow"), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") ) +
   facet_wrap(~response)
-p_f 
+p_t2  
+
+p_t3 = dt_p %>% 
+  as.data.table() %>% 
+  filter(grepl("tier_3", predictor_tier)) %>% 
+  filter(!grepl("ntercept", term)) %>% 
+  ggplot() +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
+  geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
+                  position = position_dodge(width = .5), 
+                  linewidth = 1.1, alpha = .8) +
+  labs(y = NULL, x = "Estimate (±95 % CI)", color = "") +
+  scico::scale_color_scico_d(palette = "roma", begin = .15, end = .85) +
+  theme_minimal() +
+  theme(legend.position = "right",
+        panel.grid = element_line(color = "snow"), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") ) +
+  facet_wrap(~response)
+p_t3 
+
+p_t4 = dt_p %>% 
+  as.data.table() %>% 
+  filter(grepl("tier_4", predictor_tier)) %>% 
+  filter(!grepl("ntercept", term)) %>% 
+  ggplot() +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
+  geom_pointrange(aes(x = estimate, y = clean_term, xmin = ci_lb, xmax = ci_ub, color = clean_tier),
+                  position = position_dodge(width = .5), 
+                  linewidth = 1.1, alpha = .8) +
+  labs(y = NULL, x = "Estimate (±95 % CI)", color = "") +
+  scico::scale_color_scico_d(palette = "roma", begin = .15, end = .85) +
+  theme_minimal() +
+  theme(legend.position = "right",
+        panel.grid = element_line(color = "snow"), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        panel.background = element_rect(fill = "snow", color = NA), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") ) +
+  facet_wrap(~response)
+p_t4 
 
 
 library(patchwork)
-(p_comb = p_s / p_f)
-ggsave(plot = p_comb, "builds/plots/supplement/log_transformed_fluxes.png", dpi = 600, height = 6, width = 8)
+(p_comb = p_t1 / p_t2 / p_t3 +
+  plot_annotation(tag_levels = "A"))
+ggsave(plot = p_comb, "builds/plots/supplement/log_transformed_fluxes.png", dpi = 600, height = 9, width = 8)
