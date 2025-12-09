@@ -770,7 +770,7 @@ p_t4_pred_mpca
 p_t4_r2_mpca <- dt_est %>% 
   filter(!grepl("ntercept", predictor)) %>% 
   filter(!response %in% c("temperature_nee_anomaly_country", "temperature_reco_anomaly_country")) %>% 
-  filter(model_tier == "tier_4" & predictor_tier == "traits_separately") %>% 
+  filter(model_tier == "tier_4" & predictor_tier == "morph_traits_pca") %>% 
   ggplot() +
   geom_point(aes(y = excluded_gradient, x = rsq_m,
                  color = excluded_gradient), size = 2.5) +

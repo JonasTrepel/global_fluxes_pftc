@@ -293,3 +293,4 @@ ggsave(plot = p_country_corr, "builds/plots/supplement/correlation_country_level
 
 
 cor.test(dt_raw$height_x_cover_anomaly_country, dt_raw$plant_height_anomaly_country, na.rm = T)
+
