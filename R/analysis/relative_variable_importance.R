@@ -261,7 +261,7 @@ p_vp_ts <- dt_vp %>%
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R²", y = "") +
+  labs(x = "Contribution to Marginal R² (%)", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",
@@ -284,7 +284,7 @@ p_vp_mt <- dt_vp %>%
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R²", y = "") +
+  labs(x = "Contribution to Marginal R² (%)", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",
@@ -306,7 +306,7 @@ p_vp_at <- dt_vp %>%
   ggplot() +
   geom_col(aes(x = var_imp, y = clean_term)) +
   facet_wrap(~label) +
-  labs(x = "Percentage of Marginal R²", y = "") +
+  labs(x = "Contribution to Marginal R² (%)", y = "") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",

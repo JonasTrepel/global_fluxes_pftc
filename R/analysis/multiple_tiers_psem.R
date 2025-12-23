@@ -1870,13 +1870,14 @@ p_rsq <- dt_fm %>%
   labs(
     x = "Model Tier",
     y = "Marginal R²",
-    color = "Flux"
+    color = "Flux", 
+    title = "A"
   ) +
   scale_color_met_d(name = "Egypt") +
   theme_minimal() +
   theme(legend.position = "none",
         legend.box="vertical",
-        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.title = element_text(hjust = 0, size = 14),
         panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
@@ -1903,14 +1904,15 @@ p_ic <- dt_fm %>%
     y = "Information Criterion",
     color = "Flux", 
     shape = "IC", 
-    linetype = "IC"
+    linetype = "IC", 
+    title = "B"
   ) +
   scale_linetype_manual(values = c("solid", "dashed", "dashed")) +
   scale_color_met_d(name = "Egypt") +
   theme_minimal() +
   theme(legend.position = "right",
         legend.box="vertical",
-        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        plot.title = element_text(hjust = 0, size = 14),
         panel.grid = element_line(color = "snow"), 
         #axis.title.x = element_blank(), 
         axis.text = element_text(size = 10), 
@@ -1923,4 +1925,5 @@ p_ic
 p_comp <- grid.arrange(p_rsq, p_ic, widths = c(1, 1.25))
 ggsave(plot = p_comp, "builds/plots/performance_comparison_between_tiers.png",
        dpi = 600, 
-       height = 2.5, width = 8)
+       height = 4, width = 8)
+
