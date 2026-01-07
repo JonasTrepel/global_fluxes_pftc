@@ -70,9 +70,13 @@ dt_mod <- dt_raw %>%
     temp_k_reco = temperature_reco + 273.15,
     temp_k_gpp  = temperature_gpp  + 273.15,
     
+    downscaled_temp_k = downscaled_temp + 273.15, 
+    
     temp_k_nee_trans  = -1 / ((1.38e-23)*temp_k_nee),
     temp_k_reco_trans = -1 / ((1.38e-23)*temp_k_reco),
-    temp_k_gpp_trans  = -1 / ((1.38e-23)*temp_k_gpp)
+    temp_k_gpp_trans  = -1 / ((1.38e-23)*temp_k_gpp),
+    
+    downscaled_temp_k_trans = -1 / ((1.38e-23)*downscaled_temp_k)
   ) %>%
   group_by(gradient) %>% 
   mutate(
@@ -80,9 +84,13 @@ dt_mod <- dt_raw %>%
     temp_k_reco_trans_mean = mean(temp_k_reco_trans, na.rm = TRUE),
     temp_k_gpp_trans_mean  = mean(temp_k_gpp_trans,  na.rm = TRUE),
     
+    downscaled_temp_k_trans_mean  = mean(downscaled_temp_k_trans,  na.rm = TRUE),
+    
     temp_k_nee_trans_anomaly  = temp_k_nee_trans  - temp_k_nee_trans_mean,
     temp_k_reco_trans_anomaly = temp_k_reco_trans - temp_k_reco_trans_mean,
     temp_k_gpp_trans_anomaly  = temp_k_gpp_trans  - temp_k_gpp_trans_mean,
+    
+    downscaled_temp_k_trans_anomaly  = downscaled_temp_k_trans  - downscaled_temp_k_trans_mean,
     
     positive_nee_anomaly_country  = nee_anomaly_country  + abs(min(nee_anomaly_country,  na.rm = TRUE)) + 1,
     positive_reco_anomaly_country = reco_anomaly_country + abs(min(reco_anomaly_country, na.rm = TRUE)) + 1,
@@ -165,14 +173,14 @@ m_dat %>%
 
 #Tier 1 
 m_nee_t1_1 <- glmmTMB(positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                          par_nee_anomaly_country +
                          ( 1 | site), na.action = na.omit,
                        data = m_dat)
 summary(m_nee_t1_1)
 
 m_nee_t1_2 <- glmmTMB(log_positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
@@ -180,7 +188,7 @@ summary(m_nee_t1_2)
 
 #Tier 2
 m_nee_t2_1 <- glmmTMB(positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_nee_anomaly_country +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -188,7 +196,7 @@ m_nee_t2_1 <- glmmTMB(positive_nee_anomaly_country ~
 summary(m_nee_t2_1)
 
 m_nee_t2_2 <- glmmTMB(log_positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_nee_trans_anomaly +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -197,7 +205,7 @@ summary(m_nee_t2_2)
 
 #Tier 3
 m_nee_t3_1 <- glmmTMB(positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_nee_anomaly_country +
                         height_x_cover_anomaly_country +
                         par_nee_anomaly_country +
@@ -206,7 +214,7 @@ m_nee_t3_1 <- glmmTMB(positive_nee_anomaly_country ~
 summary(m_nee_t3_1)
 
 m_nee_t3_2 <- glmmTMB(log_positive_nee_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_nee_trans_anomaly +
                         height_x_cover_anomaly_country +
                         par_nee_anomaly_country +
@@ -217,7 +225,7 @@ summary(m_nee_t3_2)
 #Tier 4
 m_nee_t4_1 <- glmmTMB(positive_nee_anomaly_country ~
                      temperature_nee_anomaly_country +
-                     downscaled_temp_anomaly_country +
+                     downscaled_temp_k_trans_anomaly +
                      height_x_cover_anomaly_country +
                      leaf_area_anomaly_country +
                      sla_anomaly_country +
@@ -228,7 +236,7 @@ summary(m_nee_t4_1)
 
 m_nee_t4_2 <- glmmTMB(log_positive_nee_anomaly_country ~
                         temp_k_nee_trans_anomaly +
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         height_x_cover_anomaly_country +
                         leaf_area_anomaly_country +
                         sla_anomaly_country +
@@ -241,14 +249,14 @@ summary(m_nee_t4_2)
 # GPP
 #Tier 1 
 m_gpp_t1_1 <- glmmTMB(positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_gpp_t1_1)
 
 m_gpp_t1_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
@@ -256,7 +264,7 @@ summary(m_gpp_t1_2)
 
 #Tier 2
 m_gpp_t2_1 <- glmmTMB(positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_gpp_anomaly_country +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -264,7 +272,7 @@ m_gpp_t2_1 <- glmmTMB(positive_gpp_anomaly_country ~
 summary(m_gpp_t2_1)
 
 m_gpp_t2_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_gpp_trans_anomaly +
                         par_nee_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -273,7 +281,7 @@ summary(m_gpp_t2_2)
 
 #Tier 3
 m_gpp_t3_1 <- glmmTMB(positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_gpp_anomaly_country +
                         height_x_cover_anomaly_country +
                         par_nee_anomaly_country +
@@ -282,7 +290,7 @@ m_gpp_t3_1 <- glmmTMB(positive_gpp_anomaly_country ~
 summary(m_gpp_t3_1)
 
 m_gpp_t3_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_gpp_trans_anomaly +
                         height_x_cover_anomaly_country +
                         par_nee_anomaly_country +
@@ -293,7 +301,7 @@ summary(m_gpp_t3_2)
 #Tier 4
 m_gpp_t4_1 <- glmmTMB(positive_gpp_anomaly_country ~
                         temperature_gpp_anomaly_country +
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         height_x_cover_anomaly_country +
                         leaf_area_anomaly_country +
                         sla_anomaly_country +
@@ -304,7 +312,7 @@ summary(m_gpp_t4_1)
 
 m_gpp_t4_2 <- glmmTMB(log_positive_gpp_anomaly_country ~
                         temp_k_gpp_trans_anomaly +
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         height_x_cover_anomaly_country +
                         leaf_area_anomaly_country +
                         sla_anomaly_country +
@@ -316,27 +324,27 @@ summary(m_gpp_t4_2)
 # Reco
 #Tier 1 
 m_reco_t1_1 <- glmmTMB(positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_reco_t1_1)
 
 m_reco_t1_2 <- glmmTMB(log_positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_reco_t1_2)
 
 #Tier 2
 m_reco_t2_1 <- glmmTMB(positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_reco_anomaly_country +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
 summary(m_reco_t2_1)
 
 m_reco_t2_2 <- glmmTMB(log_positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_reco_trans_anomaly +
                         ( 1 | site), na.action = na.omit,
                       data = m_dat)
@@ -344,7 +352,7 @@ summary(m_reco_t2_2)
 
 #Tier 3
 m_reco_t3_1 <- glmmTMB(positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temperature_reco_anomaly_country +
                         height_x_cover_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -352,7 +360,7 @@ m_reco_t3_1 <- glmmTMB(positive_reco_anomaly_country ~
 summary(m_reco_t3_1)
 
 m_reco_t3_2 <- glmmTMB(log_positive_reco_anomaly_country ~
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         temp_k_reco_trans_anomaly +
                         height_x_cover_anomaly_country +
                         ( 1 | site), na.action = na.omit,
@@ -363,7 +371,7 @@ summary(m_reco_t3_2)
 
 m_reco_t4_1 <- glmmTMB(positive_reco_anomaly_country ~
                         temperature_reco_anomaly_country +
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         height_x_cover_anomaly_country +
                         leaf_area_anomaly_country +
                         sla_anomaly_country +
@@ -373,7 +381,7 @@ summary(m_reco_t4_1)
 
 m_reco_t4_2 <- glmmTMB(log_positive_reco_anomaly_country ~
                         temp_k_reco_trans_anomaly +
-                        downscaled_temp_anomaly_country +
+                        downscaled_temp_k_trans_anomaly +
                         height_x_cover_anomaly_country +
                         leaf_area_anomaly_country +
                         sla_anomaly_country +
@@ -469,7 +477,7 @@ dt_p <- dt_res_fm %>%
       grepl("gpp", model_name)~ "GPP"), 
     clean_term =  case_when(
       .default = term,
-      term == "downscaled_temp_anomaly_country" ~ "Growing Season Temp.",
+      term == "downscaled_temp_k_trans_anomaly" ~ "Growing Season Temp.",
       grepl("temp", term) ~ "Inst. Temperature",
       term == "height_x_cover_anomaly_country"      ~ "'Biomass'",
       term == "par_nee_anomaly_country"      ~ "PAR",

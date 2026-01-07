@@ -25,8 +25,8 @@ dt_inc <- dt %>%
   ))
 table(dt_inc$ask)
 
-c(unique(dt_inc[dt_inc$ask == "yes"]$Email))
-mails <- paste(c(unique(dt_inc[dt_inc$ask == "yes"]$Email)), collapse = "; ")
+c(unique(dt_inc[dt_inc$ask == "yes" | dt_inc$ask == "maybe", ]$Email))
+mails <- paste(c(unique(dt_inc[dt_inc$ask == "yes" | dt_inc$ask == "maybe" ]$Email)), collapse = "; ")
 mails
  ## plus all the norway students 
 
