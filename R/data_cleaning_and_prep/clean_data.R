@@ -1030,9 +1030,9 @@ us_pl_h <- us_t_raw %>%
   group_by(species) %>% 
   summarize(height = mean(height, na.rm = T))
 
-
+unique(us_t_raw[us_t_raw$site == "Cinnamon", ]$plot)
 us_traits <- us_t_raw %>% 
-  filter(!is.na(plot)) %>% 
+ # filter(!is.na(plot)) %>% 
   dplyr::select(-height) %>% 
   left_join(us_pl_h) %>% 
   rename(
@@ -1071,7 +1071,8 @@ us_traits <- us_t_raw %>%
 us_traits[us_traits$site == "pbm" & us_traits$trait_name == "p_percent", ]$trait_value
 
 us_traits
-unique(us_traits[us_traits$site == "cinnamon", ]$plot)
+unique(us_traits$site)
+unique(us_traits[us_traits$site == "cinnamon", ])
 
 ## Biomass/Height -----------------------------
 #cover

@@ -15,6 +15,7 @@ summary(dt_flux_t)
 table(dt_flux_t[dt_flux_t$treatment == "c", ]$tier)
 table(dt_flux_t[dt_flux_t$treatment == "c" & tier == "Peru_2018", ]$month)
 summary(dt_flux_t[dt_flux_t$tier == "South_Africa_2023", ]$par)
+table(dt_flux_t[dt_flux_t$tier == "Colorado_2023", ]$site)
 
 dt_flux_t %>% 
   select(month, tier) %>% 
@@ -58,6 +59,7 @@ table(dt_flux_t$tier)
 table(dt_flux$tier)
 summary(dt_flux[dt_flux$tier == "South_Africa_2023", ]$par_reco)
 dt_flux_t[dt_flux_t$tier == "Peru_2019", ]$date
+table(dt_flux[dt_flux$tier == "Colorado_2023", ]$site)
 
 #Colorado 2013 and Peru 2019 have the most control plots, which is why we will go with them for now 
 #But for Peru 2018 we have leaf traits, so we go for this one instead. 

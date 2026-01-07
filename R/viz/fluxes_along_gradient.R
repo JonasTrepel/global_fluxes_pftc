@@ -53,7 +53,7 @@ library(gridExtra)
 dt <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>% 
   dplyr::select(
     # identifiers 
-    country, site, plot_id, treatment, gradient,
+    country, site, plot_id, treatment, gradient, elevation,
     
     # fluxes
     nee, reco, gpp,
@@ -120,6 +120,9 @@ dt <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>%
     grassiness_anomaly_country
   ) %>% 
   filter(!is.na(sla_cm2_g)) 
+setDT(dt)
+table(dt[dt$gradient == "Rocky Mountains", ]$site)
+range(dt[dt$gradient == "Rocky Mountains", ]$elevation)
 
 
 dt %>% ggplot() +
