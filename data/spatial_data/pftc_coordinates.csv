@@ -1,0 +1,195 @@
+country,region,gradient,site,plot_id,elevation_m,longitude_e,latitude_n,ecosystem
+sv,Svalbard,C,sv_C_1,C_sv_C_1_A,9.916196823,15.71206735,78.21307418,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_B,9.916196823,15.71199512,78.21310808,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_C,9.803709984,15.71193157,78.21315328,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_D,9.758845329,15.71184938,78.21319246,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_F,9.858673096,15.71172429,78.21327843,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_E,9.892903328,15.71179807,78.21323227,arctic
+sv,Svalbard,C,sv_C_1,C_sv_C_1_G,10.29130459,15.71164548,78.2133169,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_A,35.10354614,15.70282517,78.21310649,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_B,34.95293808,15.70275361,78.21314043,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_C,34.44870377,15.70268937,78.21318562,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_D,35.8802681,15.70260791,78.21322457,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_E,34.9179306,15.70255721,78.21326463,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_E,85.54279327,15.69377768,78.2116176,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_F,34.51542282,15.70248278,78.21331085,arctic
+sv,Svalbard,C,sv_C_2,C_sv_C_2_G,35.29413986,15.70240505,78.21334917,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_G,85.1536026,15.69337518,78.21168918,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_A,84.31552124,15.69444173,78.21146353,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_B,85.32965851,15.69431966,78.21149469,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_C,85.30431366,15.69412308,78.21153424,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_D,85.3084259,15.6939438,78.21157568,arctic
+sv,Svalbard,C,sv_C_3,C_sv_C_3_F,85.08908081,15.69357732,78.21164849,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_A,135.15802,15.6916043,78.21014851,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_C,134.2497559,15.69118353,78.2101837,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_D,133.6484375,15.69095136,78.21021182,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_E,134.3934021,15.69072803,78.21023975,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_B,135.8239594,15.69140679,78.21016548,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_F,133.4052277,15.69051752,78.21027277,arctic
+sv,Svalbard,C,sv_C_4,C_sv_C_4_G,134.020813,15.69026177,78.21029458,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_A,177.6980896,15.69342393,78.20880172,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_B,176.5678558,15.6932301,78.20882584,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_C,177.3595581,15.69301729,78.20885031,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_D,176.567337,15.6928778,78.20888216,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_E,177.4220581,15.69263878,78.20890792,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_F,176.6023865,15.69242208,78.20892577,arctic
+sv,Svalbard,C,sv_C_5,C_sv_C_5_G,177.9407349,15.69223722,78.20895256,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_A,224.7054138,15.69883605,78.20698001,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_B,225.408432,15.69862388,78.2070069,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_C,224.6528625,15.69844191,78.20703529,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_G,224.0271759,15.69659592,78.20727938,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_D,224.3682251,15.69824933,78.20706691,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_E,223.04422,15.69701746,78.20725527,arctic
+sv,Svalbard,C,sv_C_6,C_sv_C_6_F,223.8014069,15.6968108,78.20727381,arctic
+sv,Svalbard,C,sv_C_7,C_sv_C_7_B,237.3326721,15.69794512,78.20667393,arctic
+sv,Svalbard,C,sv_C_7,C_sv_C_7_C,237.9008636,15.69769546,78.20668429,arctic
+sv,Svalbard,C,sv_C_7,C_sv_C_7_D,238.1590576,15.69743539,78.20668669,arctic
+sv,Svalbard,C,sv_C_7,C_sv_C_7_A,237.0172424,15.69816825,78.20666099,arctic
+pe,Central Andes,C,pe_C_ACJ,C_pe_C_ACJ_1,3487.4,-71.628828,-13.176034,tropic
+pe,Central Andes,C,pe_C_ACJ,C_pe_C_ACJ_2,3487.7,-71.628834,-13.1761,tropic
+pe,Central Andes,C,pe_C_ACJ,C_pe_C_ACJ_3,3489,-71.628834,-13.176134,tropic
+pe,Central Andes,C,pe_C_ACJ,C_pe_C_ACJ_4,3490,-71.628844,-13.176195,tropic
+pe,Central Andes,C,pe_C_ACJ,C_pe_C_ACJ_5,3492.4,-71.628819,-13.176252,tropic
+pe,Central Andes,C,pe_C_PIL,C_pe_C_PIL_1,3669.6,-71.639885,-13.151803,tropic
+pe,Central Andes,C,pe_C_PIL,C_pe_C_PIL_2,3671.2,-71.639945,-13.151791,tropic
+pe,Central Andes,C,pe_C_PIL,C_pe_C_PIL_3,3673.3,-71.640027,-13.15178,tropic
+pe,Central Andes,C,pe_C_PIL,C_pe_C_PIL_4,3683.5,-71.640395,-13.151633,tropic
+pe,Central Andes,C,pe_C_PIL,C_pe_C_PIL_5,3685.5,-71.640462,-13.15161,tropic
+pe,Central Andes,B,pe_B_QUE,B_pe_B_QUE_1,3882.9,-71.619294,-13.213786,tropic
+pe,Central Andes,B,pe_B_QUE,B_pe_B_QUE_2,3884.3,-71.619348,-13.213841,tropic
+pe,Central Andes,B,pe_B_QUE,B_pe_B_QUE_3,3890,-71.619384,-13.214201,tropic
+pe,Central Andes,B,pe_B_QUE,B_pe_B_QUE_4,3889.8,-71.619396,-13.214146,tropic
+pe,Central Andes,B,pe_B_QUE,B_pe_B_QUE_5,3893.1,-71.619377,-13.214258,tropic
+pe,Central Andes,C,pe_C_TRE,C_pe_C_TRE_1,3714.3,-71.620771,-13.119746,tropic
+pe,Central Andes,C,pe_C_TRE,C_pe_C_TRE_2,3714.8,-71.62081,-13.119733,tropic
+pe,Central Andes,C,pe_C_TRE,C_pe_C_TRE_3,3714.7,-71.620874,-13.119713,tropic
+pe,Central Andes,C,pe_C_TRE,C_pe_C_TRE_4,3714.7,-71.620927,-13.119695,tropic
+pe,Central Andes,C,pe_C_TRE,C_pe_C_TRE_5,3714.6,-71.62093,-13.119707,tropic
+pe,Central Andes,C,pe_C_WAY,C_pe_C_WAY_1,3118,-71.589709,-13.180406,tropic
+pe,Central Andes,C,pe_C_WAY,C_pe_C_WAY_2,3120.3,-71.589752,-13.18043,tropic
+pe,Central Andes,C,pe_C_WAY,C_pe_C_WAY_3,3121,-71.589806,-13.180457,tropic
+pe,Central Andes,C,pe_C_WAY,C_pe_C_WAY_4,3123.3,-71.589873,-13.180527,tropic
+pe,Central Andes,C,pe_C_WAY,C_pe_C_WAY_5,3125,-71.589928,-13.18058,tropic
+ch,Eastern Himalaya,C,ch_A,ch_A1-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A2-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A3-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A4-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A5-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A6-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_A,ch_A7-C,3850,102.0173,29.88911,sub-tropics
+ch,Eastern Himalaya,C,ch_H,ch_H1-C,4100,102.0118,29.90742,sub-tropics
+ch,Eastern Himalaya,C,ch_H,ch_H2-C,4100,102.0118,29.90742,sub-tropics
+ch,Eastern Himalaya,C,ch_H,ch_H3-C,4100,102.0118,29.90742,sub-tropics
+ch,Eastern Himalaya,C,ch_H,ch_H4-C,4100,102.0118,29.90742,sub-tropics
+ch,Eastern Himalaya,C,ch_H,ch_H5-C,4100,102.0118,29.90742,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L1-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L2-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L3-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L4-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L5-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L6-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_L,ch_L7-C,3000,102.0343,29.84347,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M1-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M2-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M3-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M4-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M5-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M6-C,3500,102.036,29.86192,sub-tropics
+ch,Eastern Himalaya,C,ch_M,ch_M7-C,3500,102.036,29.86192,sub-tropics
+no,Southern Scandes,C,no_Joasete,no_Joasete_81 AN1C 81,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Joasete,no_Joasete_88 AN1N 88,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Joasete,no_Joasete_109 AN3C 109,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Joasete,no_Joasete_111 AN3N 111,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Joasete,no_Joasete_156 AN2C 156,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Joasete,no_Joasete_160 AN2N 160,920,7.168,60.86183,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_4 AN1C 4,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_7 AN1N 7,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_27 AN3C 27,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_31 AN3N 31,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_77 AN2C 77,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Liahovden,no_Liahovden_79 AN2N 79,1290,7.19504,60.85994,boreal
+no,Southern Scandes,C,no_Hogsete,no_Hogsete_101 TTC,700,7.17666,60.876,boreal
+no,Southern Scandes,C,no_Hogsete,no_Hogsete_110 TTC,700,7.17666,60.876,boreal
+no,Southern Scandes,C,no_Hogsete,no_Hogsete_115 TTC,700,7.17666,60.876,boreal
+no,Southern Scandes,C,no_Hogsete,no_Hogsete_116 TTC,700,7.17666,60.876,boreal
+no,Southern Scandes,C,no_Hogsete,no_Hogsete_124 TTC,700,7.17666,60.876,boreal
+no,Southern Scandes,C,no_Vikesland,no_Vikesland_126 TTC,474,7.16982,60.8803,boreal
+no,Southern Scandes,C,no_Vikesland,no_Vikesland_134 TTC,474,7.16982,60.8803,boreal
+no,Southern Scandes,C,no_Vikesland,no_Vikesland_140 TTC,474,7.16982,60.8803,boreal
+no,Southern Scandes,C,no_Vikesland,no_Vikesland_141 TTC,474,7.16982,60.8803,boreal
+no,Southern Scandes,C,no_Vikesland,no_Vikesland_146 TTC,474,7.16982,60.8803,boreal
+co,Rocky Mountains,C,co_Almont,co_Almont_1,2475,-106.861632,38.655455,temperate
+co,Rocky Mountains,C,co_Almont,co_Almont_2,2475,-106.861632,38.655455,temperate
+co,Rocky Mountains,C,co_Almont,co_Almont_3,2475,-106.861632,38.655455,temperate
+co,Rocky Mountains,C,co_Almont,co_Almont_4,2475,-106.861632,38.655455,temperate
+co,Rocky Mountains,C,co_Almont,co_Almont_5,2475,-106.861632,38.655455,temperate
+co,Rocky Mountains,C,co_CBT,co_CBT_1,2699,-106.9799521,38.8817327,temperate
+co,Rocky Mountains,C,co_CBT,co_CBT_2,2699,-106.9799521,38.8817327,temperate
+co,Rocky Mountains,C,co_CBT,co_CBT_3,2699,-106.9799521,38.8817327,temperate
+co,Rocky Mountains,C,co_CBT,co_CBT_4,2699,-106.9799521,38.8817327,temperate
+co,Rocky Mountains,C,co_CBT,co_CBT_5,2699,-106.9799521,38.8817327,temperate
+co,Rocky Mountains,C,co_Road,co_Road_2,2810,-106.978584,38.89680392,temperate
+co,Rocky Mountains,C,co_Road,co_Road_4,2810,-106.978584,38.89680392,temperate
+co,Rocky Mountains,C,co_Road,co_Road_5,2810,-106.978584,38.89680392,temperate
+co,Rocky Mountains,C,co_Road,co_Road_1,2810,-106.978584,38.89680392,temperate
+co,Rocky Mountains,C,co_Road,co_Road_3,2810,-106.978584,38.89680392,temperate
+co,Rocky Mountains,C,co_Pfeiler,co_Pfeiler_1,3171,-107.0323667,38.96044646,temperate
+co,Rocky Mountains,C,co_Pfeiler,co_Pfeiler_2,3171,-107.0323667,38.96044646,temperate
+co,Rocky Mountains,C,co_Pfeiler,co_Pfeiler_3,3171,-107.0323667,38.96044646,temperate
+co,Rocky Mountains,C,co_Pfeiler,co_Pfeiler_4,3171,-107.0323667,38.96044646,temperate
+co,Rocky Mountains,C,co_Pfeiler,co_Pfeiler_5,3171,-107.0323667,38.96044646,temperate
+co,Rocky Mountains,C,co_Cinnamon,co_Cinnamon_4,3458,-107.0663821,38.99159151,temperate
+co,Rocky Mountains,C,co_Cinnamon,co_Cinnamon_5,3458,-107.0663821,38.99159151,temperate
+co,Rocky Mountains,C,co_Cinnamon,co_Cinnamon_1,3458,-107.0663821,38.99159151,temperate
+co,Rocky Mountains,C,co_Cinnamon,co_Cinnamon_2,3458,-107.0663821,38.99159151,temperate
+co,Rocky Mountains,C,co_Cinnamon,co_Cinnamon_3,3458,-107.0663821,38.99159151,temperate
+sa,Drakensberg,W,sa_5,sa_5_2,2800,28.892625,-28.73771704,grassland
+sa,Drakensberg,W,sa_5,sa_5_4,2800,28.89251998,-28.73776599,grassland
+sa,Drakensberg,W,sa_5,sa_5_1,2800,28.892625,-28.73771704,grassland
+sa,Drakensberg,W,sa_5,sa_5_3,2800,28.892625,-28.73771704,grassland
+sa,Drakensberg,W,sa_5,sa_5_5,2800,28.89251998,-28.73776599,grassland
+sa,Drakensberg,E,sa_5,sa_5_3,2800,28.89437397,-28.73781703,grassland
+sa,Drakensberg,E,sa_5,sa_5_5,2800,28.89438001,-28.73769097,grassland
+sa,Drakensberg,E,sa_5,sa_5_1,2800,28.89437397,-28.73781703,grassland
+sa,Drakensberg,E,sa_5,sa_5_2,2800,28.89437397,-28.73781703,grassland
+sa,Drakensberg,E,sa_5,sa_5_4,2800,28.89439501,-28.73773104,grassland
+sa,Drakensberg,E,sa_4,sa_4_1,2600,28.89262198,-28.728377,grassland
+sa,Drakensberg,E,sa_4,sa_4_2,2600,28.89262198,-28.728377,grassland
+sa,Drakensberg,E,sa_4,sa_4_3,2600,28.89262198,-28.728377,grassland
+sa,Drakensberg,E,sa_4,sa_4_4,2600,28.89271804,-28.72826996,grassland
+sa,Drakensberg,E,sa_4,sa_4_5,2600,28.89271804,-28.72826996,grassland
+sa,Drakensberg,W,sa_4,sa_4_1,2600,28.89249902,-28.72828497,grassland
+sa,Drakensberg,W,sa_4,sa_4_2,2600,28.89249902,-28.72828497,grassland
+sa,Drakensberg,W,sa_4,sa_4_3,2600,28.89249902,-28.72828497,grassland
+sa,Drakensberg,W,sa_4,sa_4_4,2600,28.89243398,-28.72816301,grassland
+sa,Drakensberg,W,sa_4,sa_4_5,2600,28.89243398,-28.72816301,grassland
+sa,Drakensberg,E,sa_3,sa_3_1,2400,28.89683104,-28.71917199,grassland
+sa,Drakensberg,E,sa_3,sa_3_2,2400,28.89683104,-28.71917199,grassland
+sa,Drakensberg,E,sa_3,sa_3_4,2400,28.89677798,-28.719058,grassland
+sa,Drakensberg,E,sa_3,sa_3_3,2400,28.89683104,-28.71917199,grassland
+sa,Drakensberg,E,sa_3,sa_3_5,2400,28.89677798,-28.719058,grassland
+sa,Drakensberg,W,sa_3,sa_3_1,2400,28.89568004,-28.71877301,grassland
+sa,Drakensberg,W,sa_3,sa_3_2,2400,28.89568004,-28.71877301,grassland
+sa,Drakensberg,W,sa_3,sa_3_3,2400,28.89568004,-28.71877301,grassland
+sa,Drakensberg,W,sa_3,sa_3_4,2400,28.89562304,-28.71863304,grassland
+sa,Drakensberg,W,sa_3,sa_3_5,2400,28.89562304,-28.71863304,grassland
+sa,Drakensberg,W,sa_2,sa_2_1,2200,28.89387399,-28.68038499,grassland
+sa,Drakensberg,W,sa_2,sa_2_2,2200,28.89387399,-28.68038499,grassland
+sa,Drakensberg,W,sa_2,sa_2_3,2200,28.89387399,-28.68038499,grassland
+sa,Drakensberg,W,sa_2,sa_2_4,2200,28.89389,-28.68025297,grassland
+sa,Drakensberg,W,sa_2,sa_2_5,2200,28.89389,-28.68025297,grassland
+sa,Drakensberg,E,sa_2,sa_2_1,2200,28.89512901,-28.679927,grassland
+sa,Drakensberg,E,sa_2,sa_2_2,2200,28.89512901,-28.679927,grassland
+sa,Drakensberg,E,sa_2,sa_2_3,2200,28.89512901,-28.679927,grassland
+sa,Drakensberg,E,sa_2,sa_2_4,2200,28.89510596,-28.67980203,grassland
+sa,Drakensberg,E,sa_2,sa_2_5,2200,28.89510596,-28.67980203,grassland
+sa,Drakensberg,E,sa_1,sa_1_1,2000,28.88308003,-28.66102003,grassland
+sa,Drakensberg,E,sa_1,sa_1_2,2000,28.88308003,-28.66102003,grassland
+sa,Drakensberg,E,sa_1,sa_1_3,2000,28.88308003,-28.66102003,grassland
+sa,Drakensberg,E,sa_1,sa_1_4,2000,28.88308296,-28.66089203,grassland
+sa,Drakensberg,E,sa_1,sa_1_5,2000,28.88308296,-28.66089203,grassland
+sa,Drakensberg,W,sa_1,sa_1_1,2000,28.88263998,-28.66247102,grassland
+sa,Drakensberg,W,sa_1,sa_1_2,2000,28.88263998,-28.66247102,grassland
+sa,Drakensberg,W,sa_1,sa_1_3,2000,28.88263998,-28.66247102,grassland
+sa,Drakensberg,W,sa_1,sa_1_4,2000,28.88277099,-28.66239801,grassland
+sa,Drakensberg,W,sa_1,sa_1_5,2000,28.88277099,-28.66239801,grassland
