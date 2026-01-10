@@ -4,9 +4,15 @@ This repository contains all data and code used for the manuscript "Plant traits
 
 The code is organized on four main folders: cleaning and preparation (R/data_cleaning_and_prep), getting the environemental data (R/environmental_data), performing the analysis (R/analysis) and create the visuals (R/viz). The data folder contains, well, the data and the the builds folder contains the plots. 
 
-The R/environmental_data folder contains:
-1. ....
-2. ....
+The R/downscale_ERA5 folder contains:
+1. 01_solve_coordinates.R: sort out plot coordinates
+2. 02_download_ERA5.R: Download only ERA5 data
+3. 03_prepare_DEMS.R: downloading and preparing digital elevation models (DEMS)
+4. 04_downscale_mesoclim_parallel.R: downscale era5 data using mesoclim package
+5. 05_postprocess_climate.R: format data and clean output
+6. /functions/: helper functions called in the scripts 
+
+*scripts in this folder are very memory intensive and should be run on a supercomputer/server/cloud 
 
 R/data_cleaning_and_prep:
 1. get_south_africa_temp_and_par.R: Get temperature and PAR for South African data
@@ -23,7 +29,7 @@ R/analysis:
 4. relative_variable_importance.R: Get relative variable importance
 5. sensitivity/vpd_instead_growing_season_temp_models.R: Sensitivity analysis replacing growing season temperature with Vapor Pressure Deficit to test if moisture is more limiting
 6. sensitivity/log_transform_fluxes.R: sensitivity analysis to test if temperature becomes significant when using the strict Arrhenius term: ln(flux) ~ -1/kT, with k = Boltzmann constant and T = temperature in Kelvin
-7. sensitivity/loo_gradient_psem.R: repeating model tier 4, itertively leaving out one gradient
+7. sensitivity/loo_gradient_psem.R: repeating model tier 4, iteratively leaving out one gradient
 
 R/viz: 
 1. map.R: create the map and data distribution for Fig. 1
