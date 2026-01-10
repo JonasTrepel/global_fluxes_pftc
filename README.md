@@ -42,7 +42,7 @@ R/viz:
 *most manuscript figures have been combined in inkscape later on
 
 
-The data can be found in the datafolder and is decribed in the manuscript and in the associated datapapers: 
+The data is decribed in the manuscript and in the associated datapapers: 
 - V. Vandvik, et al., Plant traits and vegetation data from climate warming experiments along an 1100 m elevation gradient in Gongga Mountains, China. Sci Data 7, 189 (2020)
 - V. Vandvik, et al., Plant traits and associated data from a warming experiment, a seabird colony, and along elevation in Svalbard. Sci Data 10, 578 (2023)
 - A. H. Halbritter, et al., Plant trait and vegetation data along a 1314 m elevation gradient with fire history in Puna grasslands, Perú. Sci Data 11, 225 (2024)
