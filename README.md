@@ -2,7 +2,8 @@
 
 This repository contains all data and code used for the manuscript "Plant traits decouple ecosystem carbon fluxes from temperature along tropical, temperate, and Arctic elevation gradients" by Trepel, Niittynen, et al (under review)
 
-The code is organized on four main folders: cleaning and preparation (R/data_cleaning_and_prep), getting the environemental data (R/environmental_data), performing the analysis (R/analysis) and create the visuals (R/viz). The data folder contains, well, the data and the the builds folder contains the plots. 
+The code is organized on four main folders: cleaning and preparation (R/data_cleaning_and_prep), getting the environemental data (R/environmental_data), performing the analysis (R/analysis) and create the visuals (R/viz). The data folder contains, well, the data and the the builds folder contains the plots. We recommend running the scripts in this order: 
+
 
 The R/downscale_ERA5 folder contains:
 1. 01_solve_coordinates.R: sort out plot coordinates
@@ -40,7 +41,6 @@ R/viz:
 
 *most manuscript figures have been combined in inkscape later on
 
-We recommend running the scripts in this order. 
 
 The data can be found in the datafolder and is decribed in the manuscript and in the associated datapapers: 
 - V. Vandvik, et al., Plant traits and vegetation data from climate warming experiments along an 1100 m elevation gradient in Gongga Mountains, China. Sci Data 7, 189 (2020)
