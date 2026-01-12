@@ -51,7 +51,8 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
   filter(!is.na(all_traits_pc1_anomaly_country))#%>% filter(complete.cases(.))
 
 dt <- dt_raw %>% 
-  dplyr::select(-c(nee, reco, gpp, lat)) %>% 
+  dplyr::select(-c(nee, reco, gpp, lat, 
+                   gpp_anomaly_country, nee_anomaly_country, reco_anomaly_country)) %>% 
   mutate(leaf_area_cm2 = log(leaf_area_cm2),
          species_richness = log(species_richness),
          functional_diversity_q1 = log(functional_diversity_q1),
@@ -59,10 +60,9 @@ dt <- dt_raw %>%
          
   ) %>% 
   mutate(across(where(is.numeric), ~as.numeric(scale(.x)))) %>% 
-  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
+  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat", 
+                       "gpp_anomaly_country", "nee_anomaly_country", "reco_anomaly_country")]) %>% 
   distinct()
-
-
 
 dt %>% 
   ggplot() +

@@ -68,7 +68,8 @@ dt_raw <- fread("data/processed_data/clean_data/global_fluxes_main_data.csv") %>
   ) %>% filter(!is.na(morph_traits_pc1_anomaly_country))
 
 dt <- dt_raw %>% 
-  dplyr::select(-c(nee, reco, gpp, lat)) %>% 
+  dplyr::select(-c(nee, reco, gpp, lat, 
+                   gpp_anomaly_country, nee_anomaly_country, reco_anomaly_country)) %>% 
   mutate(leaf_area_cm2 = log(leaf_area_cm2),
          species_richness = log(species_richness),
          functional_diversity_q1 = log(functional_diversity_q1),
@@ -76,7 +77,8 @@ dt <- dt_raw %>%
          
   ) %>% 
   mutate(across(where(is.numeric), ~as.numeric(scale(.x)))) %>% 
-  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
+  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat", 
+                       "gpp_anomaly_country", "nee_anomaly_country", "reco_anomaly_country")]) %>% 
   distinct()
 
 
@@ -1378,6 +1380,8 @@ resp_clean_comb <- dt_est %>%
 dt_est$clean_response <- factor(dt_est$clean_response, levels = c(
   resp_clean_comb$clean_response
 ))
+
+
 # Plots -------------
 scico(9, palette = 'bam')
 #"#001959" "#818231" "#F9CCF9"
@@ -1926,4 +1930,87 @@ p_comp <- grid.arrange(p_rsq, p_ic, widths = c(1, 1.25))
 ggsave(plot = p_comp, "builds/plots/performance_comparison_between_tiers.png",
        dpi = 600, 
        height = 4, width = 8)
+
+
+############# Get unstandardized estimates ready #############
+setDT(dt_est)
+#downscaled temp
+#NEE - Tier 2, including both temperature vars 
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$estimate/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$ci_lb/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$ci_ub/sd(dt_raw$downscaled_temp_anomaly_country)
+#Reco
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$estimate/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$ci_lb/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$ci_ub/sd(dt_raw$downscaled_temp_anomaly_country)
+
+#Gpp
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$estimate/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$ci_lb/sd(dt_raw$downscaled_temp_anomaly_country)
+
+dt_est[predictor == "downscaled_temp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$ci_ub/sd(dt_raw$downscaled_temp_anomaly_country)
+
+#instantanoue temp
+#Nee
+dt_est[predictor == "temperature_nee_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$estimate/sd(dt_raw$temperature_nee_anomaly_country)
+
+dt_est[predictor == "temperature_nee_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$ci_lb/sd(dt_raw$temperature_nee_anomaly_country)
+
+dt_est[predictor == "temperature_nee_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "nee_anomaly_country"]$ci_ub/sd(dt_raw$temperature_nee_anomaly_country)
+#Reco
+dt_est[predictor == "temperature_reco_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$estimate/sd(dt_raw$temperature_reco_anomaly_country)
+
+dt_est[predictor == "temperature_reco_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$ci_lb/sd(dt_raw$temperature_reco_anomaly_country)
+
+dt_est[predictor == "temperature_reco_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "reco_anomaly_country"]$ci_ub/sd(dt_raw$temperature_reco_anomaly_country)
+
+#Gpp
+dt_est[predictor == "temperature_gpp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$estimate/sd(dt_raw$temperature_gpp_anomaly_country)
+
+dt_est[predictor == "temperature_gpp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$ci_lb/sd(dt_raw$temperature_gpp_anomaly_country)
+
+dt_est[predictor == "temperature_gpp_anomaly_country" &
+         model_tier == "tier_2" & 
+         response == "gpp_anomaly_country"]$ci_ub/sd(dt_raw$temperature_gpp_anomaly_country)
+
+
 

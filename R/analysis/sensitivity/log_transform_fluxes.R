@@ -72,11 +72,11 @@ dt_mod <- dt_raw %>%
     
     downscaled_temp_k = downscaled_temp + 273.15, 
     
-    temp_k_nee_trans  = -1 / ((1.38e-23)*temp_k_nee),
-    temp_k_reco_trans = -1 / ((1.38e-23)*temp_k_reco),
-    temp_k_gpp_trans  = -1 / ((1.38e-23)*temp_k_gpp),
+    temp_k_nee_trans  = -1 / ((8.617e-5)*temp_k_nee),
+    temp_k_reco_trans = -1 / ((8.617e-5)*temp_k_reco),
+    temp_k_gpp_trans  = -1 / ((8.617e-5)*temp_k_gpp),
     
-    downscaled_temp_k_trans = -1 / ((1.38e-23)*downscaled_temp_k)
+    downscaled_temp_k_trans = -1 / ((8.617e-5)*downscaled_temp_k)
   ) %>%
   group_by(gradient) %>% 
   mutate(
@@ -150,17 +150,21 @@ temp_panel <- plot_grid(
 temp_panel
 
 m_dat <- dt_mod %>% 
-  dplyr::select(-c(nee, reco, gpp, lat)) %>% 
   mutate(leaf_area_cm2 = log(leaf_area_cm2),
          species_richness = log(species_richness),
          functional_diversity_q1 = log(functional_diversity_q1),
-         height_x_cover = log(height_x_cover), 
-         log_positive_nee_anomaly_country = log(positive_nee_anomaly_country),
-         log_positive_gpp_anomaly_country = log(positive_gpp_anomaly_country),
-         log_positive_reco_anomaly_country = log(positive_reco_anomaly_country)
+         height_x_cover = log(height_x_cover)
   ) %>% 
+  dplyr::select(-c(nee, reco, gpp, lat, 
+                   gpp_anomaly_country, nee_anomaly_country, reco_anomaly_country,
+                   positive_nee_anomaly_country, positive_reco_anomaly_country, positive_gpp_anomaly_country)) %>% 
   mutate(across(where(is.numeric), ~as.numeric(scale(.x)))) %>% 
-  left_join(dt_raw[, c("plot_id", "nee", "reco", "gpp", "lat")]) %>% 
+  left_join(dt_mod[, c("plot_id", "nee", "reco", "gpp", "lat", 
+                       "gpp_anomaly_country", "nee_anomaly_country", "reco_anomaly_country",
+                       "positive_nee_anomaly_country", "positive_reco_anomaly_country", "positive_gpp_anomaly_country")]) %>% 
+  mutate(log_positive_nee_anomaly_country = log(positive_nee_anomaly_country),
+         log_positive_gpp_anomaly_country = log(positive_gpp_anomaly_country),
+         log_positive_reco_anomaly_country = log(positive_reco_anomaly_country)) %>% 
   distinct()
 
 m_dat %>% 
@@ -597,3 +601,91 @@ library(patchwork)
 (p_comb = p_t1 / p_t2 / p_t3 +
   plot_annotation(tag_levels = "A"))
 ggsave(plot = p_comb, "builds/plots/supplement/log_transformed_fluxes.png", dpi = 600, height = 9, width = 8)
+
+
+
+###### Get coefficient estimates ready 
+
+############# Get unstandardized estimates ready #############
+setDT(dt_p)
+#downscaled temp
+#NEE - Tier 2, including both temperature vars 
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "NEE"]$estimate/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "NEE"]$ci_lb/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "NEE"]$ci_ub/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+#Reco
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$estimate/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$ci_lb/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$ci_ub/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+#Gpp
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$estimate/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$ci_lb/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+dt_p[term == "downscaled_temp_k_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$ci_ub/sd(dt_mod$downscaled_temp_k_trans_anomaly)
+
+#instantanoue temp
+#Nee
+
+dt_p[term == "temp_k_nee_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+       response == "NEE"]$estimate/sd(dt_mod$temp_k_nee_trans_anomaly)
+
+dt_p[term == "temp_k_nee_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "NEE"]$ci_lb/sd(dt_mod$temp_k_nee_trans_anomaly)
+
+dt_p[term == "temp_k_nee_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "NEE"]$ci_ub/sd(dt_mod$temp_k_nee_trans_anomaly)
+#Reco
+dt_p[term == "temp_k_reco_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$estimate/sd(dt_mod$temp_k_reco_trans_anomaly)
+
+dt_p[term == "temp_k_reco_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$ci_lb/sd(dt_mod$temp_k_reco_trans_anomaly)
+
+dt_p[term == "temp_k_reco_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "Reco"]$ci_ub/sd(dt_mod$temp_k_reco_trans_anomaly)
+
+#Gpp
+dt_p[term == "temp_k_gpp_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$estimate/sd(dt_mod$temp_k_gpp_trans_anomaly)
+
+dt_p[term == "temp_k_gpp_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$ci_lb/sd(dt_mod$temp_k_gpp_trans_anomaly)
+
+dt_p[term == "temp_k_gpp_trans_anomaly" &
+       predictor_tier == "tier_2_transformed" & 
+         response == "GPP"]$ci_ub/sd(dt_mod$temp_k_gpp_trans_anomaly)
+
+

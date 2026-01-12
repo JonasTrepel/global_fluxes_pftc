@@ -129,11 +129,11 @@ dt_mod <- dt %>%
     
     downscaled_temp_k = downscaled_temp + 273.15, 
     
-    temp_k_nee_trans  = -1 / ((1.38e-23)*temp_k_nee),
-    temp_k_reco_trans = -1 / ((1.38e-23)*temp_k_reco),
-    temp_k_gpp_trans  = -1 / ((1.38e-23)*temp_k_gpp),
+    temp_k_nee_trans  = -1 / ((8.617e-5)*temp_k_nee),
+    temp_k_reco_trans = -1 / ((8.617e-5)*temp_k_reco),
+    temp_k_gpp_trans  = -1 / ((8.617e-5)*temp_k_gpp),
     
-    downscaled_temp_k_trans = -1 / ((1.38e-23)*downscaled_temp_k)
+    downscaled_temp_k_trans = -1 / ((8.617e-5)*downscaled_temp_k)
   ) %>%
   group_by(gradient) %>% 
   mutate(
