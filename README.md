@@ -37,7 +37,7 @@ R/viz:
 2. fluxes_along_gradient.R: code for Fig. S1, showing the (lack of) response of fluxes along gradients of growing season temperature
 3. all_traits_pca_along_gradient.R: Show how the trait principal component axes vary along gradients of growing season temperature 
 4. correlations.R: visualize correlations
-5. arrhenius_plot_supplement.R: plot ln(flux) ~ -1/kT, with k = Boltzmann constant and T = temperature in Kelvin for both growing season and instantaneous temperature 
+5. arrhenius_plot.R: plot ln(flux) ~ -1/kT, with k = Boltzmann constant and T = temperature in Kelvin for both growing season and instantaneous temperature 
 
 *most manuscript figures have been combined in inkscape later on
 
