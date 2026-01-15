@@ -242,7 +242,7 @@ p_gst = dt_mod %>%
             alpha = .75, linetype = "dashed", color = "black", linewidth = 0.75) +
   facet_grid(rows = vars(flux_type), cols = vars(gradient), scales = "free") +
   MetBrewer::scale_color_met_d(name = "Archambault") +
-  labs(x = "-1/kT", y = "log (flux + offset)", subtitle = "Growing Season Temperature", title = "A") +
+  labs(x = "-1/kT", y = "ln (flux + offset)", subtitle = "Growing Season Temperature", title = "A") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -312,7 +312,7 @@ p_it = dt_mod %>%
             alpha = .75, linetype = "dashed", color = "black", linewidth = 0.75) +
   facet_grid(rows = vars(flux_type), cols = vars(gradient), scales = "free") +
   MetBrewer::scale_color_met_d(name = "Archambault") +
-  labs(x = "-1/kT", y = "log (flux + offset)", subtitle = "Instantaneous Temperature", title = "B") +
+  labs(x = "-1/kT", y = "ln (flux + offset)", subtitle = "Instantaneous Temperature", title = "B") +
   theme(legend.position = "none", 
         legend.box="vertical",
         plot.subtitle = element_text(hjust = 0.5, size = 14, face = "bold"),
@@ -334,3 +334,166 @@ library(patchwork)
 
 ggsave(plot = p_comb, "builds/plots/supplement/arrhenius_plots_fluxes_vs_temp.png", dpi = 600, height = 11, width = 10)
 
+
+##########################################################################################################
+#### get the plots with anomaly ready ####################################################################
+##########################################################################################################
+
+# growing season temperature 
+dt_pred_gst_a <- rbind(
+  predict_with_ci(model = m_gpp,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           temp_k_gpp_trans_anomaly = 0, 
+                                           par_nee_anomaly_country = 0),
+                  response_name = "GPP",
+                  predictor_col = dt_mod$downscaled_temp_k_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country), 
+  predict_with_ci(model = m_nee,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           temp_k_nee_trans_anomaly = 0,
+                                           par_nee_anomaly_country = 0),
+                  response_name = "NEE",
+                  predictor_col = dt_mod$downscaled_temp_k_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country), 
+  predict_with_ci(model = m_reco,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           temp_k_reco_trans_anomaly = 0, 
+                                           par_nee_anomaly_country = 0),
+                  response_name = "Reco",
+                  predictor_col = dt_mod$downscaled_temp_k_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country)) %>% 
+  rename(predictor = predictor, 
+         flux_type = response) %>% 
+  left_join(unique(dt[, c("country", "gradient")]))
+
+
+glimpse(dt_pred_gst_a)
+
+c(MetBrewer::met.brewer(name = "Archambault", n = 6))
+unique(dt[, c("country", "gradient")])
+
+palette = c("Central Andes" = "#7c4b73", 
+            "Drakensberg" = "#88a0dc", 
+            "Southern Scandes" = "#e78429",
+            "Svalbard" = "#f9d14a",
+            "Rocky Mountains" = "#ab3329",
+            "Eastern Himalayas"  = "#ed968c")
+
+p_gst_a = dt_mod %>% 
+  rename(`GPP` = log_positive_gpp_anomaly_country, 
+         `NEE` = log_positive_nee_anomaly_country, 
+         `Reco` = log_positive_reco_anomaly_country) %>%
+  pivot_longer(cols = c("GPP", "NEE", "Reco"), 
+               names_to = "flux_type", values_to = "flux_value") %>% 
+  mutate(gradient = fct_reorder(gradient, lat), 
+         temp = case_when(
+           flux_type == "GPP" ~ temp_k_gpp_trans_anomaly, 
+           flux_type == "NEE" ~ temp_k_nee_trans_anomaly, 
+           flux_type == "Reco" ~ temp_k_reco_trans_anomaly 
+         )) %>% 
+  ggplot(aes(x = downscaled_temp_k_trans_anomaly, y = flux_value)) +
+  geom_point(alpha = .5, aes(color = gradient)) +
+  geom_ribbon(data = dt_pred_gst_a, aes(x = predictor, ymin = ci_lb, ymax = ci_ub), 
+              alpha = .1, linetype = "dashed", inherit.aes = FALSE, color = "grey25", linewidth = 0.5) +
+  geom_line(data = dt_pred_gst_a, aes(x = predictor, y = pred),
+            alpha = 1, linetype = "dashed", linewidth = 0.75, color = "black") +
+  facet_wrap(~flux_type, scales = "free") +
+  scale_color_manual(values = palette) +
+  scale_fill_manual(values = palette) +
+  labs(x = "-1/kT (deviation from gradient mean)", y = "ln (flux + offset)", subtitle = "Growing Season Temperature", title = "") +
+  theme(legend.position = "none", 
+        legend.box="vertical",
+        plot.title = element_blank(),
+        plot.subtitle = element_text(hjust = 0.5, size = 12, face = "italic"),
+        panel.grid = element_line(color = "snow"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        #panel.border = element_rect(color = NA), 
+        panel.background = element_rect(fill = "snow"), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") )
+
+p_gst_a 
+
+#Instantaneous temperature 
+dt_pred_it <- rbind(
+  predict_with_ci(model = m_gpp,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           downscaled_temp_k_trans_anomaly = 0,
+                                           par_nee_anomaly_country = 0),
+                  response_name = "GPP",
+                  predictor_col = dt_mod$temp_k_gpp_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country), 
+  predict_with_ci(model = m_nee,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           downscaled_temp_k_trans_anomaly = 0,
+                                           par_nee_anomaly_country = 0),
+                  response_name = "NEE",
+                  predictor_col = dt_mod$temp_k_nee_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country), 
+  predict_with_ci(model = m_reco,
+                  data = dt_mod %>% mutate(site = NA, country = NA, 
+                                           downscaled_temp_k_trans_anomaly = 0,
+                                           par_nee_anomaly_country = 0),
+                  response_name = "Reco",
+                  predictor_col = dt_mod$temp_k_reco_trans_anomaly,
+                  country_mean = 0, 
+                  country_col = dt_mod$country)) %>% 
+  rename(predictor = predictor, 
+         flux_type = response) %>% 
+  left_join(unique(dt[, c("country", "gradient")]))
+
+
+glimpse(dt_pred_it)
+
+
+p_it_a = dt_mod %>% 
+  rename(`GPP` = log_positive_gpp_anomaly_country, 
+         `NEE` = log_positive_nee_anomaly_country, 
+         `Reco` = log_positive_reco_anomaly_country) %>%
+  pivot_longer(cols = c("GPP", "NEE", "Reco"), 
+               names_to = "flux_type", values_to = "flux_value") %>% 
+  mutate(gradient = fct_reorder(gradient, lat), 
+         temp = case_when(
+           flux_type == "GPP" ~ temp_k_gpp_trans_anomaly, 
+           flux_type == "NEE" ~ temp_k_nee_trans_anomaly, 
+           flux_type == "Reco" ~ temp_k_reco_trans_anomaly 
+         )) %>% 
+  ggplot(aes(x = temp, y = flux_value)) +
+  geom_point(alpha = .5, aes(color = gradient)) +
+  geom_ribbon(data = dt_pred_it, aes(x = predictor, ymin = ci_lb, ymax = ci_ub), 
+              alpha = .1, linetype = "dashed", inherit.aes = FALSE, color = "grey25", linewidth = 0.5) +
+  geom_line(data = dt_pred_it, aes(x = predictor, y = pred),
+            alpha = 1, linetype = "dashed", linewidth = 0.75, color = "black") +
+  facet_wrap(~flux_type, scales = "free") +
+  scale_color_manual(values = palette) +
+  scale_fill_manual(values = palette) +
+  labs(x = "-1/kT (deviation from gradient mean)", y = "ln (flux + offset)", subtitle = "Instantaneous Temperature") +
+  theme(legend.position = "none", 
+        legend.box="vertical",
+        plot.subtitle = element_text(hjust = 0.5, size = 12, face = "italic"),
+        panel.grid = element_line(color = "snow"), 
+        #axis.title.x = element_blank(), 
+        axis.text = element_text(size = 10), 
+        plot.title = element_blank(),
+        axis.text.x = element_text(size = 10, angle = 0, hjust = 1), 
+        #panel.border = element_rect(color = NA), 
+        panel.background = element_rect(fill = "snow"), 
+        strip.text.x = element_text(size = 12), 
+        strip.text.y = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "linen", color = "linen") )
+
+p_it_a 
+
+library(patchwork)
+
+(p_comb_a <- p_gst_a / p_it_a)
+
+ggsave(plot = p_comb_a, "builds/plots/supplement/arrhenius_plots_fluxes_vs_temp_anomalies.png", dpi = 600, height = 6, width = 10)

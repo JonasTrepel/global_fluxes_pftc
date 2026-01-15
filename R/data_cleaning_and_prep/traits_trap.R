@@ -18,6 +18,11 @@ trait <- fread("data/processed_data/preliminary_data/prelim_traits.csv") %>%
   filter(!Taxon == "" ) %>% 
   filter(!(Trait == "sla_cm2_g" & Value > 1000))
 
+unique(trait$Trait)
+
+
+trait %>% 
+  filter(Trait == "sla_cm2_g")
 # Filter out trait outliers by comparing to plot level medians
 trait <- trait %>% 
   arrange(Tier, PlotID, Trait, Taxon) %>% 
@@ -29,6 +34,9 @@ trait <- trait %>%
   mutate(er = abs(Tmd - Value)/sd) %>% 
   filter(!(er > 2.25 & n >= 4 & !is.na(sd))) %>% 
   select(-c(n:er)) %>% ungroup()
+
+unique(trait$Trait)
+
 
 # Filter out trait outliers by comparing them to country level medians if less than 4 measurements in a plot
 trait <- trait %>% 
