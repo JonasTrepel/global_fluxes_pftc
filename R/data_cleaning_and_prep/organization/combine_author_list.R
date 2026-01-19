@@ -76,8 +76,22 @@ lapply(1:nrow(d), function(x){
 # This will construct the list of affiliations
 lapply(unique(d2$Aff_number), function(x){
   
-  paste0(superscript(x), (dat2 %>% filter(Aff_number == x) %>% pull(Affiliation) %>% unique))
+  paste0(superscript(x), (d2 %>% filter(Aff_number == x) %>% pull(Affiliation) %>% unique))
   
   
 }) %>% 
   paste(collapse = ", ")
+
+out <- lapply(unique(d2$Aff_number), function(x){
+  paste0(
+    superscript(x),
+    (d2 %>% filter(Aff_number == x) %>% pull(Affiliation) %>% unique)
+  )
+}) %>% paste(collapse = ", ")
+
+writeLines(out, pipe("pbcopy"))
+
+
+
+mails = unique(d$email) %>% paste(collapse = ", ")
+writeLines(mails, pipe("pbcopy"))
